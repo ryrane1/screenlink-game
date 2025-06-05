@@ -83,4 +83,8 @@ def validate_link():
 def test_env():
     return jsonify({"TMDB_API_KEY": TMDB_API_KEY})
 
+if __name__ == '__main__':
+    from os import environ
+    port = int(environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port)
 
