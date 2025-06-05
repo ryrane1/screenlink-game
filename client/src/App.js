@@ -1,6 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import './App.css';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5001';
 
 function App() {
   const [startActor, setStartActor] = useState(null);
@@ -9,9 +10,10 @@ function App() {
   const [currentInput, setCurrentInput] = useState({ actor: '', title: '' });
   const [validationMessage, setValidationMessage] = useState('');
   const [steps, setSteps] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5001/get-random-actors')
+    fetch(`${BACKEND_URL}/get-random-actors`)
       .then(res => res.json())
       .then(data => {
         setStartActor(data.start);
@@ -19,90 +21,98 @@ function App() {
         setChain([data.start]);
         setSteps(0);
         setValidationMessage('');
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setValidationMessage("Failed to load actors.");
+        setLoading(false);
       });
   }, []);
 
   const handleSubmit = async () => {
     const { actor, title } = currentInput;
     if (!actor || !title) {
-      setValidationMessage('Please fill both actor and title.');
+      setValidationMessage('❗ Please fill out both fields.');
       return;
     }
 
-    const res = await fetch('http://localhost:5001/validate-link', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ actor, title })
-    });
-    const result = await res.json();
+    try {
+      const res = await fetch(`${BACKEND_URL}/validate-link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actor, title }),
+      });
+      const result = await res.json();
 
-    if (result.valid) {
-      setChain([...chain, { name: title }, { name: actor }]);
-      setSteps(prev => prev + 1);
-      setCurrentInput({ actor: '', title: '' });
+      if (result.valid) {
+        setChain(prev => [...prev, { name: title }, { name: actor }]);
+        setSteps(prev => prev + 1);
+        setCurrentInput({ actor: '', title: '' });
 
-      if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
-        setValidationMessage('🎉 You reached the goal actor!');
+        if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
+          setValidationMessage('🎉 You reached the goal actor!');
+        } else {
+          setValidationMessage('✅ Valid connection. Keep going!');
+        }
       } else {
-        setValidationMessage('✅ Valid link. Keep going.');
+        setValidationMessage('❌ Invalid connection. Try again.');
       }
-    } else {
-      setValidationMessage('❌ Invalid link. Try again.');
+    } catch (error) {
+      console.error(error);
+      setValidationMessage('❌ Error validating connection.');
     }
   };
 
   const handlePlayAgain = () => {
-    window.location.reload(); // Simple full reset for now
+    window.location.reload();
   };
 
   return (
     <div className="App">
       <h1>🎬 Actor Connection Game</h1>
-      {startActor && goalActor ? (
-        <div>
-          <div>
-            <h3>Start: {startActor.name}</h3>
-            {startActor.image && <img src={startActor.image} alt={startActor.name} />}
-          </div>
-          <div>
-            <h3>Goal: {goalActor.name}</h3>
-            {goalActor.image && <img src={goalActor.image} alt={goalActor.name} />}
-          </div>
-        </div>
-      ) : (
+
+      {loading ? (
         <p>Loading actors...</p>
+      ) : (
+        <>
+          <div>
+            <h3>Start: {startActor?.name}</h3>
+            {startActor?.image && <img src={startActor.image} alt={startActor.name} />}
+          </div>
+          <div>
+            <h3>Goal: {goalActor?.name}</h3>
+            {goalActor?.image && <img src={goalActor.image} alt={goalActor.name} />}
+          </div>
+        </>
       )}
 
+      <p><strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}</p>
+
+      <input
+        type="text"
+        placeholder="Actor Name"
+        value={currentInput.actor}
+        onChange={e => setCurrentInput({ ...currentInput, actor: e.target.value })}
+      />
+      <input
+        type="text"
+        placeholder="Movie or TV Title"
+        value={currentInput.title}
+        onChange={e => setCurrentInput({ ...currentInput, title: e.target.value })}
+      />
+      <button onClick={handleSubmit}>Submit</button>
+      <button onClick={handlePlayAgain}>Play Again</button>
+
+      <p>{validationMessage}</p>
+
       <div>
-        <p>
-          <strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}
-        </p>
-
-        <input
-          type="text"
-          placeholder="Actor Name"
-          value={currentInput.actor}
-          onChange={e => setCurrentInput({ ...currentInput, actor: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Movie or TV Title"
-          value={currentInput.title}
-          onChange={e => setCurrentInput({ ...currentInput, title: e.target.value })}
-        />
-        <button onClick={handleSubmit}>Submit</button>
-        <button onClick={handlePlayAgain}>Play Again</button>
-
-        <p>{validationMessage}</p>
-
-        <div>
-          <h4>Current Chain:</h4>
-          <ul>
-            {chain.map((item, index) => (
-              <li key={index}>{item.name}</li>
-            ))}
-          </ul>
-        </div>
+        <h4>Current Chain:</h4>
+        <ul>
+          {chain.map((item, index) => (
+            <li key={index}>{item.name}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
