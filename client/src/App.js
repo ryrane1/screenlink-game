@@ -13,15 +13,17 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("📡 Fetching random actors from:", `${BACKEND_URL}/get-random-actors`);
     axios.get(`${BACKEND_URL}/get-random-actors`)
       .then(res => {
+        console.log("✅ Random actors loaded:", res.data);
         setStartActor(res.data.start);
         setGoalActor(res.data.goal);
         setChain([res.data.start]);
         setLoading(false);
       })
       .catch(err => {
-        console.error(err);
+        console.error("❌ Error loading actors:", err);
         setValidationMessage('Failed to load actors.');
         setLoading(false);
       });
@@ -35,24 +37,25 @@ function App() {
     }
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/validate-link`, {
-        actor,
-        title,
-      });
+      console.log("📨 Sending to backend:", { actor, title });
+      const response = await axios.post(`${BACKEND_URL}/validate-link`, { actor, title });
+
       if (response.data.valid) {
+        console.log("✅ Valid link confirmed.");
         setChain(prev => [...prev, { name: title }, { name: actor }]);
         setValidationMessage('✅ Valid connection. Keep going!');
         setCurrentInput({ actor: '', title: '' });
 
-        if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
+        if (actor.trim().toLowerCase() === goalActor.name.trim().toLowerCase()) {
           setValidationMessage('🎉 You reached the goal actor!');
         }
       } else {
+        console.log("❌ Invalid connection.");
         setValidationMessage('❌ Invalid connection. Try again.');
       }
     } catch (error) {
-      console.error('Validation error:', error);
-      setValidationMessage('💥 Error validating. Is the Flask server running?');
+      console.error("💥 Error during validation:", error);
+      setValidationMessage('💥 Error connecting to Flask backend.');
     }
   };
 
@@ -64,6 +67,7 @@ function App() {
     <div className="App" style={{ backgroundColor: '#0d0d0d', color: '#b2ff9e', padding: '2rem', 
 fontFamily: 'sans-serif' }}>
       <h1>🎬 Connect from {startActor?.name} to {goalActor?.name}</h1>
+      
       <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', alignItems: 'center', 
 marginBottom: '1rem' }}>
         {startActor?.image && (
