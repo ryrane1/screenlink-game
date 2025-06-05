@@ -1,6 +1,7 @@
 import random
 import requests
 import time
+from flask_cors import CORS
 from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 import os
@@ -9,6 +10,8 @@ load_dotenv()
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 app = Flask(__name__)
+CORS(app)
+
 
 @app.route('/')
 def index():
