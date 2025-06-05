@@ -46,7 +46,7 @@ function App() {
       const result = await res.json();
 
       if (result.valid) {
-        setChain(prev => [...prev, { name: title }, { name: actor }]);
+        setChain(prev => [...prev, result.title, result.actor]);
         setSteps(prev => prev + 1);
         setCurrentInput({ actor: '', title: '' });
 
@@ -110,7 +110,10 @@ function App() {
         <h4>Current Chain:</h4>
         <ul>
           {chain.map((item, index) => (
-            <li key={index}>{item.name}</li>
+            <li key={index}>
+              {item.image && <img src={item.image} alt={item.name} />}
+              <div>{item.name}</div>
+            </li>
           ))}
         </ul>
       </div>
