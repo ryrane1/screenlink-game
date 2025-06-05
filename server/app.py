@@ -10,7 +10,7 @@ load_dotenv()
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, support_credentials=True)
 
 
 @app.route('/')
