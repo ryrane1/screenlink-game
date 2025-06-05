@@ -57,8 +57,7 @@ def validate_link():
         poster_path = media.get('poster_path')
         poster_url = f"https://image.tmdb.org/t/p/w185{poster_path}" if poster_path else None
 
-        credits_url = 
-f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
+        credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', [])
 
