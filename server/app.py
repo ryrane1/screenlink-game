@@ -10,6 +10,10 @@ TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 app = Flask(__name__)
 
+@app.route('/')
+def index():
+    return '✅ Flask backend is running!'
+
 # 🎭 Fixed list of 100 popular actor names
 popular_actors = [
     "Zendaya", "Timothée Chalamet", "Florence Pugh", "Austin Butler", "Anya Taylor-Joy",
@@ -74,7 +78,7 @@ def validate_link():
         credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', [])
-        if any(c.get('name') == actor for c in cast):
+        if any(c.get('name', '').strip().lower() == actor.strip().lower() for c in cast):
             return jsonify({"valid": True})
     return jsonify({"valid": False})
 
