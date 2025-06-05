@@ -132,19 +132,21 @@ function App() {
   return (
     <div style={{ padding: '40px', fontFamily: 'Arial', maxWidth: '900px', margin: 'auto' }}>
       <h2 style={{ color: '#90ee90' }}>
-        🎬 Connect from <strong>{start.name}</strong> to <strong>{goal.name}</strong>
+        🎬 Connect from <strong>{start?.name || '...'}</strong> to <strong>{goal?.name || '...'}</strong>
       </h2>
 
       <div style={{ display: 'flex', gap: '40px', alignItems: 'center', marginBottom: '20px' }}>
         <div style={{ textAlign: 'center' }}>
-          <img src={start.image} alt={start.name} style={{ height: '100px', borderRadius: '8px' 
-}} />
+        {start?.image && (
+          <img src={start.image} alt={start.name || 'Start Actor'} style={{ height: '100px', borderRadius: '8px' }} />
+        )}
           <div>{start.name}</div>
         </div>
         <span style={{ fontSize: '24px' }}>🎯</span>
         <div style={{ textAlign: 'center' }}>
-          <img src={goal.image} alt={goal.name} style={{ height: '100px', borderRadius: '8px' }} 
-/>
+        {goal?.image && (
+          <img src={goal.image} alt={goal.name || 'Goal Actor'} style={{ height: '100px', borderRadius: '8px' }} />
+        )}
           <div>{goal.name}</div>
         </div>
       </div>
@@ -218,7 +220,7 @@ function App() {
           fontSize: '18px'
         }}>
           ✅ Game Summary: You connected <strong>{start.name}</strong> to 
-<strong>{goal.name}</strong> in <strong>{Math.floor((chain.length - 1) / 2)}</strong> steps!
+<strong>{goal.name}</strong> in <strong>{Math.max(Math.floor((chain.length - 1) / 2), 0)}</strong> steps!
         </div>
       )}
     </div>
