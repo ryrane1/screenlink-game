@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
+import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5001';
 
@@ -9,23 +10,19 @@ function App() {
   const [chain, setChain] = useState([]);
   const [currentInput, setCurrentInput] = useState({ actor: '', title: '' });
   const [validationMessage, setValidationMessage] = useState('');
-  const [steps, setSteps] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/get-random-actors`)
-      .then(res => res.json())
-      .then(data => {
-        setStartActor(data.start);
-        setGoalActor(data.goal);
-        setChain([data.start]);
-        setSteps(0);
-        setValidationMessage('');
+    axios.get(`${BACKEND_URL}/get-random-actors`)
+      .then(res => {
+        setStartActor(res.data.start);
+        setGoalActor(res.data.goal);
+        setChain([res.data.start]);
         setLoading(false);
       })
       .catch(err => {
         console.error(err);
-        setValidationMessage("Failed to load actors.");
+        setValidationMessage('Failed to load actors.');
         setLoading(false);
       });
   }, []);
@@ -38,29 +35,24 @@ function App() {
     }
 
     try {
-      const res = await fetch(`${BACKEND_URL}/validate-link`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ actor, title }),
+      const response = await axios.post(`${BACKEND_URL}/validate-link`, {
+        actor,
+        title,
       });
-      const result = await res.json();
-
-      if (result.valid) {
-        setChain(prev => [...prev, result.title, result.actor]);
-        setSteps(prev => prev + 1);
+      if (response.data.valid) {
+        setChain(prev => [...prev, { name: title }, { name: actor }]);
+        setValidationMessage('✅ Valid connection. Keep going!');
         setCurrentInput({ actor: '', title: '' });
 
         if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
           setValidationMessage('🎉 You reached the goal actor!');
-        } else {
-          setValidationMessage('✅ Valid connection. Keep going!');
         }
       } else {
         setValidationMessage('❌ Invalid connection. Try again.');
       }
     } catch (error) {
-      console.error(error);
-      setValidationMessage('❌ Error validating connection.');
+      console.error('Validation error:', error);
+      setValidationMessage('💥 Error validating. Is the Flask server running?');
     }
   };
 
@@ -69,54 +61,68 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>🎬 Actor Connection Game</h1>
-
-      {loading ? (
-        <p>Loading actors...</p>
-      ) : (
-        <>
+    <div className="App" style={{ backgroundColor: '#0d0d0d', color: '#b2ff9e', padding: '2rem', 
+fontFamily: 'sans-serif' }}>
+      <h1>🎬 Connect from {startActor?.name} to {goalActor?.name}</h1>
+      <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', alignItems: 'center', 
+marginBottom: '1rem' }}>
+        {startActor?.image && (
           <div>
-            <h3>Start: {startActor?.name}</h3>
-            {startActor?.image && <img src={startActor.image} alt={startActor.name} />}
+            <img src={startActor.image} alt={startActor.name} style={{ width: 100, borderRadius: 8 }} />
+            <div>{startActor.name}</div>
           </div>
+        )}
+        🎯
+        {goalActor?.image && (
           <div>
-            <h3>Goal: {goalActor?.name}</h3>
-            {goalActor?.image && <img src={goalActor.image} alt={goalActor.name} />}
+            <img src={goalActor.image} alt={goalActor.name} style={{ width: 100, borderRadius: 8 }} />
+            <div>{goalActor.name}</div>
           </div>
-        </>
-      )}
-
-      <p><strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}</p>
-
-      <input
-        type="text"
-        placeholder="Actor Name"
-        value={currentInput.actor}
-        onChange={e => setCurrentInput({ ...currentInput, actor: e.target.value })}
-      />
-      <input
-        type="text"
-        placeholder="Movie or TV Title"
-        value={currentInput.title}
-        onChange={e => setCurrentInput({ ...currentInput, title: e.target.value })}
-      />
-      <button onClick={handleSubmit}>Submit</button>
-      <button onClick={handlePlayAgain}>Play Again</button>
-
-      <p>{validationMessage}</p>
-
-      <div>
-        <h4>Current Chain:</h4>
-        <ul>
-          {chain.map((item, index) => (
-            <li key={index}>
-              {item.image && <img src={item.image} alt={item.name} />}
-              <div>{item.name}</div>
-            </li>
-          ))}
-        </ul>
+        )}
       </div>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}
+      </div>
+
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', justifyContent: 'center' }}>
+        <input
+          placeholder="🎬 Movie/Show Title"
+          value={currentInput.title}
+          onChange={e => setCurrentInput({ ...currentInput, title: e.target.value })}
+        />
+        <input
+          placeholder="👤 Next Actor"
+          value={currentInput.actor}
+          onChange={e => setCurrentInput({ ...currentInput, actor: e.target.value })}
+        />
+        <button onClick={handleSubmit}>Submit</button>
+      </div>
+
+      <p style={{ color: validationMessage.includes('Error') || validationMessage.includes('Invalid') ? 
+'red' : 'lightgreen' }}>
+        {validationMessage}
+      </p>
+
+      <div style={{ marginTop: '1rem' }}>
+        <h3>Current Chain:</h3>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
+          {chain.map((item, idx) => (
+            <div key={idx} style={{ backgroundColor: '#1a1a1a', padding: '0.5rem 1rem', borderRadius: 8 
+}}>
+              {item.image && <img src={item.image} alt={item.name} style={{ width: 50, marginRight: 8, 
+verticalAlign: 'middle' }} />}
+              {item.name}
+              {idx !== chain.length - 1 && ' → '}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button onClick={handlePlayAgain} style={{ marginTop: '2rem', padding: '0.5rem 1rem', 
+backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: 4 }}>
+        🔁 Play Again
+      </button>
     </div>
   );
 }
