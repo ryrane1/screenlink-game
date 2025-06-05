@@ -17,7 +17,22 @@ def index():
     return '✅ Flask backend is running!'
 
 # 🎭 Fixed list of 100 popular actor names
-popular_actors = [ ... ]  # (keep your full list here)
+popular_actors = [
+    "Jennifer Lawrence", "Robert Downey Jr.", "Zendaya", "Tom Holland",
+    "Florence Pugh", "Timothée Chalamet", "Emma Stone", "Brad Pitt",
+    "Margot Robbie", "Chris Evans", "Scarlett Johansson", "Ryan Gosling",
+    "Natalie Portman", "Jake Gyllenhaal", "Ana de Armas", "Adam Driver",
+    "Saoirse Ronan", "Michael B. Jordan", "Emily Blunt", "Daniel Kaluuya",
+    "Daisy Ridley", "John Boyega", "Millie Bobby Brown", "Finn Wolfhard",
+    "David Harbour", "Winona Ryder", "Pedro Pascal", "Oscar Isaac",
+    "Henry Cavill", "Gal Gadot", "Jason Momoa", "Christian Bale",
+    "Cillian Murphy", "Florence Welch", "Taron Egerton", "Awkwafina",
+    "Emma Watson", "Rupert Grint", "Daniel Radcliffe", "Ben Barnes",
+    "Austin Butler", "Paul Mescal", "Barry Keoghan", "Letitia Wright",
+    "Lupita Nyong’o", "Elizabeth Olsen", "Paul Bettany", "Sebastian Stan",
+    "Anthony Mackie", "Hailee Steinfeld", "Jeremy Renner", "Tom Hiddleston"
+    # add more as desired...
+]
 
 def fetch_actor_data(name):
     url = f"https://api.themoviedb.org/3/search/person?api_key={TMDB_API_KEY}&query={name}"
