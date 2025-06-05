@@ -19,15 +19,25 @@ function App() {
   const [actorSuggestions, setActorSuggestions] = useState([]);
 
   const fetchNewGame = async () => {
-    const res = await axios.get('/get-random-actors');
-    setStart(res.data.start);
-    setGoal(res.data.goal);
-    setChain([{ actor: res.data.start.name, image: res.data.start.image }]);
-    setInputTitle('');
-    setInputActor('');
-    setStatus('');
-    setGameOver(false);
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_API_BASE}/get-random-actors`);
+    
+      console.log("API response:", res.data); // ✅ This logs the full backend response
+      console.log("Start actor:", res.data.start); // ✅ This confirms start actor object
+      console.log("Goal actor:", res.data.goal);   // ✅ This confirms goal actor object
+
+      setStart(res.data.start);
+      setGoal(res.data.goal);
+      setChain([{ actor: res.data.start.name, image: res.data.start.image }]);
+      setInputTitle('');
+      setInputActor('');
+      setStatus('');
+      setGameOver(false);
+    } catch (error) {
+      console.error("❌ fetchNewGame error:", error);
+    }
   };
+
 
   useEffect(() => {
     fetchNewGame();
