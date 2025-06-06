@@ -79,7 +79,8 @@ function App() {
       }
 
       const res = await axios.get(`${BACKEND_URL}/suggest?query=${query}&type=${type}`);
-      setSuggestions(Array.isArray(res.data) ? res.data : []);
+      const namesOnly = (res.data || []).map(item => item.name || item.title || '');
+      setSuggestions(namesOnly.filter(Boolean));
     } catch (err) {
       console.error(err);
       setSuggestions([]);
@@ -106,14 +107,16 @@ function App() {
       <div className="chain-container">
         {chain.map((entry, i) => (
           <div key={`${entry.name}-${i}`} className="chain-item">
-            {entry.image && <img src={entry.image} alt={entry.name} />}
+            {entry.image && typeof entry.image === 'string' && (
+              <img src={entry.image} alt={entry.name || 'Image'} />
+            )}
             <div>{entry.name}</div>
           </div>
         ))}
       </div>
 
       <div className="input-container">
-        <div style={{ position: 'relative' }}>
+        <div className="input-box">
           <input
             value={titleInput}
             onChange={(e) => {
@@ -140,7 +143,7 @@ function App() {
           )}
         </div>
 
-        <div style={{ position: 'relative' }}>
+        <div className="input-box">
           <input
             value={actorInput}
             onChange={(e) => {
