@@ -83,7 +83,6 @@ function App() {
         setError('');
 
         if (goalActor && actor === goalActor.name) {
-          alert("🎉 You reached the goal actor!");
           const resPath = await axios.get(`${BACKEND_URL}/get-shortest-path?start=${startActor.name}&goal=${goalActor.name}`);
           setShortestPath(resPath.data.path || []);
           return;
