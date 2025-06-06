@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const TMDB_API_KEY = process.env.REACT_APP_TMDB_API_KEY;
 
 function App() {
-  const [startActor, setStartActor] = useState(null);
-  const [goalActor, setGoalActor] = useState(null);
   const [chain, setChain] = useState([]);
   const [titleInput, setTitleInput] = useState('');
   const [actorInput, setActorInput] = useState('');
+  const [startActor, setStartActor] = useState(null);
+  const [goalActor, setGoalActor] = useState(null);
   const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [message, setMessage] = useState('');
+  const [win, setWin] = useState(false);
 
   useEffect(() => {
-    const fetchRandomActors = async () => {
+    const fetchActors = async () => {
       try {
         const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
         setStartActor(res.data.start);
@@ -28,30 +27,13 @@ function App() {
       }
     };
 
-    fetchRandomActors();
+    fetchActors();
   }, []);
-
-  const fetchActorImage = async (actorName) => {
-    try {
-      const res = await axios.get(
-        `https://api.themoviedb.org/3/search/person?query=${encodeURIComponent(
-          actorName
-        )}&api_key=${TMDB_API_KEY}`
-      );
-      const path = res.data.results?.[0]?.profile_path;
-      return path ? `https://image.tmdb.org/t/p/w185${path}` : '';
-    } catch (err) {
-      return '';
-    }
-  };
 
   const handleSubmit = async () => {
     try {
       const actor = actorInput.trim();
       const title = titleInput.trim();
-      if (!actor || !title) return;
-
-      const actorImage = await fetchActorImage(actor);
 
       const res = await axios.post(`${BACKEND_URL}/validate-link`, {
         actor: chain[chain.length - 1].name,
@@ -60,20 +42,22 @@ function App() {
 
       if (res.data.valid) {
         const poster = res.data.poster || '';
-        setChain([
+        const actorImage = res.data.actor_image || '';
+
+        const newChain = [
           ...chain,
           { name: title, image: poster },
           { name: actor, image: actorImage },
-        ]);
+        ];
+
+        setChain(newChain);
         setTitleInput('');
         setActorInput('');
         setError('');
         setSuggestions([]);
 
-        if (
-          actor.toLowerCase() === goalActor.name.toLowerCase()
-        ) {
-          setMessage('🎉 You reached the goal actor!');
+        if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
+          setWin(true);
         }
       } else {
         setError('❌ Invalid link');
@@ -88,25 +72,11 @@ function App() {
     window.location.reload();
   };
 
-  const handleSuggestion = (value, type) => {
-    if (type === 'actor') setActorInput(value);
-    else setTitleInput(value);
-    setSuggestions([]);
-  };
-
-  const handleInputChange = async (e, type) => {
-    const value = e.target.value;
-    if (type === 'actor') setActorInput(value);
-    else setTitleInput(value);
-
-    if (!value.trim()) return setSuggestions([]);
-
+  const fetchSuggestions = async (query, type) => {
     try {
-      const res = await axios.get(
-        `${BACKEND_URL}/suggest?query=${encodeURIComponent(
-          value
-        )}&type=${type}`
-      );
+      const res = await axios.get(`${BACKEND_URL}/suggest`, {
+        params: { query, type },
+      });
       setSuggestions(res.data);
     } catch (err) {
       console.error(err);
@@ -115,67 +85,61 @@ function App() {
 
   return (
     <div className="App">
-      <h1 style={{ color: 'white' }}>🎬 Welcome to ScreenLink</h1>
+      <h1 style={{ color: '#28B22B' }}>🎬 Welcome to ScreenLink</h1>
 
       {startActor && goalActor && (
         <div className="start-goal-container">
           <div className="start-box">
             <img src={startActor.image} alt={startActor.name} />
-            <p>
-              <strong>Start:</strong> {startActor.name}
-            </p>
+            <strong>Start:</strong> {startActor.name}
           </div>
           <div className="goal-box">
             <img src={goalActor.image} alt={goalActor.name} />
-            <p>
-              <strong>Goal:</strong> {goalActor.name}
-            </p>
+            <strong>Goal:</strong> {goalActor.name}
           </div>
         </div>
       )}
 
       <div className="chain-container">
-        {chain.map((item, idx) => (
-          <div key={idx} className="chain-card">
-            {item.image && <img src={item.image} alt={item.name} />}
-            <p>{item.name}</p>
+        {chain.map((item, index) => (
+          <div key={index} className="chain-item">
+            <img src={item.image} alt={item.name} />
+            <div>{item.name}</div>
           </div>
         ))}
       </div>
 
       <div className="input-container">
         <input
+          type="text"
           value={titleInput}
-          onChange={(e) => handleInputChange(e, 'title')}
-          placeholder="🎥 Movie/Show Title"
+          onChange={(e) => {
+            setTitleInput(e.target.value);
+            fetchSuggestions(e.target.value, 'title');
+          }}
+          placeholder="🎬 Movie/Show Title"
         />
         <input
+          type="text"
           value={actorInput}
-          onChange={(e) => handleInputChange(e, 'actor')}
+          onChange={(e) => {
+            setActorInput(e.target.value);
+            fetchSuggestions(e.target.value, 'actor');
+          }}
           placeholder="🧑 Actor Name"
         />
         <button onClick={handleSubmit}>Submit</button>
       </div>
 
-      {suggestions.length > 0 && (
-        <div className="suggestion-box">
-          {suggestions.map((sug, idx) => (
-            <div
-              key={idx}
-              onClick={() =>
-                handleSuggestion(sug, actorInput ? 'actor' : 'title')
-              }
-            >
-              {sug}
-            </div>
-          ))}
+      {error && <div className="error">{error}</div>}
+
+      {win && (
+        <div className="win-message">
+          🎉 You reached the goal actor!
         </div>
       )}
 
-      {error && <p className="error">{error}</p>}
-      {message && <p className="victory">{message}</p>}
-
-      <p className="steps">Steps: {Math.max(Math.floor((chain.length - 1) / 2), 0)}</p>
+      <p className="step-counter">Steps: {Math.floor((chain.length - 1) / 2)}</p>
 
       <button className="restart-button" onClick={handleRestart}>
         🔁 Play Again
