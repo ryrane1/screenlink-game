@@ -14,6 +14,8 @@ function App() {
   const [suggestType, setSuggestType] = useState('');
   const [shortestPath, setShortestPath] = useState([]);
   const [error, setError] = useState('');
+  const resetGame = () => {
+  window.location.reload();};
 
   useEffect(() => {
     const fetchActors = async () => {
