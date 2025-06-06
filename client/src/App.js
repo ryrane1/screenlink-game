@@ -111,11 +111,10 @@ function App() {
         chain.length > 0 &&
         chain[chain.length - 1].type === 'actor' &&
         chain[chain.length - 1].name === goalActor.name && (
-          <>
-            <div className="curtain" />
-            <div className="curtain right" />
-            <div className="win-message">🎉 You Win! 🎬</div>
-          </>
+          <div className="end-credits">
+            <h2>🎬 Thanks for playing ScreenLink!</h2>
+            <button onClick={resetGame}>Play Again</button>
+          </div>
       )}
 
       <h1>🎬 ScreenLink</h1>

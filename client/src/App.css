@@ -168,32 +168,48 @@ button:hover {
   margin-top: 30px;
 }
 
-/* Curtains animation when you win */
-.curtain {
+/* End Credits Screen */
+.end-credits {
   position: fixed;
   top: 0;
   left: 0;
-  width: 50%;
-  height: 100%;
-  background: #300000;
-  z-index: 9999;
-  animation: curtain-left 1s forwards;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 1s ease-in;
+  text-align: center;
 }
 
-.curtain.right {
-  left: 50%;
-  background: #300000;
-  animation: curtain-right 1s forwards;
+.end-credits h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
 
-@keyframes curtain-left {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(0); }
+.end-credits button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #00ffae;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 20px;
 }
 
-@keyframes curtain-right {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(0); }
+.end-credits button:hover {
+  background-color: #00d195;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @media (max-width: 768px) {
@@ -208,18 +224,5 @@ button:hover {
   .arrow-between {
     font-size: 28px;
   }
-}
-
-.win-message {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 2.2rem;
-  color: #ffffff;
-  font-weight: bold;
-  z-index: 10000;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-  pointer-events: none;
 }
 
