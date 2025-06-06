@@ -20,7 +20,7 @@ function App() {
         const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
         setStartActor(res.data.start);
         setGoalActor(res.data.goal);
-        setChain([{ name: res.data.start.name, image: res.data.start.image }]);
+        setChain([{ name: res.data.start.name, image: res.data.start.image, type: 'actor' }]);
       } catch (err) {
         console.error(err);
       }
@@ -32,7 +32,8 @@ function App() {
     try {
       const actor = actorInput.trim();
       const title = titleInput.trim();
-      const currentActor = chain[chain.length - 1].name;
+      const lastActorEntry = [...chain].reverse().find(item => item.type === 'actor');
+      const currentActor = lastActorEntry?.name;
 
       const res = await axios.post(`${BACKEND_URL}/validate-link`, {
         actor: currentActor,
@@ -46,8 +47,8 @@ function App() {
 
         setChain((prev) => [
           ...prev,
-          { name: title, image: poster },
-          { name: actor, image: actorImage }
+          { name: title, image: poster, type: 'title' },
+          { name: actor, image: actorImage, type: 'actor' }
         ]);
 
         setTitleInput('');
