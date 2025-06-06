@@ -123,17 +123,6 @@ function App() {
         ))}
       </div>
 
-      <div className="chain-container">
-        {chain.map((entry, i) => (
-          <div key={`${entry.name}-${i}`} className="chain-item">
-            {entry.image && typeof entry.image === 'string' && (
-              <img src={entry.image} alt={entry.name || 'Image'} />
-            )}
-            <div>{entry.name}</div>
-          </div>
-        ))}
-      </div>
-
       <div className="input-container">
         <div className="input-box">
           <input
