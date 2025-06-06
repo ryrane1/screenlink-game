@@ -123,7 +123,7 @@ def get_shortest_path():
 
         search_url = f"https://api.themoviedb.org/3/search/person?query={current}&api_key={TMDB_API_KEY}"
         res = requests.get(search_url).json()
-        if not res['results']:
+        if not res or 'results' not in res or not res['results']:
             continue
 
         actor_id = res['results'][0]['id']
