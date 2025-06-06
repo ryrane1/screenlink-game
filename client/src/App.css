@@ -2,8 +2,8 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f4fff8;
-  color: #044d29;
+  background-color: #0d1f17;
+  color: #c8facc;
 }
 
 .App {
@@ -14,9 +14,10 @@ body {
 }
 
 h1 {
-  color: #2e8b57;
+  color: #66ff99;
   margin-bottom: 2rem;
   font-size: 2.5rem;
+  text-shadow: 0 0 8px #00ff88;
 }
 
 .start-goal-container {
@@ -27,12 +28,12 @@ h1 {
 }
 
 .actor-box {
-  background-color: #e6fff2;
-  border: 2px solid #2e8b57;
+  background-color: #123c2a;
+  border: 2px solid #2ecc71;
   border-radius: 12px;
   padding: 1rem;
   width: 40%;
-  box-shadow: 0 4px 8px rgba(0, 128, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 255, 128, 0.2);
 }
 
 .actor-box img {
@@ -50,12 +51,12 @@ h1 {
 }
 
 .chain-step {
-  background-color: #ffffff;
-  border: 1px solid #d0f0dc;
+  background-color: #1a3d2d;
+  border: 1px solid #2ecc71;
   border-radius: 10px;
   padding: 0.75rem;
   width: 100px;
-  box-shadow: 0 2px 4px rgba(0, 128, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 255, 128, 0.1);
 }
 
 .chain-step img {
@@ -70,33 +71,37 @@ h1 {
 }
 
 input {
-  padding: 8px 10px;
+  padding: 10px 12px;
   font-size: 1rem;
-  border: 1px solid #a6d5b8;
+  border: 1px solid #2ecc71;
   border-radius: 6px;
-  background-color: #ffffff;
+  background-color: #0f2a1e;
+  color: #c8facc;
+  outline: none;
+  width: 200px;
 }
 
 button {
-  padding: 8px 14px;
+  padding: 10px 16px;
   margin-left: 10px;
   font-size: 1rem;
   border: none;
   border-radius: 6px;
-  background-color: #2e8b57;
-  color: white;
+  background-color: #2ecc71;
+  color: #0d1f17;
   cursor: pointer;
+  font-weight: bold;
   transition: background-color 0.2s ease-in-out;
 }
 
 button:hover {
-  background-color: #267a4d;
+  background-color: #27ae60;
 }
 
 .suggestion-dropdown {
   position: absolute;
-  background: white;
-  border: 1px solid #b7dfc3;
+  background: #0f2a1e;
+  border: 1px solid #2ecc71;
   width: 100%;
   max-height: 150px;
   overflow-y: auto;
@@ -105,15 +110,16 @@ button:hover {
   z-index: 10;
   list-style: none;
   border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(34, 139, 34, 0.15);
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.2);
 }
 
 .suggestion-dropdown li {
-  padding: 8px;
+  padding: 10px;
   cursor: pointer;
+  color: #c8facc;
 }
 
 .suggestion-dropdown li:hover {
-  background-color: #e6ffe6;
+  background-color: #1f5139;
 }
 
