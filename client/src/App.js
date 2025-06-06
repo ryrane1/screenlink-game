@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+import { useEffect, useState } from "react";
+import confetti from "canvas-confetti";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -16,6 +18,7 @@ function App() {
   const [error, setError] = useState('');
   const resetGame = () => {
   window.location.reload();};
+  const [showEndCredits, setShowEndCredits] = useState(false);
 
   useEffect(() => {
     const fetchActors = async () => {
@@ -30,6 +33,27 @@ function App() {
     };
     fetchActors();
   }, []);
+
+
+  useEffect(() => {
+    if (
+      goalActor &&
+      chain.length > 0 &&
+      chain[chain.length - 1].type === "actor" &&
+      chain[chain.length - 1].name === goalActor.name
+    ) {
+      setShowEndCredits(true);
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 },
+      });
+
+      setTimeout(() => {
+        setShowEndCredits(false);
+      }, 7000);
+    }
+  }, [chain, goalActor]);
 
   const handleSubmit = async () => {
     try {

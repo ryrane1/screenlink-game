@@ -182,8 +182,16 @@ button:hover {
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  animation: fadeIn 1s ease-in;
   text-align: center;
+  animation: scrollCredits 7s ease-in-out forwards;
+  overflow: hidden;
+}
+
+.end-credits-content {
+  animation: fadeInUp 2s ease forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .end-credits h2 {
@@ -191,25 +199,41 @@ button:hover {
   margin-bottom: 1rem;
 }
 
-.end-credits button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  background-color: #00ffae;
-  color: black;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 20px;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.end-credits button:hover {
-  background-color: #00d195;
+@keyframes scrollCredits {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    display: none;
+  }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
 }
 
 @media (max-width: 768px) {
@@ -225,4 +249,5 @@ button:hover {
     font-size: 28px;
   }
 }
+
 
