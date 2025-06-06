@@ -12,6 +12,7 @@ function App() {
   const [actorInput, setActorInput] = useState('');
   const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [message, setMessage] = useState('');
   const [type, setType] = useState(''); // 'actor' or 'title'
 
   useEffect(() => {
