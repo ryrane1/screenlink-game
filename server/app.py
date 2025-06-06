@@ -78,17 +78,14 @@ def validate_link():
         if media_type not in ['movie', 'tv']:
             continue
 
-        credits_url = 
-f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
+        credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', [])
 
         for c in cast:
             if c.get('name', '').strip().lower() == next_actor.strip().lower():
-                poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if 
-media.get('poster_path') else None
-                actor_image = f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}" if 
-c.get('profile_path') else None
+                poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if media.get('poster_path') else None
+                actor_image = f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}" if c.get('profile_path') else None
                 return jsonify({"valid": True, "poster": poster, "actor_image": actor_image})
 
     return jsonify({"valid": False})
@@ -105,12 +102,10 @@ def suggest():
     response = requests.get(url).json()
 
     if type_ == 'actor':
-        results = [{"name": res['name']} for res in response.get('results', []) if 
-res.get('known_for_department') == 'Acting']
+        results = [{"name": res['name']} for res in response.get('results', []) if res.get('known_for_department') == 'Acting']
     else:
         results = [
-            {"name": res.get('title') or res.get('name'), "image": 
-f"https://image.tmdb.org/t/p/w185{res['poster_path']}"}
+            {"name": res.get('title') or res.get('name'), "image": f"https://image.tmdb.org/t/p/w185{res['poster_path']}"}
             for res in response.get('results', []) if res.get('media_type') in ['movie', 'tv'] and 
 res.get('poster_path')
         ]
