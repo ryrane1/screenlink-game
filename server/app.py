@@ -9,31 +9,39 @@ CORS(app)
 
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
+
 ACTORS = [
-    "Jennifer Lawrence", "Timothée Chalamet", "Florence Pugh", "Pedro Pascal",
-    "Jenna Ortega", "Cillian Murphy", "Natalie Portman", "Margot Robbie",
-    "Denzel Washington", "Emma Stone", "Ryan Gosling", "Tom Hanks",
-    "Zendaya", "Robert Pattinson", "Millie Bobby Brown", "Saoirse Ronan",
-    "Adam Driver", "Anya Taylor-Joy", "Paul Mescal", "Daniel Kaluuya",
-    "Austin Butler", "Jessica Chastain", "Oscar Isaac", "Barry Keoghan",
-    "Greta Lee", "Rachel Zegler", "Jacob Elordi", "Lily-Rose Depp",
-    "Paul Dano", "Carey Mulligan", "Sadie Sink", "Stephanie Hsu",
-    "Daniel Radcliffe", "Mckenna Grace", "Keke Palmer", "Brian Tyree Henry",
-    "Maya Hawke", "Chloe Bailey", "Anthony Ramos", "Ayo Edebiri",
-    "Logan Lerman", "Thomasin McKenzie", "Sophie Thatcher", "Maitreyi Ramakrishnan",
-    "Letitia Wright", "Bella Ramsey", "David Tennant", "Emma D’Arcy",
-    "Jodie Comer", "Tyler James Williams", "Simu Liu", "Hailee Steinfeld",
-    "Kaitlyn Dever", "Tom Holland", "Hunter Schafer", "Jeremy Allen White",
-    "Finn Wolfhard", "Rachel Sennott", "Josh Hutcherson", "Sebastian Stan",
-    "Sydney Sweeney", "Donald Glover", "Kaley Cuoco", "Jacob Tremblay",
-    "Rami Malek", "Joseph Quinn", "Melissa Barrera", "Mason Gooding",
-    "Ncuti Gatwa", "Phoebe Dynevor", "Justice Smith", "Milo Manheim",
-    "Lana Condor", "Xolo Maridueña", "Isabela Merced", "Jabari Banks",
-    "Noah Jupe", "Miles Teller", "Nicholas Hoult", "Olivia Cooke",
-    "Katherine Langford", "Joshua Bassett", "Devery Jacobs", "Evan Peters",
-    "Dominique Fishback", "Caleb McLaughlin", "Zazie Beetz", "Aubrey Plaza",
-    "Alexander Skarsgård", "Natasha Lyonne", "Ken Jeong", "Awkwafina",
-    "John Boyega", "Lakeith Stanfield", "Ben Barnes", "Lily James"
+    "Jennifer Lawrence", "Robert Downey Jr.", "Scarlett Johansson", "Dwayne Johnson", "Tom Hanks", 
+    "Emma Stone", "Brad Pitt", "Leonardo DiCaprio", "Chris Evans", "Natalie Portman",
+    "Margot Robbie", "Ryan Reynolds", "Zendaya", "Tom Holland", "Anne Hathaway",
+    "Chris Hemsworth", "Angelina Jolie", "Christian Bale", "Gal Gadot", "Samuel L. Jackson",
+    "Ryan Gosling", "Jessica Chastain", "Matt Damon", "Viola Davis", "Jake Gyllenhaal",
+    "Florence Pugh", "Adam Driver", "Jodie Comer", "Millie Bobby Brown", "Cillian Murphy",
+    "Bryan Cranston", "Pedro Pascal", "Daniel Kaluuya", "Austin Butler", "Timothée Chalamet",
+    "Zoe Saldana", "Paul Rudd", "Hugh Jackman", "Oscar Isaac", "Elizabeth Olsen",
+    "John Boyega", "Daniel Radcliffe", "Emma Watson", "Rupert Grint", "Meryl Streep",
+    "Keanu Reeves", "Taron Egerton", "Jason Momoa", "Anya Taylor-Joy", "Rachel Zegler",
+    "Sebastian Stan", "Anthony Mackie", "Jeremy Renner", "Hailee Steinfeld", "Chadwick Boseman",
+    "Ben Affleck", "Michael B. Jordan", "Idris Elba", "Winona Ryder", "Paul Mescal",
+    "Sadie Sink", "Finn Wolfhard", "Noah Schnapp", "Caleb McLaughlin", "David Harbour",
+    "Gaten Matarazzo", "Joe Keery", "Maya Hawke", "Natalia Dyer", "Charlie Heaton",
+    "Benedict Cumberbatch", "Andrew Garfield", "Tobey Maguire", "Joaquin Phoenix", "Jared Leto",
+    "Jamie Lee Curtis", "Michelle Yeoh", "Brendan Fraser", "Kate Winslet", "Naomi Watts",
+    "Robert Pattinson", "Kristen Stewart", "James McAvoy", "Sophie Turner", "Maisie Williams",
+    "Kit Harington", "Peter Dinklage", "Lena Headey", "Emilia Clarke", "Millie Gibson",
+    "Ncuti Gatwa", "Jenna Ortega", "Steve Carell", "Mindy Kaling", "John Krasinski",
+    "Amy Adams", "Julia Roberts", "Anne Hathaway", "Reese Witherspoon", "Nicole Kidman",
+    "Harrison Ford", "Mark Hamill", "Carrie Fisher", "Daisy Ridley", "Oscar Isaac",
+    "Billy Dee Williams", "Donald Glover", "Alden Ehrenreich", "Phoebe Waller-Bridge",
+    "Brie Larson", "Lupita Nyong'o", "Letitia Wright", "Danai Gurira", "Martin Freeman",
+    "Andy Serkis", "Michael Sheen", "David Tennant", "Bill Skarsgård", "Alexander Skarsgård",
+    "Charlize Theron", "Helen Mirren", "Ethan Hawke", "Josh Hutcherson", "Elizabeth Banks",
+    "Woody Harrelson", "Donald Sutherland", "Stanley Tucci", "Jeffrey Wright", "Mahershala Ali",
+    "Tessa Thompson", "Rami Malek", "Ben Kingsley", "Rosamund Pike", "Emily Blunt",
+    "Dev Patel", "Halle Berry", "Sandra Bullock", "Kerry Washington", "Octavia Spencer",
+    "Awkwafina", "Ken Jeong", "Simu Liu", "Gemma Chan", "Henry Golding",
+    "Michelle Yeoh", "Stephen Yeun", "Ali Wong", "Jamie Foxx", "Chris Rock",
+    "Kevin Hart", "Will Smith", "Jada Pinkett Smith", "Regina King", "Lakeith Stanfield"
 ]
 
 @app.route('/get-random-actors')
@@ -68,8 +76,7 @@ def validate_link():
         if media_type not in ['movie', 'tv']:
             continue
 
-        credits_url = 
-f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
+        credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', [])
 
