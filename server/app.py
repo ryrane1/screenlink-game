@@ -72,7 +72,7 @@ def validate_link():
 
         credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
-        cast = credits.get('cast', [])
+        cast = credits.get('cast', []) + credits.get('guest_stars', [])
 
         # Validate both current actor and next actor are in the same cast
         cast_names = [c.get('name', '').strip().lower() for c in cast]
@@ -154,7 +154,7 @@ def get_shortest_path():
 
             cast_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
             cast_data = requests.get(cast_url).json()
-            cast = cast_data.get('cast', [])
+            cast = cast_data.get('cast', []) + cast_data.get('guest_stars', [])
 
             cast_names = [c.get('name', '').strip().lower() for c in cast]
 
