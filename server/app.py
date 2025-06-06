@@ -74,11 +74,20 @@ def validate_link():
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', [])
 
-        for c in cast:
-            if next_actor.strip().lower() in c.get('name', '').strip().lower():
-                poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if media.get('poster_path') else None
-                actor_image = f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}" if c.get('profile_path') else None
-                return jsonify({"valid": True, "poster": poster, "actor_image": actor_image})
+        # Validate both current actor and next actor are in the same cast
+        cast_names = [c.get('name', '').strip().lower() for c in cast]
+        if (
+            next_actor.strip().lower() in cast_names and
+            actor.strip().lower() in cast_names
+        ):
+            poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if media.get('poster_path') else None
+            actor_image = next(
+                (f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}"
+                 for c in cast
+                 if next_actor.strip().lower() in c.get('name', '').strip().lower() and c.get('profile_path')),
+                None
+            )
+            return jsonify({"valid": True, "poster": poster, "actor_image": actor_image})
 
     return jsonify({"valid": False})
 
@@ -147,9 +156,14 @@ def get_shortest_path():
             cast_data = requests.get(cast_url).json()
             cast = cast_data.get('cast', [])
 
+            cast_names = [c.get('name', '').strip().lower() for c in cast]
+
+            if current.strip().lower() not in cast_names:
+                continue  # current actor not in this cast, skip
+
             for c in cast:
                 next_actor = c['name']
-                if next_actor in visited:
+                if next_actor in visited or not next_actor:
                     continue
 
                 new_path = path + [{"type": "title", "name": title}, {"type": "actor", "name": next_actor}]
@@ -160,6 +174,7 @@ def get_shortest_path():
                 queue.append((next_actor, new_path))
 
     return jsonify({"path": []})
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
