@@ -1,64 +1,57 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 function App() {
+  const [startActor, setStartActor] = useState(null);
+  const [goalActor, setGoalActor] = useState(null);
   const [chain, setChain] = useState([]);
   const [titleInput, setTitleInput] = useState('');
   const [actorInput, setActorInput] = useState('');
-  const [startActor, setStartActor] = useState(null);
-  const [goalActor, setGoalActor] = useState(null);
   const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [win, setWin] = useState(false);
+  const [isWin, setIsWin] = useState(false);
 
   useEffect(() => {
     const fetchActors = async () => {
-      try {
-        const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
-        setStartActor(res.data.start);
-        setGoalActor(res.data.goal);
-        setChain([{ name: res.data.start.name, image: res.data.start.image }]);
-      } catch (err) {
-        console.error(err);
-        setError('Failed to load actors.');
-      }
+      const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
+      setStartActor(res.data.start);
+      setGoalActor(res.data.goal);
+      setChain([{ name: res.data.start.name, image: res.data.start.image }]);
     };
-
     fetchActors();
   }, []);
+
+  useEffect(() => {
+    if (chain.length && chain[chain.length - 1].name === goalActor?.name) {
+      setIsWin(true);
+    }
+  }, [chain, goalActor]);
 
   const handleSubmit = async () => {
     try {
       const actor = actorInput.trim();
       const title = titleInput.trim();
+      const prevActor = chain[chain.length - 1].name;
 
       const res = await axios.post(`${BACKEND_URL}/validate-link`, {
-        actor: chain[chain.length - 1].name,
-        title,
+        actor,
+        title
       });
 
       if (res.data.valid) {
-        const poster = res.data.poster || '';
-        const actorImage = res.data.actor_image || '';
-
         const newChain = [
           ...chain,
-          { name: title, image: poster },
-          { name: actor, image: actorImage },
+          { name: title, image: res.data.poster || null },
+          { name: actor, image: res.data.actor_image || null }
         ];
-
         setChain(newChain);
         setTitleInput('');
         setActorInput('');
-        setError('');
         setSuggestions([]);
-
-        if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
-          setWin(true);
-        }
+        setError('');
       } else {
         setError('❌ Invalid link');
       }
@@ -68,43 +61,51 @@ function App() {
     }
   };
 
-  const handleRestart = () => {
-    window.location.reload();
-  };
+  const handleRestart = () => window.location.reload();
 
-  const fetchSuggestions = async (query, type) => {
+  const handleAutoSuggest = async (type, value) => {
+    setError('');
+    if (!value.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
     try {
-      const res = await axios.get(`${BACKEND_URL}/suggest`, {
-        params: { query, type },
-      });
+      const res = await axios.get(`${BACKEND_URL}/suggest?query=${value}&type=${type}`);
       setSuggestions(res.data);
     } catch (err) {
       console.error(err);
     }
   };
 
+  const handleSuggestionClick = (name) => {
+    if (actorInput) setActorInput(name);
+    else setTitleInput(name);
+    setSuggestions([]);
+  };
+
   return (
     <div className="App">
-      <h1 style={{ color: '#28B22B' }}>🎬 Welcome to ScreenLink</h1>
+      <h1>🎬 Welcome to ScreenLink</h1>
 
       {startActor && goalActor && (
         <div className="start-goal-container">
-          <div className="start-box">
+          <div className="actor-card">
             <img src={startActor.image} alt={startActor.name} />
-            <strong>Start:</strong> {startActor.name}
+            <p><strong>Start:</strong> {startActor.name}</p>
           </div>
-          <div className="goal-box">
+          <div className="actor-card">
             <img src={goalActor.image} alt={goalActor.name} />
-            <strong>Goal:</strong> {goalActor.name}
+            <p><strong>Goal:</strong> {goalActor.name}</p>
           </div>
         </div>
       )}
 
       <div className="chain-container">
-        {chain.map((item, index) => (
-          <div key={index} className="chain-item">
-            <img src={item.image} alt={item.name} />
-            <div>{item.name}</div>
+        {chain.map((step, idx) => (
+          <div key={idx} className="chain-item">
+            {step.image && <img src={step.image} alt={step.name} />}
+            <p>{step.name}</p>
           </div>
         ))}
       </div>
@@ -112,38 +113,40 @@ function App() {
       <div className="input-container">
         <input
           type="text"
+          placeholder="🎥 Movie/Show Title"
           value={titleInput}
           onChange={(e) => {
             setTitleInput(e.target.value);
-            fetchSuggestions(e.target.value, 'title');
+            handleAutoSuggest('title', e.target.value);
           }}
-          placeholder="🎬 Movie/Show Title"
         />
         <input
           type="text"
+          placeholder="🧑 Actor Name"
           value={actorInput}
           onChange={(e) => {
             setActorInput(e.target.value);
-            fetchSuggestions(e.target.value, 'actor');
+            handleAutoSuggest('actor', e.target.value);
           }}
-          placeholder="🧑 Actor Name"
         />
         <button onClick={handleSubmit}>Submit</button>
       </div>
 
-      {error && <div className="error">{error}</div>}
-
-      {win && (
-        <div className="win-message">
-          🎉 You reached the goal actor!
+      {suggestions.length > 0 && (
+        <div className="suggestion-box">
+          {suggestions.map((s, i) => (
+            <div key={i} onClick={() => handleSuggestionClick(s.name)}>
+              {s.name}
+            </div>
+          ))}
         </div>
       )}
 
-      <p className="step-counter">Steps: {Math.floor((chain.length - 1) / 2)}</p>
+      {error && <p className="error">{error}</p>}
+      {isWin && <p className="success">🏆 You reached the goal actor!</p>}
 
-      <button className="restart-button" onClick={handleRestart}>
-        🔁 Play Again
-      </button>
+      <p className="steps">Steps: {Math.floor((chain.length - 1) / 2)}</p>
+      <button className="restart-button" onClick={handleRestart}>🔁 Play Again</button>
     </div>
   );
 }
