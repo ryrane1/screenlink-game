@@ -141,7 +141,7 @@ function App() {
               setTitleInput(e.target.value);
               handleSuggest(e.target.value, 'title');
             }}
-            placeholder="Enter a title"
+            placeholder="Enter a film/tv title"
           />
           {suggestType === 'title' && suggestions.length > 0 && (
             <div className="suggestions-box">
@@ -194,7 +194,7 @@ function App() {
       {error && <div className="error">{error}</div>}
 
       <p className="steps">
-        <strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}
+        <strong>Links:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}
       </p>
 
       {shortestPath.length > 0 && (
