@@ -72,7 +72,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1 style={{ color: '#228B22' }}>🎬 Actor Connection Game</h1>
+      <h1 style={{ color: '#228B22' }}>🎬 Welcome to ScreenLink</h1>
 
       {startActor && goalActor && (
         <div className="start-goal-container">
