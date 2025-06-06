@@ -77,8 +77,7 @@ def validate_link():
         if media_type not in ['movie', 'tv']:
             continue
 
-        credits_url = 
-f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
+        credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', [])
 
@@ -86,8 +85,7 @@ f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API
             if c.get('name', '').strip().lower() == actor.strip().lower():
                 poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if 
 media.get('poster_path') else None
-                actor_image = f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}" if 
-c.get('profile_path') else None
+                actor_image = f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}" if c.get('profile_path') else None
                 return jsonify({"valid": True, "poster": poster, "actor_image": actor_image})
 
     return jsonify({"valid": False})
