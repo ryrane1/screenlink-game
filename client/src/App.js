@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
-import confetti from "canvas-confetti";
+import confetti from 'canvas-confetti';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -15,9 +15,21 @@ function App() {
   const [suggestType, setSuggestType] = useState('');
   const [shortestPath, setShortestPath] = useState([]);
   const [error, setError] = useState('');
-  const resetGame = () => {
-  window.location.reload();};
   const [showEndCredits, setShowEndCredits] = useState(false);
+  const scrollRef = useRef(null);
+
+  const scrollChain = (direction) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -300 : 300,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const resetGame = () => {
+    window.location.reload();
+  };
 
   useEffect(() => {
     const fetchActors = async () => {
@@ -25,7 +37,9 @@ function App() {
         const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
         setStartActor(res.data.start);
         setGoalActor(res.data.goal);
-        setChain([{ name: res.data.start.name, image: res.data.start.image, type: 'actor' }]);
+        setChain([
+          { name: res.data.start.name, image: res.data.start.image, type: 'actor' }
+        ]);
       } catch (err) {
         console.error(err);
       }
@@ -33,12 +47,11 @@ function App() {
     fetchActors();
   }, []);
 
-
   useEffect(() => {
     if (
       goalActor &&
       chain.length > 0 &&
-      chain[chain.length - 1].type === "actor" &&
+      chain[chain.length - 1].type === 'actor' &&
       chain[chain.length - 1].name === goalActor.name
     ) {
       setShowEndCredits(true);
@@ -53,6 +66,12 @@ function App() {
       }, 7000);
     }
   }, [chain, goalActor]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [chain]);
 
   const handleSubmit = async () => {
     try {
@@ -71,7 +90,7 @@ function App() {
         const poster = res.data.poster || '';
         const actorImage = res.data.actor_image || '';
 
-        setChain((prev) => [
+        setChain(prev => [
           ...prev,
           { name: title, image: poster, type: 'title' },
           { name: actor, image: actorImage, type: 'actor' }
@@ -83,7 +102,9 @@ function App() {
         setError('');
 
         if (goalActor && actor === goalActor.name) {
-          const resPath = await axios.get(`${BACKEND_URL}/get-shortest-path?start=${startActor.name}&goal=${goalActor.name}`);
+          const resPath = await axios.get(
+            `${BACKEND_URL}/get-shortest-path?start=${startActor.name}&goal=${goalActor.name}`
+          );
           setShortestPath(resPath.data.path || []);
           return;
         }
@@ -96,56 +117,22 @@ function App() {
     }
   };
 
-  const handleRestart = () => {
-    window.location.reload();
-  };
-
-  const handleSuggest = async (query, type) => {
-    try {
-      setSuggestType(type);
-      if (!query) {
-        setSuggestions([]);
-        return;
-      }
-
-      const res = await axios.get(`${BACKEND_URL}/suggest?query=${query}&type=${type}`);
-
-      if (type === 'actor') {
-        const seen = new Set();
-        const uniqueActors = [];
-        for (const actor of res.data || []) {
-          if (!seen.has(actor.name)) {
-            seen.add(actor.name);
-            uniqueActors.push(actor);
-          }
-        }
-        setSuggestions(uniqueActors);
-      } else {
-        setSuggestions(res.data || []);
-      }
-    } catch (err) {
-      console.error(err);
-      setSuggestions([]);
-    }
-  };
-
   return (
     <div className="App">
-      {goalActor &&
-        chain.length > 0 &&
-        chain[chain.length - 1].type === 'actor' &&
-        chain[chain.length - 1].name === goalActor.name && (
-          <div className="end-credits">
-            <h2>🎬 Thanks for playing ScreenLink!</h2>
-            <button onClick={resetGame}>Play Again</button>
-          </div>
-      )}
-
       <h1>🎬 ScreenLink</h1>
       <p className="instructions">
-        Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering
-        movie titles and actors they’ve worked with — one link at a time. You win when you reach the goal!
+        Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering movie titles and actors they’ve worked with — one link 
+at a time. You win when you reach the goal!
       </p>
+
+      {showEndCredits && (
+        <div className="end-credits">
+          <div className="end-credits-content">
+            <h2>🎬 Thanks for playing ScreenLink!</h2>
+            <p>See below for the optimal path.</p>
+          </div>
+        </div>
+      )}
 
       {startActor && goalActor && (
         <div className="start-goal-container">
@@ -159,126 +146,58 @@ function App() {
           </div>
         </div>
       )}
-      
+
       {chain.length > 0 && (
-      <div className="chain-scroll-wrapper">
-        <div className="chain-container">
-          {chain.map((entry, i) => (
-            <React.Fragment key={`${entry.name}-${i}`}>
-              <div
-                className={`chain-item ${entry.type} ${
-                  goalActor && entry.name === goalActor.name && entry.type === 'actor' ? 'winner' : ''
-                }`}
-              >
-                {entry.image && typeof entry.image === 'string' && (
-                  <img src={entry.image} alt={entry.name || 'Image'} />
-                )}
-                <div>{entry.name}</div>
-              </div>
-              {i < chain.length - 1 && <div className="arrow">➡️</div>}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-
-      <div className="input-container">
-        <div className="input-box">
-          <input
-            value={titleInput}
-            onChange={(e) => {
-              setTitleInput(e.target.value);
-              handleSuggest(e.target.value, 'title');
-            }}
-            placeholder="Enter a film/tv title"
-          />
-          {suggestType === 'title' && suggestions.length > 0 && (
-            <div className="suggestions-box">
-              {suggestions.slice(0, 5).map((item, i) => (
-                <div
-                  key={i}
-                  className="suggestion-item"
-                  onClick={() => {
-                    setTitleInput(item.name || item.title || '');
-                    setSuggestions([]);
-                  }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-                >
-                  {item.image && (
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      style={{ width: '40px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
-                    />
-                  )}
-                  <span>{item.name || item.title}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="input-box">
-          <input
-            value={actorInput}
-            onChange={(e) => {
-              setActorInput(e.target.value);
-              handleSuggest(e.target.value, 'actor');
-            }}
-            placeholder="Enter an actor"
-          />
-          {suggestType === 'actor' && suggestions.length > 0 && (
-            <div className="suggestions-box">
-              {suggestions.slice(0, 5).map((item, i) => (
-                <div
-                  key={i}
-                  className="suggestion-item"
-                  onClick={() => {
-                    setActorInput(item.name);
-                    setSuggestions([]);
-                  }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-                >
-                  {item.image && (
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      style={{ width: '40px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
-                    />
-                  )}
-                  <span>{item.name}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <button onClick={handleSubmit}>Submit</button>
-      </div>
-
-      {error && <div className="error">{error}</div>}
-
-      <p className="steps">
-        <strong>Links:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}
-      </p>
-
-      {shortestPath.length > 0 && (
         <>
-          <h3>🎯 Optimal Path:</h3>
-          <div className="chain-container">
-            {shortestPath.map((entry, i) => (
-              <React.Fragment key={`${entry.name}-${i}`}>
-                <div className={`chain-item ${entry.type}`}>
-                  <div>{entry.name}</div>
-                </div>
-                {i < shortestPath.length - 1 && <div className="arrow">➡️</div>}
-              </React.Fragment>
-            ))}
+          <div className="scroll-buttons">
+            <button onClick={() => scrollChain('left')}>⬅️</button>
+            <button onClick={() => scrollChain('right')}>➡️</button>
+          </div>
+
+          <div className="chain-scroll-wrapper" ref={scrollRef}>
+            <div className="chain-container">
+              {chain.map((entry, i) => (
+                <React.Fragment key={`${entry.name}-${i}`}>
+                  <div
+                    className={`chain-item ${entry.type} ${
+                      goalActor && entry.name === goalActor.name && entry.type === 'actor' ? 'winner' : ''
+                    }`}
+                  >
+                    {entry.image && typeof entry.image === 'string' && (
+                      <img src={entry.image} alt={entry.name || 'Image'} />
+                    )}
+                    <div>{entry.name}</div>
+                  </div>
+                  {i < chain.length - 1 && <div className="arrow">➡️</div>}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          <div className="input-container">
+            <input
+              type="text"
+              placeholder="Enter a film/tv title"
+              value={titleInput}
+              onChange={(e) => setTitleInput(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Enter an actor"
+              value={actorInput}
+              onChange={(e) => setActorInput(e.target.value)}
+            />
+            <button onClick={handleSubmit}>Submit</button>
           </div>
         </>
       )}
 
+      {error && <div className="error">❌ {error}</div>}
+
+      <p><strong>Links:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}</p>
+
       <div className="play-again">
-        <button onClick={handleRestart}>🔁 Play Again</button>
+        <button onClick={resetGame}>🔄 Play Again</button>
       </div>
     </div>
   );
