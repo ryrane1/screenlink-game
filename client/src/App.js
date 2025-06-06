@@ -107,8 +107,18 @@ function App() {
 
   return (
     <div className="App">
-      <h1>🎬 ScreenLink</h1>
+      {goalActor &&
+        chain.length > 0 &&
+        chain[chain.length - 1].type === 'actor' &&
+        chain[chain.length - 1].name === goalActor.name && (
+          <>
+            <div className="curtain" />
+            <div className="curtain right" />
+            <div className="win-message">🎉 You Win! 🎬</div>
+          </>
+      )}
 
+      <h1>🎬 ScreenLink</h1>
       <p className="instructions">
         Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering
         movie titles and actors they’ve worked with — one link at a time. You win when you reach the goal!
