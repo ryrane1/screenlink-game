@@ -70,6 +70,10 @@ def validate_link():
         if media_type not in ['movie', 'tv']:
             continue
 
+        media_title = media.get('title') or media.get('name')
+        if not media_title or media_title.strip().lower() != title.strip().lower():
+            continue  # skip results that don’t exactly match what the user typed
+
         credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', []) + credits.get('guest_stars', [])
