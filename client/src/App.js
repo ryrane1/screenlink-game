@@ -73,6 +73,21 @@ function App() {
     }
   }, [chain]);
 
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      const query = suggestType === 'title' ? titleInput : actorInput;
+      if (!query) return;
+      try {
+        const res = await axios.get(`${BACKEND_URL}/suggestions?query=${query}&type=${suggestType}`);
+        setSuggestions(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    const debounce = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(debounce);
+  }, [titleInput, actorInput, suggestType]);
+
   const handleSubmit = async () => {
     try {
       const actor = actorInput.trim();
@@ -179,14 +194,46 @@ at a time. You win when you reach the goal!
               type="text"
               placeholder="Enter a film/tv title"
               value={titleInput}
-              onChange={(e) => setTitleInput(e.target.value)}
+              onChange={(e) => {
+                setTitleInput(e.target.value);
+                setSuggestType('title');
+              }}
             />
+            {suggestions.length > 0 && suggestType === 'title' && (
+              <div className="suggestions-dropdown">
+                {suggestions.map((s, i) => (
+                  <div key={i} className="suggestion" onClick={() => {
+                    setTitleInput(s.name);
+                    setSuggestions([]);
+                  }}>
+                    <img src={s.image} alt={s.name} />
+                    <span>{s.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <input
               type="text"
               placeholder="Enter an actor"
               value={actorInput}
-              onChange={(e) => setActorInput(e.target.value)}
+              onChange={(e) => {
+                setActorInput(e.target.value);
+                setSuggestType('actor');
+              }}
             />
+            {suggestions.length > 0 && suggestType === 'actor' && (
+              <div className="suggestions-dropdown">
+                {suggestions.map((s, i) => (
+                  <div key={i} className="suggestion" onClick={() => {
+                    setActorInput(s.name);
+                    setSuggestions([]);
+                  }}>
+                    <img src={s.image} alt={s.name} />
+                    <span>{s.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <button onClick={handleSubmit}>Submit</button>
           </div>
         </>
