@@ -81,8 +81,7 @@ def validate_link():
         cast = credits.get('cast', [])
 
         if any(c.get('name', '').strip().lower() == actor.strip().lower() for c in cast):
-            poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if 
-media.get('poster_path') else None
+            poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if media.get('poster_path') else None
             return jsonify({"valid": True, "poster": poster})
 
     return jsonify({"valid": False})
