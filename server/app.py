@@ -65,8 +65,9 @@ def get_random_actors():
 @app.route('/validate-link', methods=['POST'])
 def validate_link():
     data = request.json
-    actor = data.get('actor')
+    actor = data.get('actor')  # current actor (used only for logic)
     title = data.get('title')
+    next_actor = data.get('next_actor')  # the one we want to verify
 
     search_url = f"https://api.themoviedb.org/3/search/multi?query={title}&api_key={TMDB_API_KEY}"
     search_response = requests.get(search_url).json()
@@ -77,14 +78,17 @@ def validate_link():
         if media_type not in ['movie', 'tv']:
             continue
 
-        credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
+        credits_url = 
+f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', [])
 
         for c in cast:
-            if c.get('name', '').strip().lower() == actor.strip().lower():
-                poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if media.get('poster_path') else None
-                actor_image = f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}" if c.get('profile_path') else None
+            if c.get('name', '').strip().lower() == next_actor.strip().lower():
+                poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if 
+media.get('poster_path') else None
+                actor_image = f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}" if 
+c.get('profile_path') else None
                 return jsonify({"valid": True, "poster": poster, "actor_image": actor_image})
 
     return jsonify({"valid": False})
@@ -101,7 +105,8 @@ def suggest():
     response = requests.get(url).json()
 
     if type_ == 'actor':
-        results = [{"name": res['name']} for res in response.get('results', []) if res.get('known_for_department') == 'Acting']
+        results = [{"name": res['name']} for res in response.get('results', []) if 
+res.get('known_for_department') == 'Acting']
     else:
         results = [
             {"name": res.get('title') or res.get('name'), "image": 
