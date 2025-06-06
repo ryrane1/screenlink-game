@@ -1,8 +1,8 @@
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background-color: #021a13;
-  color: white;
+  background: radial-gradient(ellipse at top, #3f4e51 0%, #1c2324 100%);
+  color: #ecac8e;
 }
 
 .App {
@@ -11,16 +11,16 @@ body {
 }
 
 h1 {
-  color: #33ff99;
+  color: #ecac8e;
   font-size: 2.8rem;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   font-weight: 600;
 }
 
 .instructions {
   font-size: 1rem;
-  color: #99ffe0;
-  margin-top: -15px;
+  color: #d06f4c;
+  margin-top: -10px;
   margin-bottom: 30px;
   max-width: 600px;
   margin-left: auto;
@@ -37,12 +37,12 @@ h1 {
 }
 
 .actor-box {
-  background-color: #063220;
-  border: 2px solid #33ff99;
+  background-color: #66746c;
+  border: 2px solid #ecac8e;
   border-radius: 10px;
   padding: 20px;
   width: 220px;
-  box-shadow: 0 0 10px #33ff99;
+  box-shadow: 0 0 10px #ecac8e;
 }
 
 .actor-box img {
@@ -74,11 +74,11 @@ h1 {
 
 input[type="text"] {
   padding: 10px;
-  border: 1px solid #33ff99;
+  border: 1px solid #d06f4c;
   border-radius: 6px;
   font-size: 16px;
   width: 200px;
-  background-color: #012117;
+  background-color: #3f4e51;
   color: white;
 }
 
@@ -88,18 +88,18 @@ input::placeholder {
 
 button {
   padding: 10px 24px;
-  background: linear-gradient(to right, #00ff99, #33ff99);
+  background: #b6433e;
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
   font-weight: bold;
-  box-shadow: 0 0 10px #00cc66;
+  box-shadow: 0 0 10px #d06f4c;
 }
 
 button:hover {
-  background: #00cc66;
+  background: #d06f4c;
 }
 
 .chain-container {
@@ -125,22 +125,23 @@ button:hover {
 }
 
 .chain-item.actor {
-  background-color: #042e21;
-  border: 2px solid #33ff99;
+  background-color: #66746c;
+  border: 2px solid #ecac8e;
   border-radius: 10px;
   padding: 6px;
 }
 
 .chain-item.title {
-  background-color: #240e23;
-  border: 2px solid #ff3399;
+  background-color: #b6433e;
+  border: 2px solid #d06f4c;
   border-radius: 10px;
   padding: 6px;
+  color: white;
 }
 
 .arrow {
   font-size: 22px;
-  color: #88ffcc;
+  color: #ecac8e;
   padding: 0 4px;
 }
 
@@ -150,10 +151,10 @@ button:hover {
 
 @keyframes glow {
   from {
-    box-shadow: 0 0 10px #33ff99;
+    box-shadow: 0 0 10px #ecac8e;
   }
   to {
-    box-shadow: 0 0 20px #00ffcc;
+    box-shadow: 0 0 20px #d06f4c;
   }
 }
 
@@ -162,13 +163,13 @@ button:hover {
   top: 40px;
   left: 0;
   width: 100%;
-  background-color: #012117;
-  border: 1px solid #33ff99;
+  background-color: #3f4e51;
+  border: 1px solid #ecac8e;
   border-radius: 4px;
   z-index: 10;
   max-height: 160px;
   overflow-y: auto;
-  box-shadow: 0 4px 8px rgba(0, 255, 153, 0.2);
+  box-shadow: 0 4px 8px rgba(236, 172, 142, 0.2);
 }
 
 .suggestion-item {
@@ -180,19 +181,21 @@ button:hover {
 }
 
 .suggestion-item:hover {
-  background-color: #145c45;
+  background-color: #d06f4c;
 }
 
 .steps {
   margin-top: 20px;
   font-size: 1.2rem;
   font-weight: bold;
+  color: #ecac8e;
 }
 
-.play-again-btn {
+.play-again-btn,
+.play-again button {
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #1aff66;
+  background-color: #d06f4c;
   border: none;
   border-radius: 6px;
   font-size: 16px;
@@ -200,13 +203,19 @@ button:hover {
   color: #000;
 }
 
-.play-again-btn:hover {
-  background-color: #00e65c;
+.play-again button:hover {
+  background-color: #ecac8e;
 }
 
 .hint-text {
   margin-top: 10px;
   font-size: 1rem;
-  color: #66ffcc;
+  color: #ecac8e;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 1rem;
+  margin-top: 10px;
 }
 
