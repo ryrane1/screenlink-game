@@ -83,8 +83,7 @@ def validate_link():
 
         for c in cast:
             if c.get('name', '').strip().lower() == actor.strip().lower():
-                poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if 
-media.get('poster_path') else None
+                poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if media.get('poster_path') else None
                 actor_image = f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}" if c.get('profile_path') else None
                 return jsonify({"valid": True, "poster": poster, "actor_image": actor_image})
 
@@ -102,8 +101,7 @@ def suggest():
     response = requests.get(url).json()
 
     if type_ == 'actor':
-        results = [{"name": res['name']} for res in response.get('results', []) if 
-res.get('known_for_department') == 'Acting']
+        results = [{"name": res['name']} for res in response.get('results', []) if res.get('known_for_department') == 'Acting']
     else:
         results = [
             {"name": res.get('title') or res.get('name'), "image": 
