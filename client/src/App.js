@@ -1,45 +1,35 @@
 import React, { useState, useEffect } from 'react';
+import Autosuggest from 'react-autosuggest';
 import axios from 'axios';
 import './App.css';
 
-const BACKEND_URL = 'https://screenlink-game.onrender.com';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-const App = () => {
-  const [startActor, setStartActor] = useState({});
-  const [goalActor, setGoalActor] = useState({});
+function App() {
+  const [startActor, setStartActor] = useState(null);
+  const [goalActor, setGoalActor] = useState(null);
   const [chain, setChain] = useState([]);
   const [titleInput, setTitleInput] = useState('');
   const [actorInput, setActorInput] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [type, setType] = useState('');
-  const [message, setMessage] = useState('');
+  const [suggestType, setSuggestType] = useState('actor');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    const fetchNewGame = async () => {
+    async function fetchActors() {
       try {
         const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
         setStartActor(res.data.start);
         setGoalActor(res.data.goal);
-        setChain([res.data.start]);
-        setMessage('');
+        setChain([{ name: res.data.start.name, image: res.data.start.image }]);
       } catch (err) {
-        setMessage('❌ Failed to load actors');
+        console.error(err);
+        setError('Failed to load actors.');
       }
-    };
-    fetchNewGame();
-  }, []);
-
-  const handleSuggest = async (query, type) => {
-    if (!query) return;
-    try {
-      const res = await axios.get(`${BACKEND_URL}/suggest`, {
-        params: { query, type }
-      });
-      setSuggestions(res.data.map(item => item.name || item));
-    } catch (err) {
-      console.error(err);
     }
-  };
+    fetchActors();
+  }, []);
 
   const handleSubmit = async () => {
     try {
@@ -47,33 +37,36 @@ const App = () => {
       const title = titleInput.trim();
       const res = await axios.post(`${BACKEND_URL}/validate-link`, {
         actor: chain[chain.length - 1].name,
-        title
+        title,
       });
 
       if (res.data.valid) {
         const poster = res.data.poster || '';
         const actorImage = res.data.actor_image || '';
-        setChain([
+        const newChain = [
           ...chain,
           { name: title, image: poster },
-          { name: actor, image: actorImage }
-        ]);
-
-        if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
-          setMessage('🎉 You reached the goal actor!');
-        } else {
-          setMessage('✅ Valid connection. Keep going!');
-        }
-
+          { name: actor, image: actorImage },
+        ];
+        setChain(newChain);
         setTitleInput('');
         setActorInput('');
         setSuggestions([]);
+        setError('');
+
+        if (goalActor && actor.toLowerCase() === goalActor.name.toLowerCase()) {
+          setSuccess('🎉 You reached the goal actor!');
+        } else {
+          setSuccess('✅ Valid connection. Keep going!');
+        }
       } else {
-        setMessage('❌ Invalid link');
+        setError('❌ Invalid link');
+        setSuccess('');
       }
     } catch (err) {
       console.error(err);
-      setMessage('❌ Error connecting to backend');
+      setError('Error connecting to backend');
+      setSuccess('');
     }
   };
 
@@ -81,20 +74,46 @@ const App = () => {
     window.location.reload();
   };
 
-  const handleSuggestionClick = (text) => {
-    if (type === 'actor') {
-      setActorInput(text);
-    } else {
-      setTitleInput(text);
+  const onSuggestionsFetchRequested = async ({ value }) => {
+    try {
+      const res = await axios.get(`${BACKEND_URL}/suggest?query=${value}&type=${suggestType}`);
+      setSuggestions(res.data);
+    } catch (err) {
+      console.error(err);
     }
+  };
+
+  const onSuggestionsClearRequested = () => {
     setSuggestions([]);
+  };
+
+  const getSuggestionValue = (suggestion) => suggestion;
+
+  const renderSuggestion = (suggestion) => <div>{suggestion}</div>;
+
+  const inputPropsTitle = {
+    placeholder: '🎬 Movie/Show Title',
+    value: titleInput,
+    onChange: (_, { newValue }) => {
+      setTitleInput(newValue);
+      setSuggestType('title');
+    },
+  };
+
+  const inputPropsActor = {
+    placeholder: '🧑 Actor Name',
+    value: actorInput,
+    onChange: (_, { newValue }) => {
+      setActorInput(newValue);
+      setSuggestType('actor');
+    },
   };
 
   return (
     <div className="App">
       <h1>🎬 Welcome to ScreenLink</h1>
 
-      {startActor.name && goalActor.name && (
+      {startActor && goalActor && (
         <div className="start-goal-container">
           <div className="actor-box">
             <img src={startActor.image} alt={startActor.name} />
@@ -107,65 +126,47 @@ const App = () => {
         </div>
       )}
 
-      <div className="chain-display">
-        {chain.map((entry, index) => (
-          <div key={index} className="chain-step">
-            {entry.image && <img src={entry.image} alt={entry.name} />}
-            <p>{entry.name}</p>
+      <div className="chain-container">
+        {chain.map((item, index) => (
+          <div key={`${item.name}-${index}`} className="chain-item">
+            <img src={item.image} alt={item.name} />
+            <p>{item.name}</p>
           </div>
         ))}
       </div>
 
-      <div className="input-section">
-        <div className="input-wrapper">
-          <input
-            value={titleInput}
-            onChange={(e) => {
-              setTitleInput(e.target.value);
-              setType('title');
-              handleSuggest(e.target.value, 'title');
-            }}
-            placeholder="🎬 Movie/Show Title"
-          />
-          {type === 'title' && suggestions.length > 0 && (
-            <ul className="suggestion-dropdown">
-              {suggestions.map((s, idx) => (
-                <li key={idx} onClick={() => handleSuggestionClick(s)}>{s}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="input-wrapper">
-          <input
-            value={actorInput}
-            onChange={(e) => {
-              setActorInput(e.target.value);
-              setType('actor');
-              handleSuggest(e.target.value, 'actor');
-            }}
-            placeholder="👤 Next Actor"
-          />
-          {type === 'actor' && suggestions.length > 0 && (
-            <ul className="suggestion-dropdown">
-              {suggestions.map((s, idx) => (
-                <li key={idx} onClick={() => handleSuggestionClick(s)}>{s}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-
+      <div className="input-container">
+        <Autosuggest
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          getSuggestionValue={getSuggestionValue}
+          renderSuggestion={renderSuggestion}
+          inputProps={inputPropsTitle}
+        />
+        <Autosuggest
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          getSuggestionValue={getSuggestionValue}
+          renderSuggestion={renderSuggestion}
+          inputProps={inputPropsActor}
+        />
         <button onClick={handleSubmit}>Submit</button>
       </div>
 
-      {message && <div className="message">{message}</div>}
+      {error && <div className="error">{error}</div>}
+      {success && <div className="success">{success}</div>}
 
-      <p><strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}</p>
+      <div className="steps"><strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 
+0)}</div>
 
-      <button onClick={handleRestart}>🔁 Play Again</button>
+      <div className="play-again">
+        <button onClick={handleRestart}>🔁 Play Again</button>
+      </div>
     </div>
   );
-};
+}
 
 export default App;
 
