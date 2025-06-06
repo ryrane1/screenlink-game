@@ -16,37 +16,36 @@ function App() {
   const [shortestPath, setShortestPath] = useState([]);
   const [error, setError] = useState('');
   const [showEndCredits, setShowEndCredits] = useState(false);
-  const scrollRef = useRef(null);
 
-  const scrollChain = (direction) => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -300 : 300,
-        behavior: 'smooth'
-      });
-    }
-  };
+  const chainContainerRef = useRef(null);
 
   const resetGame = () => {
     window.location.reload();
   };
 
+  // Fetch random start & goal actors
   useEffect(() => {
     const fetchActors = async () => {
       try {
         const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
         setStartActor(res.data.start);
         setGoalActor(res.data.goal);
-        setChain([
-          { name: res.data.start.name, image: res.data.start.image, type: 'actor' }
-        ]);
+        setChain([{ name: res.data.start.name, image: res.data.start.image, type: 'actor' }]);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching actors:', err);
       }
     };
     fetchActors();
   }, []);
 
+  // Auto-scroll chain to right on update
+  useEffect(() => {
+    if (chainContainerRef.current) {
+      chainContainerRef.current.scrollLeft = chainContainerRef.current.scrollWidth;
+    }
+  }, [chain]);
+
+  // Confetti + Win condition
   useEffect(() => {
     if (
       goalActor &&
@@ -63,52 +62,46 @@ function App() {
 
       setTimeout(() => {
         setShowEndCredits(false);
-      }, 7000);
+      }, 2500);
     }
   }, [chain, goalActor]);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
-    }
-  }, [chain]);
-
+  // Suggestions API
   useEffect(() => {
     const fetchSuggestions = async () => {
-      const query = suggestType === 'title' ? titleInput : actorInput;
-      if (!query) return;
+      const query = suggestType === 'actor' ? actorInput : titleInput;
+      if (!query) return setSuggestions([]);
       try {
-        const res = await axios.get(`${BACKEND_URL}/suggestions?query=${query}&type=${suggestType}`);
+        const res = await axios.get(`${BACKEND_URL}/suggest?type=${suggestType}&query=${query}`);
         setSuggestions(res.data);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching suggestions:', err);
       }
     };
-    const debounce = setTimeout(fetchSuggestions, 300);
-    return () => clearTimeout(debounce);
+    fetchSuggestions();
   }, [titleInput, actorInput, suggestType]);
 
   const handleSubmit = async () => {
     try {
       const actor = actorInput.trim();
       const title = titleInput.trim();
-      const lastActorEntry = [...chain].reverse().find(item => item.type === 'actor');
+      const lastActorEntry = [...chain].reverse().find((item) => item.type === 'actor');
       const currentActor = lastActorEntry?.name;
 
       const res = await axios.post(`${BACKEND_URL}/validate-link`, {
         actor: currentActor,
         title,
-        next_actor: actor
+        next_actor: actor,
       });
 
       if (res.data.valid) {
         const poster = res.data.poster || '';
         const actorImage = res.data.actor_image || '';
 
-        setChain(prev => [
+        setChain((prev) => [
           ...prev,
           { name: title, image: poster, type: 'title' },
-          { name: actor, image: actorImage, type: 'actor' }
+          { name: actor, image: actorImage, type: 'actor' },
         ]);
 
         setTitleInput('');
@@ -121,7 +114,6 @@ function App() {
             `${BACKEND_URL}/get-shortest-path?start=${startActor.name}&goal=${goalActor.name}`
           );
           setShortestPath(resPath.data.path || []);
-          return;
         }
       } else {
         setError('❌ Invalid link');
@@ -132,6 +124,27 @@ function App() {
     }
   };
 
+  const scrollLeft = () => {
+    if (chainContainerRef.current) {
+      chainContainerRef.current.scrollLeft -= 300;
+    }
+  };
+
+  const scrollRight = () => {
+    if (chainContainerRef.current) {
+      chainContainerRef.current.scrollLeft += 300;
+    }
+  };
+
+  if (!startActor || !goalActor) {
+    return (
+      <div className="App">
+        <h1>🎬 ScreenLink</h1>
+        <p className="instructions">Loading actors...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="App">
       <h1>🎬 ScreenLink</h1>
@@ -139,15 +152,6 @@ function App() {
         Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering movie titles and actors they’ve worked with — one link 
 at a time. You win when you reach the goal!
       </p>
-
-      {showEndCredits && (
-        <div className="end-credits">
-          <div className="end-credits-content">
-            <h2>🎬 Thanks for playing ScreenLink!</h2>
-            <p>See below for the optimal path.</p>
-          </div>
-        </div>
-      )}
 
       {startActor && goalActor && (
         <div className="start-goal-container">
@@ -162,96 +166,94 @@ at a time. You win when you reach the goal!
         </div>
       )}
 
+      {/* Arrow buttons */}
+      <div className="scroll-buttons">
+        <button onClick={scrollLeft}>⬅️</button>
+        <button onClick={scrollRight}>➡️</button>
+      </div>
+
+      {/* Chain display */}
       {chain.length > 0 && (
-        <>
-          <div className="scroll-buttons">
-            <button onClick={() => scrollChain('left')}>⬅️</button>
-            <button onClick={() => scrollChain('right')}>➡️</button>
-          </div>
-
-          <div className="chain-scroll-wrapper" ref={scrollRef}>
-            <div className="chain-container">
-              {chain.map((entry, i) => (
-                <React.Fragment key={`${entry.name}-${i}`}>
-                  <div
-                    className={`chain-item ${entry.type} ${
-                      goalActor && entry.name === goalActor.name && entry.type === 'actor' ? 'winner' : ''
-                    }`}
-                  >
-                    {entry.image && typeof entry.image === 'string' && (
-                      <img src={entry.image} alt={entry.name || 'Image'} />
-                    )}
-                    <div>{entry.name}</div>
-                  </div>
-                  {i < chain.length - 1 && <div className="arrow">➡️</div>}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-
-          <div className="input-container">
-            <div className="input-wrapper">
-              <input
-                type="text"
-                placeholder="Enter a film/tv title"
-                value={titleInput}
-                onChange={(e) => {
-                  setTitleInput(e.target.value);
-                  setSuggestType('title');
-                }}
-              />
-              {suggestions.length > 0 && suggestType === 'title' && (
-                <div className="suggestions-dropdown">
-                  {suggestions.map((s, i) => (
-                    <div key={i} className="suggestion" onClick={() => {
-                      setTitleInput(s.name);
-                      setSuggestions([]);
-                    }}>
-                      <img src={s.image} alt={s.name} />
-                      <span>{s.name}</span>
-                    </div>
-                  ))}
+        <div className="chain-scroll-wrapper">
+          <div className="chain-container" ref={chainContainerRef}>
+            {chain.map((entry, i) => (
+              <React.Fragment key={`${entry.name}-${i}`}>
+                <div
+                  className={`chain-item ${entry.type} ${
+                    goalActor && entry.name === goalActor.name && entry.type === 'actor' ? 'winner' : ''
+                  }`}
+                >
+                  {entry.image && typeof entry.image === 'string' && (
+                    <img src={entry.image} alt={entry.name || 'Image'} />
+                  )}
+                  <div>{entry.name}</div>
                 </div>
-              )}
-            </div>
-
-            <div className="input-wrapper">
-              <input
-                type="text"
-                placeholder="Enter an actor"
-                value={actorInput}
-                onChange={(e) => {
-                  setActorInput(e.target.value);
-                  setSuggestType('actor');
-                }}
-              />
-              {suggestions.length > 0 && suggestType === 'actor' && (
-                <div className="suggestions-dropdown">
-                  {suggestions.map((s, i) => (
-                    <div key={i} className="suggestion" onClick={() => {
-                      setActorInput(s.name);
-                      setSuggestions([]);
-                    }}>
-                      <img src={s.image} alt={s.name} />
-                      <span>{s.name}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <button onClick={handleSubmit}>Submit</button>
+                {i < chain.length - 1 && <div className="arrow">➡️</div>}
+              </React.Fragment>
+            ))}
           </div>
-        </>
+        </div>
       )}
 
-      {error && <div className="error">❌ {error}</div>}
+      {/* Inputs + Suggestions */}
+      <div className="input-container">
+        <div className="input-wrapper">
+          <input
+            type="text"
+            placeholder="Enter a film/tv title"
+            value={titleInput}
+            onChange={(e) => {
+              setTitleInput(e.target.value);
+              setSuggestType('title');
+            }}
+          />
+          {suggestions.length > 0 && suggestType === 'title' && (
+            <div className="suggestions-dropdown">
+              {suggestions.map((s, i) => (
+                <div key={i} className="suggestion" onClick={() => {
+                  setTitleInput(s.name);
+                  setSuggestions([]);
+                }}>
+                  <img src={s.image} alt={s.name} />
+                  <span>{s.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-      <p><strong>Links:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}</p>
+        <div className="input-wrapper">
+          <input
+            type="text"
+            placeholder="Enter an actor"
+            value={actorInput}
+            onChange={(e) => {
+              setActorInput(e.target.value);
+              setSuggestType('actor');
+            }}
+          />
+          {suggestions.length > 0 && suggestType === 'actor' && (
+            <div className="suggestions-dropdown">
+              {suggestions.map((s, i) => (
+                <div key={i} className="suggestion" onClick={() => {
+                  setActorInput(s.name);
+                  setSuggestions([]);
+                }}>
+                  <img src={s.image} alt={s.name} />
+                  <span>{s.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-      <div className="play-again">
-        <button onClick={resetGame}>🔄 Play Again</button>
+        <button onClick={handleSubmit}>Submit</button>
       </div>
+
+      {error && <div className="error">{error}</div>}
+      <p><strong>Links:</strong> {Math.floor((chain.length - 1) / 2)}</p>
+
+      <button className="play-again" onClick={resetGame}>🔁 Play Again</button>
     </div>
   );
 }
