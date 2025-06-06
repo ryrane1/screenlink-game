@@ -1,163 +1,191 @@
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #021a13;
-  color: white;
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './App.css';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+function App() {
+  const [startActor, setStartActor] = useState(null);
+  const [goalActor, setGoalActor] = useState(null);
+  const [chain, setChain] = useState([]);
+  const [titleInput, setTitleInput] = useState('');
+  const [actorInput, setActorInput] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestType, setSuggestType] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchActors = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
+        setStartActor(res.data.start);
+        setGoalActor(res.data.goal);
+        setChain([{ name: res.data.start.name, image: res.data.start.image }]);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchActors();
+  }, []);
+
+  const handleSubmit = async () => {
+    try {
+      const actor = actorInput.trim();
+      const title = titleInput.trim();
+      const currentActor = chain[chain.length - 1].name;
+
+      const res = await axios.post(`${BACKEND_URL}/validate-link`, {
+        actor: currentActor,
+        title,
+        next_actor: actor
+      });
+
+      if (res.data.valid) {
+        const poster = res.data.poster || '';
+        const actorImage = res.data.actor_image || '';
+
+        setChain((prev) => [
+          ...prev,
+          { name: title, image: poster },
+          { name: actor, image: actorImage }
+        ]);
+
+        setTitleInput('');
+        setActorInput('');
+        setSuggestions([]);
+        setError('');
+
+        if (goalActor && actor === goalActor.name) {
+          alert("🎉 You reached the goal actor!");
+        }
+      } else {
+        setError('❌ Invalid link');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('❌ Server error');
+    }
+  };
+
+  const handleRestart = () => {
+    window.location.reload();
+  };
+
+  const handleSuggest = async (query, type) => {
+    try {
+      setSuggestType(type);
+      if (!query) {
+        setSuggestions([]);
+        return;
+      }
+
+      const res = await axios.get(`${BACKEND_URL}/suggest?query=${query}&type=${type}`);
+      const namesOnly = (res.data || []).map(item => item.name || item.title || '');
+      setSuggestions(namesOnly.filter(Boolean));
+    } catch (err) {
+      console.error(err);
+      setSuggestions([]);
+    }
+  };
+
+  return (
+    <div className="App">
+      <h1>🎬 ScreenLink</h1>
+
+      {startActor && goalActor && (
+        <div className="start-goal-container">
+          <div className="actor-box">
+            <img src={startActor.image} alt="Start Actor" />
+            <div><strong>Start:</strong> {startActor.name}</div>
+          </div>
+          <div className="actor-box">
+            <img src={goalActor.image} alt="Goal Actor" />
+            <div><strong>Goal:</strong> {goalActor.name}</div>
+          </div>
+        </div>
+      )}
+
+      <div className="chain-container">
+        {chain.map((entry, i) => (
+          <div key={`${entry.name}-${i}`} className="chain-item">
+            {entry.image && typeof entry.image === 'string' && (
+              <img src={entry.image} alt={entry.name || 'Image'} />
+            )}
+            <div>{entry.name}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="input-container">
+        <div className="input-box">
+          <input
+            value={titleInput}
+            onChange={(e) => {
+              setTitleInput(e.target.value);
+              handleSuggest(e.target.value, 'title');
+            }}
+            placeholder="Enter a title"
+          />
+          {suggestType === 'title' && suggestions.length > 0 && (
+            <div className="suggestions-box">
+              {suggestions.map((sug, i) => (
+                <div
+                  key={i}
+                  className="suggestion-item"
+                  onClick={() => {
+                    setTitleInput(sug);
+                    setSuggestions([]);
+                  }}
+                >
+                  {sug}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="input-box">
+          <input
+            value={actorInput}
+            onChange={(e) => {
+              setActorInput(e.target.value);
+              handleSuggest(e.target.value, 'actor');
+            }}
+            placeholder="Enter an actor"
+          />
+          {suggestType === 'actor' && suggestions.length > 0 && (
+            <div className="suggestions-box">
+              {suggestions.map((sug, i) => (
+                <div
+                  key={i}
+                  className="suggestion-item"
+                  onClick={() => {
+                    setActorInput(sug);
+                    setSuggestions([]);
+                  }}
+                >
+                  {sug}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button onClick={handleSubmit}>Submit</button>
+      </div>
+
+      {error && <div className="error">{error}</div>}
+
+      <p className="steps">
+        <strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}
+      </p>
+
+      <div className="play-again">
+        <button onClick={handleRestart}>🔁 Play Again</button>
+      </div>
+    </div>
+  );
 }
 
-.App {
-  text-align: center;
-  padding: 30px 20px;
-}
-
-h1 {
-  color: #33ff99;
-  font-size: 2.5rem;
-  margin-bottom: 30px;
-}
-
-.start-goal-container {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
-  margin-bottom: 30px;
-}
-
-.actor-box {
-  background-color: #063220;
-  border: 2px solid #33ff99;
-  border-radius: 10px;
-  padding: 20px;
-  width: 220px;
-  box-shadow: 0 0 10px #33ff99;
-}
-
-.actor-box img {
-  width: 120px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.actor-box strong {
-  display: block;
-  margin-top: 10px;
-  font-size: 1.1rem;
-}
-
-.input-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin: 20px 0;
-}
-
-.input-box {
-  position: relative;
-}
-
-input[type="text"] {
-  padding: 10px;
-  border: 1px solid #33ff99;
-  border-radius: 6px;
-  font-size: 16px;
-  width: 200px;
-  background-color: #012117;
-  color: white;
-}
-
-input::placeholder {
-  color: #aaa;
-}
-
-button {
-  padding: 10px 20px;
-  background-color: #00cc66;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #00b359;
-}
-
-.chain-container {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 30px;
-  gap: 10px;
-}
-
-.chain-box {
-  background-color: #063220;
-  border: 1px solid #33ff99;
-  border-radius: 8px;
-  padding: 10px;
-  width: 120px;
-  text-align: center;
-  color: #fff;
-}
-
-.chain-box img {
-  width: 80px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 6px;
-  margin-bottom: 5px;
-}
-
-.suggestions-box {
-  position: absolute;
-  top: 40px;
-  left: 0;
-  width: 100%;
-  background-color: #012117;
-  border: 1px solid #33ff99;
-  border-radius: 4px;
-  z-index: 10;
-  max-height: 160px;
-  overflow-y: auto;
-  box-shadow: 0 4px 8px rgba(0, 255, 153, 0.2);
-}
-
-.suggestion-item {
-  padding: 8px 12px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 14px;
-  text-align: left;
-}
-
-.suggestion-item:hover {
-  background-color: #145c45;
-}
-
-.steps {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.play-again-btn {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #1aff66;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  color: #000;
-}
-
-.play-again-btn:hover {
-  background-color: #00e65c;
-}
+export default App;
 
