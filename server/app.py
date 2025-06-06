@@ -47,6 +47,7 @@ ACTORS = [
 @app.route('/get-random-actors')
 def get_random_actors():
     start, goal = random.sample(ACTORS, 2)
+    
     def get_image(name):
         url = f"https://api.themoviedb.org/3/search/person?query={name}&api_key={TMDB_API_KEY}"
         res = requests.get(url).json()
@@ -76,20 +77,25 @@ def validate_link():
         if media_type not in ['movie', 'tv']:
             continue
 
-        credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
+        credits_url = 
+f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', [])
 
-        if any(c.get('name', '').strip().lower() == actor.strip().lower() for c in cast):
-            poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if media.get('poster_path') else None
-            return jsonify({"valid": True, "poster": poster})
+        for c in cast:
+            if c.get('name', '').strip().lower() == actor.strip().lower():
+                poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if 
+media.get('poster_path') else None
+                actor_image = f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}" if 
+c.get('profile_path') else None
+                return jsonify({"valid": True, "poster": poster, "actor_image": actor_image})
 
     return jsonify({"valid": False})
 
 @app.route('/suggest')
 def suggest():
     query = request.args.get('query')
-    type_ = request.args.get('type')  # "actor" or "title"
+    type_ = request.args.get('type')
     if not query or not type_:
         return jsonify([])
 
