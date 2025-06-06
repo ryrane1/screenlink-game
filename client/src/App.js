@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Autosuggest from 'react-autosuggest';
 import axios from 'axios';
 import './App.css';
 
@@ -12,12 +11,10 @@ function App() {
   const [titleInput, setTitleInput] = useState('');
   const [actorInput, setActorInput] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [suggestType, setSuggestType] = useState('actor');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    async function fetchActors() {
+    const fetchActors = async () => {
       try {
         const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
         setStartActor(res.data.start);
@@ -27,7 +24,8 @@ function App() {
         console.error(err);
         setError('Failed to load actors.');
       }
-    }
+    };
+
     fetchActors();
   }, []);
 
@@ -38,35 +36,28 @@ function App() {
       const res = await axios.post(`${BACKEND_URL}/validate-link`, {
         actor: chain[chain.length - 1].name,
         title,
+        next_actor: actor,
       });
 
       if (res.data.valid) {
         const poster = res.data.poster || '';
         const actorImage = res.data.actor_image || '';
-        const newChain = [
+
+        setChain([
           ...chain,
           { name: title, image: poster },
           { name: actor, image: actorImage },
-        ];
-        setChain(newChain);
+        ]);
         setTitleInput('');
         setActorInput('');
         setSuggestions([]);
         setError('');
-
-        if (goalActor && actor.toLowerCase() === goalActor.name.toLowerCase()) {
-          setSuccess('🎉 You reached the goal actor!');
-        } else {
-          setSuccess('✅ Valid connection. Keep going!');
-        }
       } else {
         setError('❌ Invalid link');
-        setSuccess('');
       }
     } catch (err) {
       console.error(err);
       setError('Error connecting to backend');
-      setSuccess('');
     }
   };
 
@@ -74,39 +65,14 @@ function App() {
     window.location.reload();
   };
 
-  const onSuggestionsFetchRequested = async ({ value }) => {
+  const handleSuggest = async (query, type) => {
     try {
-      const res = await axios.get(`${BACKEND_URL}/suggest?query=${value}&type=${suggestType}`);
+      if (!query) return setSuggestions([]);
+      const res = await axios.get(`${BACKEND_URL}/suggest?query=${query}&type=${type}`);
       setSuggestions(res.data);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching suggestions:', err);
     }
-  };
-
-  const onSuggestionsClearRequested = () => {
-    setSuggestions([]);
-  };
-
-  const getSuggestionValue = (suggestion) => suggestion;
-
-  const renderSuggestion = (suggestion) => <div>{suggestion}</div>;
-
-  const inputPropsTitle = {
-    placeholder: '🎬 Movie/Show Title',
-    value: titleInput,
-    onChange: (_, { newValue }) => {
-      setTitleInput(newValue);
-      setSuggestType('title');
-    },
-  };
-
-  const inputPropsActor = {
-    placeholder: '🧑 Actor Name',
-    value: actorInput,
-    onChange: (_, { newValue }) => {
-      setActorInput(newValue);
-      setSuggestType('actor');
-    },
   };
 
   return (
@@ -115,55 +81,79 @@ function App() {
 
       {startActor && goalActor && (
         <div className="start-goal-container">
-          <div className="actor-box">
+          <div className="start-box">
             <img src={startActor.image} alt={startActor.name} />
-            <p><strong>Start:</strong> {startActor.name}</p>
+            <strong>Start:</strong> {startActor.name}
           </div>
-          <div className="actor-box">
+          <div className="goal-box">
             <img src={goalActor.image} alt={goalActor.name} />
-            <p><strong>Goal:</strong> {goalActor.name}</p>
+            <strong>Goal:</strong> {goalActor.name}
           </div>
         </div>
       )}
 
       <div className="chain-container">
-        {chain.map((item, index) => (
-          <div key={`${item.name}-${index}`} className="chain-item">
-            <img src={item.image} alt={item.name} />
-            <p>{item.name}</p>
+        {chain.map((entry, i) => (
+          <div key={`${entry.name}-${i}`} className="chain-entry">
+            {entry.image && <img src={entry.image} alt={entry.name} />}
+            <div>{entry.name}</div>
           </div>
         ))}
       </div>
 
-      <div className="input-container">
-        <Autosuggest
-          suggestions={suggestions}
-          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-          onSuggestionsClearRequested={onSuggestionsClearRequested}
-          getSuggestionValue={getSuggestionValue}
-          renderSuggestion={renderSuggestion}
-          inputProps={inputPropsTitle}
-        />
-        <Autosuggest
-          suggestions={suggestions}
-          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-          onSuggestionsClearRequested={onSuggestionsClearRequested}
-          getSuggestionValue={getSuggestionValue}
-          renderSuggestion={renderSuggestion}
-          inputProps={inputPropsActor}
-        />
+      <div className="input-row">
+        <div className="input-with-suggestions">
+          <input
+            value={titleInput}
+            onChange={(e) => {
+              setTitleInput(e.target.value);
+              handleSuggest(e.target.value, 'title');
+            }}
+            placeholder="🎬 Movie/Show Title"
+          />
+          {suggestions.length > 0 && (
+            <ul className="suggestions-dropdown">
+              {suggestions.map((s, i) => (
+                <li key={i} onClick={() => setTitleInput(s)}>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div className="input-with-suggestions">
+          <input
+            value={actorInput}
+            onChange={(e) => {
+              setActorInput(e.target.value);
+              handleSuggest(e.target.value, 'actor');
+            }}
+            placeholder="🧑 Actor Name"
+          />
+          {suggestions.length > 0 && (
+            <ul className="suggestions-dropdown">
+              {suggestions.map((s, i) => (
+                <li key={i} onClick={() => setActorInput(s)}>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <button onClick={handleSubmit}>Submit</button>
       </div>
 
-      {error && <div className="error">{error}</div>}
-      {success && <div className="success">{success}</div>}
+      {error && <p className="error">{error}</p>}
 
-      <div className="steps"><strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 
-0)}</div>
+      <p>
+        <strong>Steps:</strong> {Math.floor((chain.length - 1) / 2)}
+      </p>
 
-      <div className="play-again">
-        <button onClick={handleRestart}>🔁 Play Again</button>
-      </div>
+      {chain.length > 0 && chain[chain.length - 1].name === goalActor?.name && (
+        <p className="win-message">🎉 You reached the goal actor!</p>
+      )}
+
+      <button className="play-again" onClick={handleRestart}>🔁 Play Again</button>
     </div>
   );
 }
