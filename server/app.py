@@ -9,40 +9,32 @@ CORS(app)
 
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
-
 ACTORS = [
-    "Jennifer Lawrence", "Robert Downey Jr.", "Scarlett Johansson", "Dwayne Johnson", "Tom Hanks", 
-    "Emma Stone", "Brad Pitt", "Leonardo DiCaprio", "Chris Evans", "Natalie Portman",
-    "Margot Robbie", "Ryan Reynolds", "Zendaya", "Tom Holland", "Anne Hathaway",
-    "Chris Hemsworth", "Angelina Jolie", "Christian Bale", "Gal Gadot", "Samuel L. Jackson",
-    "Ryan Gosling", "Jessica Chastain", "Matt Damon", "Viola Davis", "Jake Gyllenhaal",
-    "Florence Pugh", "Adam Driver", "Jodie Comer", "Millie Bobby Brown", "Cillian Murphy",
-    "Bryan Cranston", "Pedro Pascal", "Daniel Kaluuya", "Austin Butler", "Timothée Chalamet",
-    "Zoe Saldana", "Paul Rudd", "Hugh Jackman", "Oscar Isaac", "Elizabeth Olsen",
-    "John Boyega", "Daniel Radcliffe", "Emma Watson", "Rupert Grint", "Meryl Streep",
-    "Keanu Reeves", "Taron Egerton", "Jason Momoa", "Anya Taylor-Joy", "Rachel Zegler",
-    "Sebastian Stan", "Anthony Mackie", "Jeremy Renner", "Hailee Steinfeld", "Chadwick Boseman",
-    "Ben Affleck", "Michael B. Jordan", "Idris Elba", "Winona Ryder", "Paul Mescal",
-    "Sadie Sink", "Finn Wolfhard", "Noah Schnapp", "Caleb McLaughlin", "David Harbour",
-    "Gaten Matarazzo", "Joe Keery", "Maya Hawke", "Natalia Dyer", "Charlie Heaton",
-    "Benedict Cumberbatch", "Andrew Garfield", "Tobey Maguire", "Joaquin Phoenix", "Jared Leto",
-    "Jamie Lee Curtis", "Michelle Yeoh", "Brendan Fraser", "Kate Winslet", "Naomi Watts",
-    "Robert Pattinson", "Kristen Stewart", "James McAvoy", "Sophie Turner", "Maisie Williams",
-    "Kit Harington", "Peter Dinklage", "Lena Headey", "Emilia Clarke", "Millie Gibson",
-    "Ncuti Gatwa", "Jenna Ortega", "Steve Carell", "Mindy Kaling", "John Krasinski",
-    "Amy Adams", "Julia Roberts", "Anne Hathaway", "Reese Witherspoon", "Nicole Kidman",
-    "Harrison Ford", "Mark Hamill", "Carrie Fisher", "Daisy Ridley", "Oscar Isaac",
-    "Billy Dee Williams", "Donald Glover", "Alden Ehrenreich", "Phoebe Waller-Bridge",
-    "Brie Larson", "Lupita Nyong'o", "Letitia Wright", "Danai Gurira", "Martin Freeman",
-    "Andy Serkis", "Michael Sheen", "David Tennant", "Bill Skarsgård", "Alexander Skarsgård",
-    "Charlize Theron", "Helen Mirren", "Ethan Hawke", "Josh Hutcherson", "Elizabeth Banks",
-    "Woody Harrelson", "Donald Sutherland", "Stanley Tucci", "Jeffrey Wright", "Mahershala Ali",
-    "Tessa Thompson", "Rami Malek", "Ben Kingsley", "Rosamund Pike", "Emily Blunt",
-    "Dev Patel", "Halle Berry", "Sandra Bullock", "Kerry Washington", "Octavia Spencer",
-    "Awkwafina", "Ken Jeong", "Simu Liu", "Gemma Chan", "Henry Golding",
-    "Michelle Yeoh", "Stephen Yeun", "Ali Wong", "Jamie Foxx", "Chris Rock",
-    "Kevin Hart", "Will Smith", "Jada Pinkett Smith", "Regina King", "Lakeith Stanfield"
+    # Women
+    "Zendaya", "Florence Pugh", "Emma Stone", "Margot Robbie", "Jennifer Lawrence",
+    "Scarlett Johansson", "Anya Taylor-Joy", "Millie Bobby Brown", "Natalie Portman",
+    "Saoirse Ronan", "Ana de Armas", "Sydney Sweeney", "Lupita Nyong'o", "Zendaya",
+    "Jenna Ortega", "Emily Blunt", "Rachel Zegler", "Viola Davis", "Kristen Stewart",
+    "Elizabeth Olsen", "Gal Gadot", "Tessa Thompson", "Jessica Chastain", "Michelle Yeoh",
+    "Kate Winslet", "Emma Watson", "Hailee Steinfeld", "Ayo Edebiri", "Meryl Streep",
+    "Reese Witherspoon", "Amy Adams", "Awkwafina", "Lily James", "Sophie Turner",
+    "Maya Hawke", "Kaitlyn Dever", "Dakota Johnson", "Hunter Schafer", "Natalie Dyer",
+
+    # Men
+    "Timothée Chalamet", "Pedro Pascal", "Cillian Murphy", "Austin Butler", "Ryan Gosling",
+    "Paul Mescal", "Tom Holland", "Robert Pattinson", "Adam Driver", "Leonardo DiCaprio",
+    "Dwayne Johnson", "Chris Hemsworth", "Chris Evans", "Ryan Reynolds", "Chadwick Boseman",
+    "Keanu Reeves", "Jason Momoa", "Oscar Isaac", "Andrew Garfield", "Tom Hiddleston",
+    "Ben Affleck", "Jake Gyllenhaal", "Donald Glover", "Joseph Quinn", "Jamie Dornan",
+    "Josh O'Connor", "Daniel Kaluuya", "Jeremy Allen White", "Noah Centineo", "Michael B. Jordan",
+    "Daniel Radcliffe", "John Boyega", "Finn Wolfhard", "Gaten Matarazzo", "Joe Keery",
+    "Sebastian Stan", "Henry Cavill", "Anthony Mackie", "Paul Rudd", "Matt Damon",
+
+    # TV & Streaming stars
+    "Steve Carell", "John Krasinski", "Penn Badgley", "Idris Elba", "David Harbour",
+    "Natasha Lyonne", "Pedro Pascal", "Bella Ramsey", "Gael García Bernal", "Evan Peters"
 ]
+
 
 @app.route('/get-random-actors')
 def get_random_actors():
