@@ -1,86 +1,92 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = 'https://screenlink-game.onrender.com';
 
-function App() {
-  const [startActor, setStartActor] = useState(null);
-  const [goalActor, setGoalActor] = useState(null);
+const App = () => {
+  const [startActor, setStartActor] = useState({});
+  const [goalActor, setGoalActor] = useState({});
   const [chain, setChain] = useState([]);
   const [titleInput, setTitleInput] = useState('');
   const [actorInput, setActorInput] = useState('');
-  const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [isWin, setIsWin] = useState(false);
+  const [type, setType] = useState('');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const fetchActors = async () => {
-      const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
-      setStartActor(res.data.start);
-      setGoalActor(res.data.goal);
-      setChain([{ name: res.data.start.name, image: res.data.start.image }]);
+    const fetchNewGame = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
+        setStartActor(res.data.start);
+        setGoalActor(res.data.goal);
+        setChain([res.data.start]);
+        setMessage('');
+      } catch (err) {
+        setMessage('❌ Failed to load actors');
+      }
     };
-    fetchActors();
+    fetchNewGame();
   }, []);
 
-  useEffect(() => {
-    if (chain.length && chain[chain.length - 1].name === goalActor?.name) {
-      setIsWin(true);
+  const handleSuggest = async (query, type) => {
+    if (!query) return;
+    try {
+      const res = await axios.get(`${BACKEND_URL}/suggest`, {
+        params: { query, type }
+      });
+      setSuggestions(res.data.map(item => item.name || item));
+    } catch (err) {
+      console.error(err);
     }
-  }, [chain, goalActor]);
+  };
 
   const handleSubmit = async () => {
     try {
       const actor = actorInput.trim();
       const title = titleInput.trim();
-      const prevActor = chain[chain.length - 1].name;
-
       const res = await axios.post(`${BACKEND_URL}/validate-link`, {
-        actor,
+        actor: chain[chain.length - 1].name,
         title
       });
 
       if (res.data.valid) {
-        const newChain = [
+        const poster = res.data.poster || '';
+        const actorImage = res.data.actor_image || '';
+        setChain([
           ...chain,
-          { name: title, image: res.data.poster || null },
-          { name: actor, image: res.data.actor_image || null }
-        ];
-        setChain(newChain);
+          { name: title, image: poster },
+          { name: actor, image: actorImage }
+        ]);
+
+        if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
+          setMessage('🎉 You reached the goal actor!');
+        } else {
+          setMessage('✅ Valid connection. Keep going!');
+        }
+
         setTitleInput('');
         setActorInput('');
         setSuggestions([]);
-        setError('');
       } else {
-        setError('❌ Invalid link');
+        setMessage('❌ Invalid link');
       }
     } catch (err) {
       console.error(err);
-      setError('Error connecting to backend');
+      setMessage('❌ Error connecting to backend');
     }
   };
 
-  const handleRestart = () => window.location.reload();
-
-  const handleAutoSuggest = async (type, value) => {
-    setError('');
-    if (!value.trim()) {
-      setSuggestions([]);
-      return;
-    }
-
-    try {
-      const res = await axios.get(`${BACKEND_URL}/suggest?query=${value}&type=${type}`);
-      setSuggestions(res.data);
-    } catch (err) {
-      console.error(err);
-    }
+  const handleRestart = () => {
+    window.location.reload();
   };
 
-  const handleSuggestionClick = (name) => {
-    if (actorInput) setActorInput(name);
-    else setTitleInput(name);
+  const handleSuggestionClick = (text) => {
+    if (type === 'actor') {
+      setActorInput(text);
+    } else {
+      setTitleInput(text);
+    }
     setSuggestions([]);
   };
 
@@ -88,68 +94,78 @@ function App() {
     <div className="App">
       <h1>🎬 Welcome to ScreenLink</h1>
 
-      {startActor && goalActor && (
+      {startActor.name && goalActor.name && (
         <div className="start-goal-container">
-          <div className="actor-card">
+          <div className="actor-box">
             <img src={startActor.image} alt={startActor.name} />
             <p><strong>Start:</strong> {startActor.name}</p>
           </div>
-          <div className="actor-card">
+          <div className="actor-box">
             <img src={goalActor.image} alt={goalActor.name} />
             <p><strong>Goal:</strong> {goalActor.name}</p>
           </div>
         </div>
       )}
 
-      <div className="chain-container">
-        {chain.map((step, idx) => (
-          <div key={idx} className="chain-item">
-            {step.image && <img src={step.image} alt={step.name} />}
-            <p>{step.name}</p>
+      <div className="chain-display">
+        {chain.map((entry, index) => (
+          <div key={index} className="chain-step">
+            {entry.image && <img src={entry.image} alt={entry.name} />}
+            <p>{entry.name}</p>
           </div>
         ))}
       </div>
 
-      <div className="input-container">
-        <input
-          type="text"
-          placeholder="🎥 Movie/Show Title"
-          value={titleInput}
-          onChange={(e) => {
-            setTitleInput(e.target.value);
-            handleAutoSuggest('title', e.target.value);
-          }}
-        />
-        <input
-          type="text"
-          placeholder="🧑 Actor Name"
-          value={actorInput}
-          onChange={(e) => {
-            setActorInput(e.target.value);
-            handleAutoSuggest('actor', e.target.value);
-          }}
-        />
+      <div className="input-section">
+        <div className="input-wrapper">
+          <input
+            value={titleInput}
+            onChange={(e) => {
+              setTitleInput(e.target.value);
+              setType('title');
+              handleSuggest(e.target.value, 'title');
+            }}
+            placeholder="🎬 Movie/Show Title"
+          />
+          {type === 'title' && suggestions.length > 0 && (
+            <ul className="suggestion-dropdown">
+              {suggestions.map((s, idx) => (
+                <li key={idx} onClick={() => handleSuggestionClick(s)}>{s}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="input-wrapper">
+          <input
+            value={actorInput}
+            onChange={(e) => {
+              setActorInput(e.target.value);
+              setType('actor');
+              handleSuggest(e.target.value, 'actor');
+            }}
+            placeholder="👤 Next Actor"
+          />
+          {type === 'actor' && suggestions.length > 0 && (
+            <ul className="suggestion-dropdown">
+              {suggestions.map((s, idx) => (
+                <li key={idx} onClick={() => handleSuggestionClick(s)}>{s}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         <button onClick={handleSubmit}>Submit</button>
       </div>
 
-      {suggestions.length > 0 && (
-        <div className="suggestion-box">
-          {suggestions.map((s, i) => (
-            <div key={i} onClick={() => handleSuggestionClick(s.name)}>
-              {s.name}
-            </div>
-          ))}
-        </div>
-      )}
+      {message && <div className="message">{message}</div>}
 
-      {error && <p className="error">{error}</p>}
-      {isWin && <p className="success">🏆 You reached the goal actor!</p>}
+      <p><strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}</p>
 
-      <p className="steps">Steps: {Math.floor((chain.length - 1) / 2)}</p>
-      <button className="restart-button" onClick={handleRestart}>🔁 Play Again</button>
+      <button onClick={handleRestart}>🔁 Play Again</button>
     </div>
   );
-}
+};
 
 export default App;
 
