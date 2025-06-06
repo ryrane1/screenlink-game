@@ -59,10 +59,9 @@ function App() {
 
         if (goalActor && actor === goalActor.name) {
           alert("🎉 You reached the goal actor!");
-           
           const resPath = await axios.get(`${BACKEND_URL}/get-shortest-path?start=${startActor.name}&goal=${goalActor.name}`);
           setShortestPath(resPath.data.path || []);
-          return; // prevent duplicate goal actor in chain
+          return;
         }
       } else {
         setError('❌ Invalid link');
@@ -86,8 +85,14 @@ function App() {
       }
 
       const res = await axios.get(`${BACKEND_URL}/suggest?query=${query}&type=${type}`);
-      const namesOnly = (res.data || []).map(item => item.name || item.title || '');
-      setSuggestions(namesOnly.filter(Boolean));
+
+      if (type === 'actor') {
+        const namesOnly = (res.data || []).map(item => item.name || '').filter(Boolean);
+        const unique = [...new Set(namesOnly)];
+        setSuggestions(unique);
+      } else {
+        setSuggestions(res.data || []);
+      }
     } catch (err) {
       console.error(err);
       setSuggestions([]);
@@ -97,7 +102,7 @@ function App() {
   return (
     <div className="App">
       <h1>🎬 ScreenLink</h1>
-      
+
       <p className="instructions">
         Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering
         movie titles and actors they’ve worked with — one link at a time. You win when you reach the goal!
@@ -145,16 +150,24 @@ function App() {
           />
           {suggestType === 'title' && suggestions.length > 0 && (
             <div className="suggestions-box">
-              {suggestions.map((sug, i) => (
+              {suggestions.slice(0, 5).map((item, i) => (
                 <div
                   key={i}
                   className="suggestion-item"
                   onClick={() => {
-                    setTitleInput(sug);
+                    setTitleInput(item.name || item.title || '');
                     setSuggestions([]);
                   }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
                 >
-                  {sug}
+                  {item.image && (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      style={{ width: '40px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
+                    />
+                  )}
+                  <span>{item.name || item.title}</span>
                 </div>
               ))}
             </div>
