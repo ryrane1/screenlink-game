@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const BACKEND_URL = 'https://screenlink-game.onrender.com';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const TMDB_API_KEY = process.env.REACT_APP_TMDB_API_KEY;
 
 function App() {
   const [startActor, setStartActor] = useState(null);
@@ -13,27 +14,34 @@ function App() {
   const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [message, setMessage] = useState('');
-  const [type, setType] = useState(''); // 'actor' or 'title'
 
   useEffect(() => {
-    const fetchStartAndGoal = async () => {
-      const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
-      setStartActor(res.data.start);
-      setGoalActor(res.data.goal);
-      setChain([res.data.start]);
+    const fetchRandomActors = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
+        setStartActor(res.data.start);
+        setGoalActor(res.data.goal);
+        setChain([{ name: res.data.start.name, image: res.data.start.image }]);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load actors.');
+      }
     };
-    fetchStartAndGoal();
+
+    fetchRandomActors();
   }, []);
 
-  const handleSuggest = async (query, type) => {
-    if (!query) return;
+  const fetchActorImage = async (actorName) => {
     try {
-      const res = await axios.get(`${BACKEND_URL}/suggest`, {
-        params: { query, type },
-      });
-      setSuggestions(res.data.map((item) => item.name || item));
+      const res = await axios.get(
+        `https://api.themoviedb.org/3/search/person?query=${encodeURIComponent(
+          actorName
+        )}&api_key=${TMDB_API_KEY}`
+      );
+      const path = res.data.results?.[0]?.profile_path;
+      return path ? `https://image.tmdb.org/t/p/w185${path}` : '';
     } catch (err) {
-      console.error(err);
+      return '';
     }
   };
 
@@ -41,6 +49,10 @@ function App() {
     try {
       const actor = actorInput.trim();
       const title = titleInput.trim();
+      if (!actor || !title) return;
+
+      const actorImage = await fetchActorImage(actor);
+
       const res = await axios.post(`${BACKEND_URL}/validate-link`, {
         actor: chain[chain.length - 1].name,
         title,
@@ -48,20 +60,21 @@ function App() {
 
       if (res.data.valid) {
         const poster = res.data.poster || '';
-        const actorImage = res.data.actor_image || '';
         setChain([
           ...chain,
           { name: title, image: poster },
           { name: actor, image: actorImage },
         ]);
-        if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
-          setMessage("🎉 You reached the goal actor!");
-        }
-
         setTitleInput('');
         setActorInput('');
         setError('');
         setSuggestions([]);
+
+        if (
+          actor.toLowerCase() === goalActor.name.toLowerCase()
+        ) {
+          setMessage('🎉 You reached the goal actor!');
+        }
       } else {
         setError('❌ Invalid link');
       }
@@ -75,99 +88,98 @@ function App() {
     window.location.reload();
   };
 
+  const handleSuggestion = (value, type) => {
+    if (type === 'actor') setActorInput(value);
+    else setTitleInput(value);
+    setSuggestions([]);
+  };
+
+  const handleInputChange = async (e, type) => {
+    const value = e.target.value;
+    if (type === 'actor') setActorInput(value);
+    else setTitleInput(value);
+
+    if (!value.trim()) return setSuggestions([]);
+
+    try {
+      const res = await axios.get(
+        `${BACKEND_URL}/suggest?query=${encodeURIComponent(
+          value
+        )}&type=${type}`
+      );
+      setSuggestions(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="App">
-      <h1 style={{ color: '#228B22' }}>🎬 Welcome to ScreenLink</h1>
+      <h1 style={{ color: 'white' }}>🎬 Welcome to ScreenLink</h1>
 
       {startActor && goalActor && (
         <div className="start-goal-container">
-          <div className="actor-box">
+          <div className="start-box">
             <img src={startActor.image} alt={startActor.name} />
-            <p><strong>Start:</strong> {startActor.name}</p>
+            <p>
+              <strong>Start:</strong> {startActor.name}
+            </p>
           </div>
-          <div className="actor-box">
+          <div className="goal-box">
             <img src={goalActor.image} alt={goalActor.name} />
-            <p><strong>Goal:</strong> {goalActor.name}</p>
+            <p>
+              <strong>Goal:</strong> {goalActor.name}
+            </p>
           </div>
         </div>
       )}
 
-      <div className="chain-display">
-        {chain.map((entry, index) => (
-          <div key={index} className="chain-step">
-            <img src={entry.image} alt={entry.name} />
-            <p>{entry.name}</p>
+      <div className="chain-container">
+        {chain.map((item, idx) => (
+          <div key={idx} className="chain-card">
+            {item.image && <img src={item.image} alt={item.name} />}
+            <p>{item.name}</p>
           </div>
         ))}
       </div>
 
-      <div className="input-section">
-        <div style={{ position: 'relative', display: 'inline-block' }}>
-          <input
-            value={titleInput}
-            onChange={(e) => {
-              setTitleInput(e.target.value);
-              setType('title');
-              handleSuggest(e.target.value, 'title');
-            }}
-            placeholder="🎬 Movie/Show Title"
-            style={{ marginRight: '10px', padding: '8px' }}
-          />
-          {type === 'title' && suggestions.length > 0 && (
-            <ul className="suggestion-dropdown">
-              {suggestions.map((sug, i) => (
-                <li
-                  key={i}
-                  onClick={() => {
-                    setTitleInput(sug);
-                    setSuggestions([]);
-                  }}
-                >
-                  {sug}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div style={{ position: 'relative', display: 'inline-block' }}>
-          <input
-            value={actorInput}
-            onChange={(e) => {
-              setActorInput(e.target.value);
-              setType('actor');
-              handleSuggest(e.target.value, 'actor');
-            }}
-            placeholder="🧑 Actor Name"
-            style={{ marginRight: '10px', padding: '8px' }}
-          />
-          {type === 'actor' && suggestions.length > 0 && (
-            <ul className="suggestion-dropdown">
-              {suggestions.map((sug, i) => (
-                <li
-                  key={i}
-                  onClick={() => {
-                    setActorInput(sug);
-                    setSuggestions([]);
-                  }}
-                >
-                  {sug}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
+      <div className="input-container">
+        <input
+          value={titleInput}
+          onChange={(e) => handleInputChange(e, 'title')}
+          placeholder="🎥 Movie/Show Title"
+        />
+        <input
+          value={actorInput}
+          onChange={(e) => handleInputChange(e, 'actor')}
+          placeholder="🧑 Actor Name"
+        />
         <button onClick={handleSubmit}>Submit</button>
       </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {suggestions.length > 0 && (
+        <div className="suggestion-box">
+          {suggestions.map((sug, idx) => (
+            <div
+              key={idx}
+              onClick={() =>
+                handleSuggestion(sug, actorInput ? 'actor' : 'title')
+              }
+            >
+              {sug}
+            </div>
+          ))}
+        </div>
+      )}
 
-      <p>
-        <strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}
-      </p>
+      {error && <p className="error">{error}</p>}
+      {message && <p className="victory">{message}</p>}
 
-      <button onClick={handleRestart}>🔁 Play Again</button>
+      <p className="steps">Steps: {Math.max(Math.floor((chain.length - 1) / 2), 0)}</p>
+
+      <button className="restart-button" onClick={handleRestart}>
+        🔁 Play Again
+      </button>
     </div>
   );
 }
