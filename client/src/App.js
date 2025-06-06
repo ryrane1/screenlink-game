@@ -43,8 +43,8 @@ function App() {
         const poster = res.data.poster || '';
         const actorImage = res.data.actor_image || '';
 
-        setChain([
-          ...chain,
+        setChain((prev) => [
+          ...prev,
           { name: title, image: poster },
           { name: actor, image: actorImage }
         ]);
