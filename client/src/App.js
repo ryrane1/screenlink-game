@@ -92,6 +92,11 @@ function App() {
   return (
     <div className="App">
       <h1>🎬 ScreenLink</h1>
+      
+      <p className="instructions">
+        Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering
+        movie titles and actors they’ve worked with — one link at a time. You win when you reach the goal!
+      </p>
 
       {startActor && goalActor && (
         <div className="start-goal-container">

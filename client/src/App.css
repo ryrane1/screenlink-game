@@ -17,6 +17,17 @@ h1 {
   font-weight: 600;
 }
 
+.instructions {
+  font-size: 1rem;
+  color: #99ffe0;
+  margin-top: -15px;
+  margin-bottom: 30px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
 .start-goal-container {
   display: flex;
   justify-content: center;
