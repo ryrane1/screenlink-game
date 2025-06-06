@@ -53,6 +53,10 @@ function App() {
           { name: title, image: poster },
           { name: actor, image: actorImage },
         ]);
+        if (actor.toLowerCase() === goalActor.name.toLowerCase()) {
+          setMessage("🎉 You reached the goal actor!");
+        }
+
         setTitleInput('');
         setActorInput('');
         setError('');
