@@ -104,6 +104,57 @@ res.get('poster_path')
 
     return jsonify(results[:5])
 
+
+from collections import deque
+
+@app.route('/get-shortest-path')
+def get_shortest_path():
+    start = request.args.get('start')
+    goal = request.args.get('goal')
+    if not start or not goal:
+        return jsonify({"path": []})
+
+    visited = set()
+    queue = deque()
+    queue.append((start, [{"type": "actor", "name": start}]))
+
+    while queue:
+        current, path = queue.popleft()
+
+        search_url = f"https://api.themoviedb.org/3/search/person?query={current}&api_key={TMDB_API_KEY}"
+        res = requests.get(search_url).json()
+        if not res['results']:
+            continue
+
+        actor_id = res['results'][0]['id']
+        credits_url = f"https://api.themoviedb.org/3/person/{actor_id}/combined_credits?api_key={TMDB_API_KEY}"
+        credits = requests.get(credits_url).json()
+
+        for media in credits.get('cast', [])[:5]:
+            title = media.get('title') or media.get('name')
+            media_id = media['id']
+            media_type = media.get('media_type')
+            if not title or media_type not in ['movie', 'tv']:
+                continue
+
+            cast_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
+            cast_data = requests.get(cast_url).json()
+            cast = cast_data.get('cast', [])
+
+            for c in cast:
+                next_actor = c['name']
+                if next_actor in visited:
+                    continue
+
+                new_path = path + [{"type": "title", "name": title}, {"type": "actor", "name": next_actor}]
+                if next_actor.strip().lower() == goal.strip().lower():
+                    return jsonify({"path": new_path})
+
+                visited.add(next_actor)
+                queue.append((next_actor, new_path))
+
+    return jsonify({"path": []})
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
     app.run(host='0.0.0.0', port=port)
