@@ -87,9 +87,15 @@ function App() {
       const res = await axios.get(`${BACKEND_URL}/suggest?query=${query}&type=${type}`);
 
       if (type === 'actor') {
-        const namesOnly = (res.data || []).map(item => item.name || '').filter(Boolean);
-        const unique = [...new Set(namesOnly)];
-        setSuggestions(unique);
+        const seen = new Set();
+        const uniqueActors = [];
+        for (const actor of res.data || []) {
+          if (!seen.has(actor.name)) {
+            seen.add(actor.name);
+            uniqueActors.push(actor);
+          }
+        }
+        setSuggestions(uniqueActors);
       } else {
         setSuggestions(res.data || []);
       }
@@ -185,16 +191,24 @@ function App() {
           />
           {suggestType === 'actor' && suggestions.length > 0 && (
             <div className="suggestions-box">
-              {suggestions.map((sug, i) => (
+              {suggestions.slice(0, 5).map((item, i) => (
                 <div
                   key={i}
                   className="suggestion-item"
                   onClick={() => {
-                    setActorInput(sug);
+                    setActorInput(item.name);
                     setSuggestions([]);
                   }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
                 >
-                  {sug}
+                  {item.image && (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      style={{ width: '40px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
+                    />
+                  )}
+                  <span>{item.name}</span>
                 </div>
               ))}
             </div>
