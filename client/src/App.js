@@ -12,6 +12,7 @@ function App() {
   const [actorInput, setActorInput] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [suggestType, setSuggestType] = useState('');
+  const [shortestPath, setShortestPath] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -58,6 +59,10 @@ function App() {
 
         if (goalActor && actor === goalActor.name) {
           alert("🎉 You reached the goal actor!");
+           
+          const resPath = await axios.get(`${BACKEND_URL}/get-shortest-path?start=${startActor.name}&goal=${goalActor.name}`);
+          setShortestPath(resPath.data.path || []);
+          return; // prevent duplicate goal actor in chain
         }
       } else {
         setError('❌ Invalid link');
@@ -191,6 +196,22 @@ function App() {
       <p className="steps">
         <strong>Steps:</strong> {Math.max(Math.floor((chain.length - 1) / 2), 0)}
       </p>
+
+      {shortestPath.length > 0 && (
+        <>
+          <h3>🎯 Optimal Path:</h3>
+          <div className="chain-container">
+            {shortestPath.map((entry, i) => (
+              <React.Fragment key={`${entry.name}-${i}`}>
+                <div className={`chain-item ${entry.type}`}>
+                  <div>{entry.name}</div>
+                </div>
+                {i < shortestPath.length - 1 && <div className="arrow">➡️</div>}
+              </React.Fragment>
+            ))}
+          </div>
+        </>
+      )}
 
       <div className="play-again">
         <button onClick={handleRestart}>🔁 Play Again</button>
