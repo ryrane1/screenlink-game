@@ -292,16 +292,45 @@ input {
 /* Mobile Optimizations */
 @media (max-width: 600px) {
   .actor-pair {
-    gap: 20px;
+    gap: 12px;
+    flex-direction: row;
+    justify-content: center;
   }
 
   .actor-card {
-    width: 120px;
+    width: 130px;
     padding: 8px;
   }
 
   .actor-card img {
     border-radius: 10px;
+    margin-bottom: 4px;
+  }
+
+  .description {
+    font-size: 15px;
+    padding: 0 15px;
+  }
+
+  .inputs-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  input {
+    width: 85vw;
+    font-size: 15px;
+  }
+
+  .submit-btn, .undo-btn {
+    width: 85vw;
+    font-size: 16px;
+    margin-top: 8px;
+  }
+
+  .button-row-below {
+    flex-direction: column;
+    gap: 8px;
   }
 }
 
