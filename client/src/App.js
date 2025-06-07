@@ -138,7 +138,7 @@ function App() {
 
   const handleShare = () => {
     if (!startActor || !goalActor || chain.length === 0) return;
-    const steps = (chain.length - 1).toString();
+    const steps = Math.floor((chain.length - 1) / 2).toString();
     let text = `🎬 I just connected ${startActor.name} to ${goalActor.name} in ${steps}️⃣ steps!\n\n`;
 
     chain.forEach((item) => {
