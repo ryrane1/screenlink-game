@@ -325,6 +325,24 @@ input {
     font-size: 15px;
   }
 
+  .chain-item {
+    max-width: 100px;
+    padding: 6px;
+    font-size: 13px;
+  }
+
+  .chain-item img {
+    max-height: 120px;
+    width: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 4px;
+ }
+
+  .arrow {
+    font-size: 20px;
+  }
+
   .submit-btn, .undo-btn {
     width: 85vw;
     font-size: 16px;
