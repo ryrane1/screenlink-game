@@ -18,16 +18,20 @@ function App() {
 
   useEffect(() => {
     const fetchActors = async () => {
-      const res = await axios.get(`${BACKEND_URL}/start`);
+      const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
       setStartActor(res.data.start);
       setGoalActor(res.data.goal);
-      setChain([res.data.start]);
+      setChain([{ ...res.data.start, type: "actor" }]);
     };
     fetchActors();
   }, []);
 
   useEffect(() => {
-    if (chain.length > 0 && chain[chain.length - 1].id === goalActor?.id) {
+    if (
+      chain.length > 0 &&
+      goalActor &&
+      chain[chain.length - 1].name === goalActor.name
+    ) {
       setGameOver(true);
       confetti();
       setTimeout(() => {
@@ -53,7 +57,7 @@ function App() {
     }
 
     try {
-      const res = await axios.get(`${BACKEND_URL}/suggest?type=${type}&q=${value}`);
+      const res = await axios.get(`${BACKEND_URL}/suggest?type=${type}&query=${value}`);
       setSuggestions(res.data || []);
     } catch (err) {
       console.error(err);
@@ -66,11 +70,18 @@ function App() {
       setTitleInput(selected.name);
       try {
         const res = await axios.post(`${BACKEND_URL}/validate-link`, {
-          actor_id: chain[chain.length - 1].id,
-          title_id: selected.id,
+          actor: chain[chain.length - 1].name,
+          title: selected.name,
+          next_actor: actorInput
         });
         if (res.data.valid) {
-          setChain([...chain, selected, res.data.actor]);
+          const titleItem = { ...selected, type: "title" };
+          const actorItem = {
+            name: actorInput,
+            image: res.data.actor_image || null,
+            type: "actor"
+          };
+          setChain([...chain, titleItem, actorItem]);
           setActorInput("");
           setTitleInput("");
         } else {

@@ -3,6 +3,7 @@ from flask_cors import CORS
 import random
 import requests
 import os
+from collections import deque
 
 app = Flask(__name__)
 CORS(app)
@@ -39,7 +40,7 @@ ACTORS = [
 @app.route('/get-random-actors')
 def get_random_actors():
     start, goal = random.sample(ACTORS, 2)
-    
+
     def get_image(name):
         url = f"https://api.themoviedb.org/3/search/person?query={name}&api_key={TMDB_API_KEY}"
         res = requests.get(url).json()
@@ -54,12 +55,13 @@ def get_random_actors():
         "goal": {"name": goal, "image": get_image(goal)}
     })
 
+
 @app.route('/validate-link', methods=['POST'])
 def validate_link():
     data = request.json
-    actor = data.get('actor')  # current actor (used only for logic)
+    actor = data.get('actor')
     title = data.get('title')
-    next_actor = data.get('next_actor')  # the one we want to verify
+    next_actor = data.get('next_actor')
 
     search_url = f"https://api.themoviedb.org/3/search/multi?query={title}&api_key={TMDB_API_KEY}"
     search_response = requests.get(search_url).json()
@@ -72,14 +74,14 @@ def validate_link():
 
         media_title = media.get('title') or media.get('name')
         if not media_title or media_title.strip().lower() != title.strip().lower():
-            continue  # skip results that don’t exactly match what the user typed
+            continue
 
         credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
         cast = credits.get('cast', []) + credits.get('guest_stars', [])
 
-        # Validate both current actor and next actor are in the same cast
         cast_names = [c.get('name', '').strip().lower() for c in cast]
+
         if (
             next_actor.strip().lower() in cast_names and
             actor.strip().lower() in cast_names
@@ -88,12 +90,13 @@ def validate_link():
             actor_image = next(
                 (f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}"
                  for c in cast
-                 if next_actor.strip().lower() in c.get('name', '').strip().lower() and c.get('profile_path')),
+                 if next_actor.strip().lower() == c.get('name', '').strip().lower() and c.get('profile_path')),
                 None
             )
             return jsonify({"valid": True, "poster": poster, "actor_image": actor_image})
 
     return jsonify({"valid": False})
+
 
 @app.route('/suggest')
 def suggest():
@@ -117,14 +120,16 @@ def suggest():
         ]
     else:
         results = [
-            {"name": res.get('title') or res.get('name'), "image": f"https://image.tmdb.org/t/p/w185{res['poster_path']}"}
-            for res in response.get('results', []) 
+            {
+                "name": res.get('title') or res.get('name'),
+                "image": f"https://image.tmdb.org/t/p/w185{res['poster_path']}"
+            }
+            for res in response.get('results', [])
             if res.get('media_type') in ['movie', 'tv'] and res.get('poster_path')
         ]
 
     return jsonify(results[:5])
 
-from collections import deque
 
 @app.route('/get-shortest-path')
 def get_shortest_path():
@@ -161,9 +166,8 @@ def get_shortest_path():
             cast = cast_data.get('cast', []) + cast_data.get('guest_stars', [])
 
             cast_names = [c.get('name', '').strip().lower() for c in cast]
-
             if current.strip().lower() not in cast_names:
-                continue  # current actor not in this cast, skip
+                continue
 
             for c in cast:
                 next_actor = c['name']
@@ -183,3 +187,4 @@ def get_shortest_path():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
     app.run(host='0.0.0.0', port=port)
+
