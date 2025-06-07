@@ -14,32 +14,39 @@ function App() {
   const [suggestions, setSuggestions] = useState([]);
   const [suggestType, setSuggestType] = useState("actor");
   const [gameOver, setGameOver] = useState(false);
-  const [stats, setStats] = useState({ currentStreak: 0, bestStreak: 0, bestLinkCount: null });
+  const [stats, setStats] = useState({ currentStreak: 0, bestLinkCount: null });
   const [optimalPath, setOptimalPath] = useState([]);
   const chainContainerRef = useRef(null);
 
-  useEffect(() => {
-    const fetchActorsAndPath = async () => {
-      const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
-      setStartActor(res.data.start);
-      setGoalActor(res.data.goal);
-      setChain([{ ...res.data.start, type: "actor" }]);
+  const fetchNewGame = async (preserveStreak = true) => {
+    const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
+    setStartActor(res.data.start);
+    setGoalActor(res.data.goal);
+    setChain([{ ...res.data.start, type: "actor" }]);
+    setActorInput("");
+    setTitleInput("");
+    setSuggestions([]);
+    setGameOver(false);
 
-      try {
-        const pathRes = await axios.get(`${BACKEND_URL}/get-shortest-path?start=${res.data.start.name}&goal=${res.data.goal.name}`);
-        setOptimalPath(pathRes.data.path || []);
-      } catch (err) {
-        console.error("Failed to fetch optimal path", err);
-      }
-    };
-    fetchActorsAndPath();
+    try {
+      const pathRes = await axios.get(`${BACKEND_URL}/get-shortest-path?start=${res.data.start.name}&goal=${res.data.goal.name}`);
+      setOptimalPath(pathRes.data.path || []);
+    } catch (err) {
+      console.error("Failed to fetch optimal path", err);
+    }
 
     const storedStats = JSON.parse(localStorage.getItem("screenlink-stats")) || {
       currentStreak: 0,
-      bestStreak: 0,
       bestLinkCount: null
     };
+
+    if (!preserveStreak) storedStats.currentStreak = 0;
     setStats(storedStats);
+    localStorage.setItem("screenlink-stats", JSON.stringify(storedStats));
+  };
+
+  useEffect(() => {
+    fetchNewGame(false);
   }, []);
 
   useEffect(() => {
@@ -54,7 +61,6 @@ function App() {
       const linkCount = (chain.length - 1) / 2;
       const updatedStats = { ...stats };
       updatedStats.currentStreak += 1;
-      updatedStats.bestStreak = Math.max(updatedStats.bestStreak, updatedStats.currentStreak);
       if (updatedStats.bestLinkCount === null || linkCount < updatedStats.bestLinkCount) {
         updatedStats.bestLinkCount = linkCount;
       }
@@ -130,8 +136,6 @@ function App() {
     }
   };
 
-  const resetGame = () => window.location.reload();
-
   return (
     <div className="App">
       <h1>🎬 <span className="highlight">ScreenLink</span></h1>
@@ -141,7 +145,7 @@ at a time.
       </p>
 
       <div className="stats-panel">
-        <p>🔥 Streak: {stats.currentStreak} | 🏆 Best: {stats.bestStreak} | 🧠 Best Links: {stats.bestLinkCount ?? "—"}</p>
+        <p>🔥 Streak: {stats.currentStreak} | 🧠 Best Links: {stats.bestLinkCount ?? "—"}</p>
       </div>
 
       <div className="actor-pair">
@@ -196,6 +200,7 @@ at a time.
       </div>
 
       <button onClick={handleUndo} className="undo-btn">Undo</button>
+      <button onClick={() => fetchNewGame(false)} className="undo-btn">🔄 New Game</button>
 
       <div className="chain-scroll-wrapper">
         <div className="chain-container" ref={chainContainerRef}>
@@ -232,7 +237,7 @@ at a time.
       {gameOver && (
         <div className="end-credits">
           <h2>🎉 Thanks for playing!</h2>
-          <button onClick={resetGame}>Play Again</button>
+          <button onClick={() => fetchNewGame(true)}>Play Again</button>
         </div>
       )}
     </div>
