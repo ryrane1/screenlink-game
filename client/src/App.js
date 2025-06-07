@@ -146,7 +146,7 @@ function App() {
       else text += `🎞️ ${item.name}\n`;
     });
 
-    text += `\nThink you can beat my path? 🔗 https://screenlink-game-rohan-ranes-projects.vercel.app/`;
+    text += `\nTry playing now!  https://screenlink-game-rohan-ranes-projects.vercel.app/`;
 
     navigator.clipboard.writeText(text).then(() => {
       const toast = document.createElement("div");
