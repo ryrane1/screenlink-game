@@ -14,16 +14,32 @@ function App() {
   const [suggestions, setSuggestions] = useState([]);
   const [suggestType, setSuggestType] = useState("actor");
   const [gameOver, setGameOver] = useState(false);
+  const [stats, setStats] = useState({ currentStreak: 0, bestStreak: 0, bestLinkCount: null });
+  const [optimalPath, setOptimalPath] = useState([]);
   const chainContainerRef = useRef(null);
 
   useEffect(() => {
-    const fetchActors = async () => {
+    const fetchActorsAndPath = async () => {
       const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
       setStartActor(res.data.start);
       setGoalActor(res.data.goal);
       setChain([{ ...res.data.start, type: "actor" }]);
+
+      try {
+        const pathRes = await axios.get(`${BACKEND_URL}/get-shortest-path?start=${res.data.start.name}&goal=${res.data.goal.name}`);
+        setOptimalPath(pathRes.data.path || []);
+      } catch (err) {
+        console.error("Failed to fetch optimal path", err);
+      }
     };
-    fetchActors();
+    fetchActorsAndPath();
+
+    const storedStats = JSON.parse(localStorage.getItem("screenlink-stats")) || {
+      currentStreak: 0,
+      bestStreak: 0,
+      bestLinkCount: null
+    };
+    setStats(storedStats);
   }, []);
 
   useEffect(() => {
@@ -34,6 +50,16 @@ function App() {
     ) {
       setGameOver(true);
       confetti();
+
+      const linkCount = (chain.length - 1) / 2;
+      const updatedStats = { ...stats };
+      updatedStats.currentStreak += 1;
+      updatedStats.bestStreak = Math.max(updatedStats.bestStreak, updatedStats.currentStreak);
+      if (updatedStats.bestLinkCount === null || linkCount < updatedStats.bestLinkCount) {
+        updatedStats.bestLinkCount = linkCount;
+      }
+      setStats(updatedStats);
+      localStorage.setItem("screenlink-stats", JSON.stringify(updatedStats));
     }
   }, [chain, goalActor]);
 
@@ -114,6 +140,10 @@ function App() {
 at a time.
       </p>
 
+      <div className="stats-panel">
+        <p>🔥 Streak: {stats.currentStreak} | 🏆 Best: {stats.bestStreak} | 🧠 Best Links: {stats.bestLinkCount ?? "—"}</p>
+      </div>
+
       <div className="actor-pair">
         <div className="actor-card">
           <img src={startActor?.image} alt={startActor?.name} />
@@ -180,6 +210,24 @@ at a time.
           ))}
         </div>
       </div>
+
+      {gameOver && optimalPath.length > 0 && (
+        <div>
+          <h3 style={{ marginTop: "30px" }}>🔍 Optimal Path</h3>
+          <div className="chain-scroll-wrapper">
+            <div className="chain-container">
+              {optimalPath.map((entry, i) => (
+                <React.Fragment key={`${entry.name}-${i}`}>
+                  <div className={`chain-item ${entry.type} ${entry.name === goalActor?.name ? "goal" : ""}`}>
+                    <div>{entry.name}</div>
+                  </div>
+                  {i < optimalPath.length - 1 && <div className="arrow">➡️</div>}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {gameOver && (
         <div className="end-credits">

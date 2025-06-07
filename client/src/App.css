@@ -205,3 +205,32 @@ button {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* 📊 Stats Panel */
+.stats-panel {
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #cceee7;
+  background-color: #122924;
+  padding: 10px 20px;
+  border-radius: 12px;
+  display: inline-block;
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.15);
+}
+
+/* 🧠 Optimal Path Title */
+h3 {
+  color: #00ffcc;
+  margin-bottom: 10px;
+}
+
+/* 🧩 Optimal Path Chain Styling */
+.chain-container + .chain-container {
+  margin-top: 15px;
+}
+
+.chain-container.optimal {
+  opacity: 0.85;
+  border-top: 1px dashed #4ebbef;
+  padding-top: 15px;
+}
+
