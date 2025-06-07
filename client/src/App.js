@@ -11,8 +11,6 @@ function App() {
   const [inputTitle, setInputTitle] = useState("");
   const [actorSuggestions, setActorSuggestions] = useState([]);
   const [titleSuggestions, setTitleSuggestions] = useState([]);
-  const [actorImage, setActorImage] = useState(null);
-  const [titleImage, setTitleImage] = useState(null);
   const [undoStack, setUndoStack] = useState([]);
   const [optimalPath, setOptimalPath] = useState([]);
   const [hasWon, setHasWon] = useState(false);
@@ -53,19 +51,10 @@ function App() {
   };
 
   const handleNewGame = () => {
-    if (gameMode === "daily") return; // No restart in daily mode
+    if (gameMode === "daily") return;
     setStreak(0);
     setBestLinks(null);
-    setGameMode("free"); // Reset mode
-    axios.get("/get-random-actors").then((res) => {
-      setStartActor(res.data.start);
-      setGoalActor(res.data.goal);
-      setChain([{ ...res.data.start, type: "actor" }]);
-      setUndoStack([]);
-      setHasWon(false);
-      setOptimalPath([]);
-      fetchOptimalPath(res.data.start.id, res.data.goal.id);
-    });
+    setGameMode("free");
   };
 
   const handleModeChange = (mode) => {
@@ -100,12 +89,64 @@ function App() {
         </div>
       )}
 
-      {/* UI for the rest of the game remains unchanged */}
+      {startActor && goalActor && (
+        <>
+          <div className="inputs-container">
+            <div className="input-wrapper">
+              <Autosuggest
+                suggestions={actorSuggestions}
+                onSuggestionsFetchRequested={({ value }) => fetchSuggestions(value, "actor")}
+                onSuggestionsClearRequested={() => setActorSuggestions([])}
+                getSuggestionValue={(suggestion) => suggestion.name}
+                onSuggestionSelected={handleActorSelected}
+                renderSuggestion={renderSuggestion}
+                inputProps={{
+                  placeholder: "Enter actor name",
+                  value: inputActor,
+                  onChange: (_, { newValue }) => setInputActor(newValue),
+                }}
+              />
+            </div>
+            <div className="input-wrapper">
+              <Autosuggest
+                suggestions={titleSuggestions}
+                onSuggestionsFetchRequested={({ value }) => fetchSuggestions(value, "title")}
+                onSuggestionsClearRequested={() => setTitleSuggestions([])}
+                getSuggestionValue={(suggestion) => suggestion.name}
+                onSuggestionSelected={handleTitleSelected}
+                renderSuggestion={renderSuggestion}
+                inputProps={{
+                  placeholder: "Enter movie/TV title",
+                  value: inputTitle,
+                  onChange: (_, { newValue }) => setInputTitle(newValue),
+                }}
+              />
+            </div>
+            <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+          </div>
+
+          <div className="chain-scroll-wrapper">
+            <div className="chain-container">
+              {chain.map((item, idx) => (
+                <React.Fragment key={idx}>
+                  <div
+                    className={`chain-item ${item.type} ${
+                      idx === chain.length - 1 && item.name === goalActor?.name ? "goal" : ""
+                    }`}
+                  >
+                    {item.image && <img src={item.image} alt={item.name} />}
+                    <div>{item.name}</div>
+                  </div>
+                  {idx !== chain.length - 1 && <span className="arrow">➡️</span>}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       {gameMode === "free" && (
-        <button className="new-game-button" onClick={handleNewGame}>
-          🔄 New Game
-        </button>
+        <button className="new-game-button" onClick={handleNewGame}>🔄 New Game</button>
       )}
     </div>
   );
