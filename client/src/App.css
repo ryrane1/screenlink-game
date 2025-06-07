@@ -47,23 +47,6 @@ h1 {
   border-radius: 10px;
 }
 
-.scroll-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 10px 0;
-}
-
-.scroll-buttons button {
-  background-color: #0f3f2f;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  font-size: 18px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
 .chain-scroll-wrapper {
   max-width: 90%;
   overflow-x: auto;
@@ -73,9 +56,8 @@ h1 {
 
 .chain-container {
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 100%
+  width: 100%;
 }
 
 .chain-scroll {
@@ -83,6 +65,7 @@ h1 {
   align-items: center;
   gap: 12px;
   min-width: max-content;
+  margin: 0 auto;
 }
 
 .chain-item {
@@ -94,6 +77,7 @@ h1 {
   border-radius: 10px;
   padding: 8px;
   width: 120px;
+  transition: transform 0.2s;
 }
 
 .chain-item img {
@@ -114,6 +98,7 @@ h1 {
 
 .chain-item.winner {
   border: 2px solid gold;
+  box-shadow: 0 0 10px gold;
 }
 
 .arrow {
@@ -153,30 +138,29 @@ button {
   cursor: pointer;
 }
 
+button:hover {
+  background-color: #00c49a;
+}
+
 .suggestions-dropdown {
   position: absolute;
-  top: 38px;
+  top: 40px;
   left: 0;
-  right: 0;
-  background-color: #132421;
-  border: 1px solid #444;
-  z-index: 10;
-  max-height: 220px;
-  overflow-y: auto;
+  width: 100%;
+  background: #152f2b;
   border-radius: 6px;
-  padding: 5px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 2;
+  max-height: 180px;
+  overflow-y: auto;
 }
 
 .suggestion {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 10px;
+  padding: 6px 10px;
   cursor: pointer;
-}
-
-.suggestion:hover {
-  background-color: #1e3e36;
+  gap: 10px;
 }
 
 .suggestion img {
@@ -186,9 +170,8 @@ button {
   border-radius: 4px;
 }
 
-.error {
-  color: red;
-  margin: 8px 0;
+.suggestion:hover {
+  background-color: #25433f;
 }
 
 .play-again {
