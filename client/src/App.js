@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import confetti from "canvas-confetti";
@@ -16,10 +15,10 @@ function App() {
   const [suggestions, setSuggestions] = useState([]);
   const [suggestType, setSuggestType] = useState("actor");
   const [gameOver, setGameOver] = useState(false);
-  const [stats, setStats] = useState({ currentStreak: 0, bestLinkCount: null });
-  const [leaderboard, setLeaderboard] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const [playerName, setPlayerName] = useState("");
-  const [showNamePrompt, setShowNamePrompt] = useState(false);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [stats, setStats] = useState({ currentStreak: 0, bestLinkCount: null });
   const chainContainerRef = useRef(null);
 
   useEffect(() => {
@@ -27,112 +26,99 @@ function App() {
   }, [mode]);
 
   useEffect(() => {
-    if (mode === "daily") {
-      axios.get(`${BACKEND_URL}/get-daily-leaderboard`).then((res) => {
-        setLeaderboard(res.data);
-      });
+    if (gameOver && mode === "daily") {
+      setTimeout(() => setShowModal(true), 300);
     }
+  }, [gameOver]);
+
+  useEffect(() => {
+    if (mode === "daily") fetchLeaderboard();
   }, [mode]);
 
   const fetchNewGame = async (preserveStreak = true) => {
-    const endpoint = mode === "daily" ? "get-daily-actors" : "get-random-actors";
-    const res = await axios.get(`${BACKEND_URL}/${endpoint}`);
-    setStartActor(res.data.start);
-    setGoalActor(res.data.goal);
-    setChain([res.data.start]);
-    setActorInput("");
-    setTitleInput("");
-    setSuggestions([]);
-    setGameOver(false);
-    setShowNamePrompt(false);
-    if (!preserveStreak) {
-      setStats({ ...stats, currentStreak: 0 });
+    const route = mode === "daily" ? "/daily-start-goal" : "/random-start-goal";
+    try {
+      const res = await axios.get(`${BACKEND_URL}${route}`);
+      setStartActor(res.data.start);
+      setGoalActor(res.data.goal);
+      setChain([res.data.start]);
+      setActorInput("");
+      setTitleInput("");
+      setGameOver(false);
+      setShowModal(false);
+      if (!preserveStreak) setStats((s) => ({ ...s, currentStreak: 0 }));
+    } catch (err) {
+      console.error("Error fetching new game:", err);
     }
   };
 
   const handleSubmit = async () => {
-    if (!actorInput || !titleInput) return;
-    const currentActor = chain[chain.length - 1];
+    if (!titleInput || !actorInput || gameOver) return;
     try {
       const res = await axios.post(`${BACKEND_URL}/validate-link`, {
-        actor: currentActor.name,
-        title: titleInput,
-        next_actor: actorInput,
+        currentActor: chain[chain.length - 1],
+        movieTitle: titleInput,
+        nextActor: actorInput,
       });
-
       if (res.data.valid) {
-        const newActor = {
-          name: actorInput,
-          image: res.data.actor_image || null,
-        };
-        const newTitle = {
-          name: titleInput,
-          image: res.data.poster || null,
-        };
-        const newChain = [...chain, newTitle, newActor];
+        const newChain = [...chain, res.data.movie, res.data.nextActor];
         setChain(newChain);
         setActorInput("");
         setTitleInput("");
-        setSuggestions([]);
 
-        if (newActor.name.toLowerCase() === goalActor.name.toLowerCase()) {
+        if (res.data.nextActor.name === goalActor.name) {
           setGameOver(true);
           confetti();
-          const newStreak = stats.currentStreak + 1;
-          const best =
-            stats.bestLinkCount === null
-              ? Math.floor((newChain.length - 1) / 2)
-              : Math.min(stats.bestLinkCount, Math.floor((newChain.length - 1) / 2));
-          setStats({ currentStreak: newStreak, bestLinkCount: best });
-
-          if (mode === "daily") {
-            setShowNamePrompt(true);
-          }
+          setStats((s) => ({
+            currentStreak: s.currentStreak + 1,
+            bestLinkCount:
+              s.bestLinkCount === null || newChain.length < s.bestLinkCount
+                ? newChain.length
+                : s.bestLinkCount,
+          }));
         }
-      } else {
-        alert("Invalid link. Try again.");
       }
     } catch (err) {
-      console.error("Validation error", err);
-    }
-  };
-
-  const submitNameToLeaderboard = async () => {
-    if (playerName.trim()) {
-      await axios.post(`${BACKEND_URL}/submit-daily-score`, {
-        player: playerName,
-        steps: Math.floor((chain.length - 1) / 2),
-        duration: 0,
-      });
-      confetti();
-      setShowNamePrompt(false);
-      const res = await axios.get(`${BACKEND_URL}/get-daily-leaderboard`);
-      setLeaderboard(res.data);
+      console.error("Error validating link:", err);
     }
   };
 
   const handleUndo = () => {
-    if (chain.length >= 3) {
-      setChain(chain.slice(0, -2));
+    if (chain.length > 1 && !gameOver) {
+      setChain(chain.slice(0, chain.length - 2));
     }
   };
 
-  const handleInputChange = async (e, type) => {
-    const value = e.target.value;
-    if (type === "actor") setActorInput(value);
-    else setTitleInput(value);
-    setSuggestType(type);
-    if (value.length < 2) return;
-    const res = await axios.get(`${BACKEND_URL}/suggest`, {
-      params: { query: value, type },
-    });
-    setSuggestions(res.data);
+  const fetchLeaderboard = async () => {
+    try {
+      const res = await axios.get(`${BACKEND_URL}/daily-leaderboard`);
+      setLeaderboard(res.data.slice(0, 3));
+    } catch (err) {
+      console.error("Error fetching leaderboard:", err);
+    }
   };
 
-  const handleSuggestionClick = (name) => {
-    if (suggestType === "actor") setActorInput(name);
-    else setTitleInput(name);
-    setSuggestions([]);
+  const submitNameToLeaderboard = async () => {
+    try {
+      await axios.post(`${BACKEND_URL}/submit-daily-score`, {
+        name: playerName,
+        steps: Math.floor((chain.length - 1) / 2),
+      });
+      fetchLeaderboard();
+      setShowModal(false);
+    } catch (err) {
+      console.error("Error submitting name:", err);
+    }
+  };
+
+  const fetchSuggestions = async (query, type) => {
+    if (!query) return setSuggestions([]);
+    try {
+      const res = await axios.get(`${BACKEND_URL}/suggest?type=${type}&query=${query}`);
+      setSuggestions(res.data);
+    } catch (err) {
+      console.error("Error fetching suggestions:", err);
+    }
   };
 
   return (
@@ -141,90 +127,71 @@ function App() {
       <p className="description">
         Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering movie titles and actors they’ve worked with — one link at a time.
       </p>
+
       <div className="mode-toggle">
-        <button className={mode === "daily" ? "active" : ""} onClick={() => setMode("daily")}>Daily</button>
-        <button className={mode === "free" ? "active" : ""} onClick={() => setMode("free")}>Free Play</button>
+        <button className={mode === "daily" ? "active" : ""} onClick={() => setMode("daily")}>📅 Daily</button>
+        <button className={mode === "free" ? "active" : ""} onClick={() => setMode("free")}>🎲 Free Play</button>
       </div>
+
       <div className="stats-panel">
         🔥 Streak: {stats.currentStreak} | 🧠 Best Links: {stats.bestLinkCount ?? "—"}
       </div>
 
-      {startActor && goalActor && (
-        <div className="actor-pair">
+      <div className="actor-pair">
+        {startActor && (
           <div className="actor-card">
             <img src={startActor.image} alt={startActor.name} />
-            <p><strong>Start:</strong> {startActor.name}</p>
+            <strong>Start:</strong> {startActor.name}
           </div>
+        )}
+        {goalActor && (
           <div className="actor-card">
             <img src={goalActor.image} alt={goalActor.name} />
-            <p><strong>Goal:</strong> {goalActor.name}</p>
+            <strong>Goal:</strong> {goalActor.name}
           </div>
-        </div>
-      )}
-
-      <div className="inputs-container">
-        <div className="input-wrapper">
-          <input type="text" value={titleInput} placeholder="Enter a film/tv title" onChange={(e) => handleInputChange(e, "title")} />
-          {suggestType === "title" && suggestions.length > 0 && (
-            <div className="suggestions-dropdown">
-              {suggestions.map((s, idx) => (
-                <div key={idx} className="suggestion" onClick={() => handleSuggestionClick(s.name)}>
-                  {s.image && <img src={s.image} alt={s.name} />}
-                  {s.name}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="input-wrapper">
-          <input type="text" value={actorInput} placeholder="Enter an actor" onChange={(e) => handleInputChange(e, "actor")} />
-          {suggestType === "actor" && suggestions.length > 0 && (
-            <div className="suggestions-dropdown">
-              {suggestions.map((s, idx) => (
-                <div key={idx} className="suggestion" onClick={() => handleSuggestionClick(s.name)}>
-                  {s.image && <img src={s.image} alt={s.name} />}
-                  {s.name}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+        )}
       </div>
 
-      {showNamePrompt && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>🎉 You completed today's Daily Link!</h3>
-            <p>Enter your name to be featured on the leaderboard:</p>
-            <input
-              type="text"
-              placeholder="Your name"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-            />
-            <div className="modal-buttons">
-              <button className="submit-btn" onClick={submitNameToLeaderboard}>Submit</button>
-              <button className="undo-btn" onClick={() => setShowNamePrompt(false)}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="inputs-container">
+        <input
+          value={titleInput}
+          onChange={(e) => {
+            setTitleInput(e.target.value);
+            setSuggestType("movie");
+            fetchSuggestions(e.target.value, "movie");
+          }}
+          placeholder="Enter a film/tv title"
+        />
+        <input
+          value={actorInput}
+          onChange={(e) => {
+            setActorInput(e.target.value);
+            setSuggestType("actor");
+            fetchSuggestions(e.target.value, "actor");
+          }}
+          placeholder="Enter an actor"
+        />
+      </div>
 
-      <div className="button-row-below">
+      <div className="button-group">
+        <button className="submit-btn" onClick={handleSubmit}>Submit</button>
         <button className="undo-btn" onClick={handleUndo}>Undo</button>
-        {mode === "free" && <button className="undo-btn" onClick={() => fetchNewGame(false)}>New Game</button>}
+        {mode === "free" && (
+          <button className="undo-btn" onClick={() => fetchNewGame(false)}>New Game</button>
+        )}
       </div>
 
       <div className="chain-scroll-wrapper">
-        <div className="chain-container">
-          {chain.map((item, idx) => (
-            <React.Fragment key={idx}>
-              <div className={`chain-item ${item.name === goalActor?.name ? "goal" : ""} ${idx % 2 === 1 ? "movie" : ""}`}>
-                {item.image && <img src={item.image} alt={item.name} />}
-                <div>{item.name}</div>
+        <div className="chain-container" ref={chainContainerRef}>
+          {chain.map((item, index) => (
+            <React.Fragment key={index}>
+              <div
+                className={`chain-item ${item.type === "movie" ? "movie" : ""} ${index === chain.length - 1 && gameOver ? "goal" : ""}`}
+              >
+                <img src={item.image} alt={item.name} />
+                {item.name}
               </div>
-              {idx < chain.length - 1 && <span className="arrow">➜</span>}
+              {index < chain.length - 1 && <div className="arrow">➜</div>}
             </React.Fragment>
           ))}
         </div>
@@ -233,28 +200,40 @@ function App() {
       {mode === "daily" && (
         <div className="leaderboard">
           <h3>🏆 Daily Leaderboard</h3>
-          {leaderboard.length === 0 ? (
-            <p>Loading leaderboard...</p>
-          ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Player</th>
-                  <th>Links</th>
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th><th>Player</th><th>Links</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leaderboard.length > 0 ? leaderboard.map((entry, i) => (
+                <tr key={i}>
+                  <td>{i + 1}</td><td>{entry.name}</td><td>{entry.steps}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {leaderboard.map((entry, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{entry.player}</td>
-                    <td>{entry.steps}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+              )) : (
+                <tr><td colSpan="3">Loading leaderboard...</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>🎉 You completed today’s Daily Link!</h3>
+            <p>Enter your name to be featured on the leaderboard:</p>
+            <input
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              placeholder="Your name"
+            />
+            <div className="modal-buttons">
+              <button onClick={submitNameToLeaderboard} className="submit-btn">Submit</button>
+              <button onClick={() => setShowModal(false)} className="undo-btn">Cancel</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

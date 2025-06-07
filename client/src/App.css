@@ -135,7 +135,10 @@ input {
 
 .chain-scroll-wrapper {
   overflow-x: auto;
-  padding: 20px 0;
+  overflow-y: hidden;
+  white-space:nowrap;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 0;
 }
 
 .chain-container {
