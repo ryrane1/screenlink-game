@@ -168,7 +168,7 @@ https://screenlink-game-rohan-ranes-projects.vercel.app/`;
     } else {
       text += `🎬 I just connected ${startActor.name} to ${goalActor.name} in ${steps}⃣ steps!\n\n`;
       chain.forEach((item) => {
-        if (item.type === "actor") text += `🧝 ${item.name}\n`;
+        if (item.type === "actor") text += `🎭 ${item.name}\n`;
         else text += `🎞️ ${item.name}\n`;
       });
       text += `\nTry playing now!  https://screenlink-game-rohan-ranes-projects.vercel.app/`;
