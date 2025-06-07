@@ -169,22 +169,24 @@ at a time. You win when you reach the goal!
       {/* Chain display */}
       {chain.length > 0 && (
         <div className="chain-scroll-wrapper">
-          <div className="chain-container" ref={chainContainerRef}>
-            {chain.map((entry, i) => (
-              <React.Fragment key={`${entry.name}-${i}`}>
-                <div
-                  className={`chain-item ${entry.type} ${
-                    goalActor && entry.name === goalActor.name && entry.type === 'actor' ? 'winner' : ''
-                  }`}
-                >
-                  {entry.image && typeof entry.image === 'string' && (
-                    <img src={entry.image} alt={entry.name || 'Image'} />
-                  )}
-                  <div>{entry.name}</div>
-                </div>
-                {i < chain.length - 1 && <div className="arrow">➡️</div>}
-              </React.Fragment>
-            ))}
+          <div className="chain-container"> 
+            <div className="chain-scroll" ref={chainContainerRef}>
+              {chain.map((entry, i) => (
+                <React.Fragment key={`${entry.name}-${i}`}>
+                  <div
+                    className={`chain-item ${entry.type} ${
+                      goalActor && entry.name === goalActor.name && entry.type === 'actor' ? 'winner' : ''
+                    }`}
+                  >
+                    {entry.image && typeof entry.image === 'string' && (
+                      <img src={entry.image} alt={entry.name || 'Image'} />
+                    )}
+                    <div>{entry.name}</div>
+                  </div>
+                  {i < chain.length - 1 && <div className="arrow">➡️</div>}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
       )}

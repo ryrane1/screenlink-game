@@ -74,8 +74,14 @@ h1 {
 .chain-container {
   display: flex;
   align-items: center;
+  width: 100%
+}
+
+.chain-scroll {
+  display: flex;
+  align-items: center;
   gap: 12px;
-  width: max-content;
+  min-width: max-content;
 }
 
 .chain-item {
