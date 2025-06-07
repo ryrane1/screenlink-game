@@ -166,12 +166,6 @@ at a time. You win when you reach the goal!
         </div>
       )}
 
-      {/* Arrow buttons */}
-      <div className="scroll-buttons">
-        <button onClick={scrollLeft}>⬅️</button>
-        <button onClick={scrollRight}>➡️</button>
-      </div>
-
       {/* Chain display */}
       {chain.length > 0 && (
         <div className="chain-scroll-wrapper">
