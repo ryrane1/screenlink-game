@@ -14,10 +14,6 @@ function App() {
   const [undoStack, setUndoStack] = useState([]);
   const [optimalPath, setOptimalPath] = useState([]);
   const [hasWon, setHasWon] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
-  const [streak, setStreak] = useState(0);
-  const [bestLinks, setBestLinks] = useState(null);
   const [gameMode, setGameMode] = useState("free");
 
   useEffect(() => {
@@ -45,22 +41,52 @@ function App() {
   }, [gameMode]);
 
   const fetchOptimalPath = (startId, goalId) => {
-    axios.get(`/get-shortest-path?startId=${startId}&goalId=${goalId}`).then((res) => {
-      setOptimalPath(res.data.path);
-    });
-  };
-
-  const handleNewGame = () => {
-    if (gameMode === "daily") return;
-    setStreak(0);
-    setBestLinks(null);
-    setGameMode("free");
+    axios
+      .get(`/get-shortest-path?startId=${startId}&goalId=${goalId}`)
+      .then((res) => {
+        setOptimalPath(res.data.path);
+      });
   };
 
   const handleModeChange = (mode) => {
     setGameMode(mode);
-    setStreak(0);
-    setBestLinks(null);
+  };
+
+  const handleNewGame = () => {
+    if (gameMode === "daily") return;
+    setGameMode("free");
+  };
+
+  const fetchSuggestions = async (value, type) => {
+    const res = await axios.get(`/autosuggest?type=${type}&query=${value}`);
+    if (type === "actor") {
+      setActorSuggestions(res.data);
+    } else {
+      setTitleSuggestions(res.data);
+    }
+  };
+
+  const handleActorSelected = (_, { suggestion }) => {
+    setInputActor("");
+    setUndoStack([...undoStack, [...chain]]);
+    setChain([...chain, { ...suggestion, type: "actor" }]);
+    checkWin(suggestion.name);
+  };
+
+  const handleTitleSelected = (_, { suggestion }) => {
+    setInputTitle("");
+    setUndoStack([...undoStack, [...chain]]);
+    setChain([...chain, { ...suggestion, type: "title" }]);
+  };
+
+  const handleSubmit = () => {
+    if (!inputActor && !inputTitle) return;
+  };
+
+  const checkWin = (name) => {
+    if (goalActor && name === goalActor.name) {
+      setHasWon(true);
+    }
   };
 
   return (
@@ -72,8 +98,18 @@ function App() {
       </p>
 
       <div className="tabs">
-        <button onClick={() => handleModeChange("daily")} className={gameMode === "daily" ? "active-tab" : ""}>Daily Game</button>
-        <button onClick={() => handleModeChange("free")} className={gameMode === "free" ? "active-tab" : ""}>Free Play</button>
+        <button
+          onClick={() => handleModeChange("daily")}
+          className={gameMode === "daily" ? "active-tab" : ""}
+        >
+          Daily Game
+        </button>
+        <button
+          onClick={() => handleModeChange("free")}
+          className={gameMode === "free" ? "active-tab" : ""}
+        >
+          Free Play
+        </button>
       </div>
 
       {startActor && goalActor && (
@@ -95,11 +131,18 @@ function App() {
             <div className="input-wrapper">
               <Autosuggest
                 suggestions={actorSuggestions}
-                onSuggestionsFetchRequested={({ value }) => fetchSuggestions(value, "actor")}
+                onSuggestionsFetchRequested={({ value }) =>
+                  fetchSuggestions(value, "actor")
+                }
                 onSuggestionsClearRequested={() => setActorSuggestions([])}
                 getSuggestionValue={(suggestion) => suggestion.name}
                 onSuggestionSelected={handleActorSelected}
-                renderSuggestion={renderSuggestion}
+                renderSuggestion={(sug) => (
+                  <div className="suggestion-item">
+                    {sug.image && <img src={sug.image} alt={sug.name} />}
+                    {sug.name}
+                  </div>
+                )}
                 inputProps={{
                   placeholder: "Enter actor name",
                   value: inputActor,
@@ -110,11 +153,18 @@ function App() {
             <div className="input-wrapper">
               <Autosuggest
                 suggestions={titleSuggestions}
-                onSuggestionsFetchRequested={({ value }) => fetchSuggestions(value, "title")}
+                onSuggestionsFetchRequested={({ value }) =>
+                  fetchSuggestions(value, "title")
+                }
                 onSuggestionsClearRequested={() => setTitleSuggestions([])}
                 getSuggestionValue={(suggestion) => suggestion.name}
                 onSuggestionSelected={handleTitleSelected}
-                renderSuggestion={renderSuggestion}
+                renderSuggestion={(sug) => (
+                  <div className="suggestion-item">
+                    {sug.image && <img src={sug.image} alt={sug.name} />}
+                    {sug.name}
+                  </div>
+                )}
                 inputProps={{
                   placeholder: "Enter movie/TV title",
                   value: inputTitle,
@@ -122,7 +172,9 @@ function App() {
                 }}
               />
             </div>
-            <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+            <button className="submit-btn" onClick={handleSubmit}>
+              Submit
+            </button>
           </div>
 
           <div className="chain-scroll-wrapper">
@@ -131,13 +183,18 @@ function App() {
                 <React.Fragment key={idx}>
                   <div
                     className={`chain-item ${item.type} ${
-                      idx === chain.length - 1 && item.name === goalActor?.name ? "goal" : ""
+                      idx === chain.length - 1 &&
+                      item.name === goalActor?.name
+                        ? "goal"
+                        : ""
                     }`}
                   >
                     {item.image && <img src={item.image} alt={item.name} />}
                     <div>{item.name}</div>
                   </div>
-                  {idx !== chain.length - 1 && <span className="arrow">➡️</span>}
+                  {idx !== chain.length - 1 && (
+                    <span className="arrow">➡️</span>
+                  )}
                 </React.Fragment>
               ))}
             </div>
@@ -146,7 +203,9 @@ function App() {
       )}
 
       {gameMode === "free" && (
-        <button className="new-game-button" onClick={handleNewGame}>🔄 New Game</button>
+        <button className="new-game-button" onClick={handleNewGame}>
+          🔄 New Game
+        </button>
       )}
     </div>
   );
