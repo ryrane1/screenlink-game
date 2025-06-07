@@ -10,35 +10,28 @@ CORS(app)
 
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
-# ✅ Replace or extend this list with your full list of 100 popular actors
 actors = [
-    "Timothée Chalamet", "Zendaya", "Florence Pugh", "Tom Holland",
-    "Austin Butler", "Jacob Elordi", "Paul Mescal", "Sydney Sweeney",
-    "Jennifer Lawrence", "Margot Robbie", "Emma Stone", "Ryan Gosling",
-    "Anya Taylor-Joy", "Jenna Ortega", "Pedro Pascal", "Chris Evans",
-    "Scarlett Johansson","Michael Cera", "Brie Larson", "Robert Pattinson", "Saoirse Ronan",
-    "Jonathan Majors", "Hunter Schafer", "Keke Palmer", "Barry Keoghan",
-    "Hailee Steinfeld", "Sadie Sink", "Glen Powell", "Miles Teller",
-    "Zoë Kravitz", "Jacob Tremblay", "Josh O’Connor", "Natalie Portman",
-    "Daniel Kaluuya", "Lakeith Stanfield", "Jodie Comer", "Daisy Edgar-Jones",
-    "Angela Bassett", "Jessica Chastain", "Emily Blunt", "Viola Davis",
-    "Tom Hanks", "Brad Pitt", "Leonardo DiCaprio", "Joaquin Phoenix",
-    "Christian Bale", "Jake Gyllenhaal", "Chris Hemsworth", "Jason Momoa",
-    "Paul Rudd", "Elizabeth Olsen", "Oscar Isaac", "Anthony Mackie",
-    "Sebastian Stan", "Jeremy Renner", "Mark Ruffalo", "Chadwick Boseman",
-    "Cillian Murphy", "Robert Downey Jr.", "Ben Affleck", "Matt Damon",
-    "Adam Driver", "Tessa Thompson", "Josh Brolin", "Jeffrey Wright",
-    "Zoe Saldana", "Michelle Yeoh", "Danai Gurira", "Letitia Wright",
-    "Lupita Nyong’o", "Regé-Jean Page", "Idris Elba", "Dwayne Johnson",
-    "John Krasinski", "Emily Ratajkowski", "Ana de Armas", "Blake Lively",
-    "Ryan Reynolds", "Channing Tatum", "Jamie Foxx", "Hailee Steinfeld",
-    "Steve Carell", "Bryce Dallas Howard", "Millie Bobby Brown", "Finn Wolfhard",
-    "Noah Schnapp", "Caleb McLaughlin", "Gaten Matarazzo", "Maya Hawke",
-    "Natalia Dyer", "Joe Keery", "Mckenna Grace", "Thomasin McKenzie",
-    "Dev Patel", "Freddie Highmore", "Logan Lerman", "Nat Wolff",
-    "Amandla Stenberg"
+    "Samuel L. Jackson", "Scarlett Johansson", "Robert Downey Jr.", "Zoe Saldana", "Chris Pratt",
+    "Tom Cruise", "Chris Hemsworth", "Vin Diesel", "Dwayne Johnson", "Bradley Cooper",
+    "Chris Evans", "Tom Hanks", "Johnny Depp", "Tom Holland", "Mark Ruffalo",
+    "Emma Watson", "Will Smith", "Don Cheadle", "Dave Bautista", "Jeremy Renner",
+    "Harrison Ford", "Karen Gillan", "Daniel Radcliffe", "Josh Brolin", "Elizabeth Olsen",
+    "Steve Carell", "Benedict Cumberbatch", "Jack Black", "Rupert Grint", "Hugh Jackman",
+    "Chadwick Boseman", "Letitia Wright", "Sebastian Stan", "Leonardo DiCaprio", "Matt Damon",
+    "Danai Gurira", "Tom Hiddleston", "Brad Pitt", "Bruce Willis", "Paul Bettany",
+    "Eddie Murphy", "Liam Neeson", "Ryan Reynolds", "Sam Worthington", "Pom Klementieff",
+    "Benedict Wong", "Ben Stiller", "Jason Statham", "Ian McKellen", "Nicolas Cage",
+    "Jim Carrey", "Idris Elba", "Gwyneth Paltrow", "Mark Wahlberg", "Jennifer Lawrence",
+    "Ewan McGregor", "Christian Bale", "Cameron Diaz", "Keanu Reeves", "Natalie Portman",
+    "Paul Rudd", "Josh Gad", "Julia Roberts", "Brie Larson", "Sandra Bullock",
+    "Martin Freeman", "Adam Sandler", "Ben Affleck", "Robert De Niro", "Ralph Fiennes",
+    "Sylvester Stallone", "Lupita Nyong'o", "Owen Wilson", "Adam Driver", "Michelle Rodriguez",
+    "Denzel Washington", "George Clooney", "Daniel Craig", "Orlando Bloom", "Daisy Ridley",
+    "Morgan Freeman", "Robert Pattinson", "Robin Williams", "John Boyega", "Anthony Mackie",
+    "Will Ferrell", "Kevin Hart", "Mel Gibson", "Simon Pegg", "Seth Rogen",
+    "Arnold Schwarzenegger", "Shia LaBeouf", "Keegan-Michael Key", "Jason Momoa", "Jude Law",
+    "Meryl Streep", "Anthony Hopkins", "Evangeline Lilly", "Keira Knightley", "Channing Tatum"
 ]
-
 
 @app.route("/")
 def index():
@@ -47,11 +40,9 @@ def index():
 @app.route("/get-random-actors")
 def get_random_actors():
     selected = random.sample(actors, 2)
-    start = selected[0]
-    goal = selected[1]
     return jsonify({
-        "start": get_actor_data(start),
-        "goal": get_actor_data(goal)
+        "start": get_actor_data(selected[0]),
+        "goal": get_actor_data(selected[1])
     })
 
 @app.route("/get-daily-actors")
@@ -59,11 +50,9 @@ def get_daily_actors():
     today_seed = datetime.utcnow().strftime("%Y-%m-%d")
     rng = random.Random(today_seed)
     selected = rng.sample(actors, 2)
-    start = selected[0]
-    goal = selected[1]
     return jsonify({
-        "start": get_actor_data(start),
-        "goal": get_actor_data(goal)
+        "start": get_actor_data(selected[0]),
+        "goal": get_actor_data(selected[1])
     })
 
 def get_actor_data(name):
@@ -105,75 +94,57 @@ def validate_link():
     res = requests.get(url).json()
     actor_id = res["results"][0]["id"]
 
-    credits_url = f"https://api.themoviedb.org/3/person/{actor_id}/movie_credits?api_key={TMDB_API_KEY}"
-    credits = requests.get(credits_url).json()
-    cast = credits.get("cast", [])
+    movie_credits = requests.get(
+        f"https://api.themoviedb.org/3/person/{actor_id}/movie_credits?api_key={TMDB_API_KEY}"
+    ).json().get("cast", [])
 
-    matched = [c for c in cast if c.get("title") == title or c.get("original_title") == title]
+    tv_credits = requests.get(
+        f"https://api.themoviedb.org/3/person/{actor_id}/tv_credits?api_key={TMDB_API_KEY}"
+    ).json().get("cast", [])
 
-    for m in matched:
-        movie_id = m["id"]
-        movie_credits_url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={TMDB_API_KEY}"
-        movie_credits = requests.get(movie_credits_url).json()
-        cast_names = [a["name"] for a in movie_credits.get("cast", [])]
+    cast = movie_credits + tv_credits
 
-        if next_actor in cast_names:
-            actor_image = next((a["profile_path"] for a in movie_credits["cast"] if a["name"] == next_actor), None)
-            poster = m.get("poster_path")
-            return jsonify({
-                "valid": True,
-                "actor_image": f"https://image.tmdb.org/t/p/w185{actor_image}" if actor_image else None,
-                "poster": f"https://image.tmdb.org/t/p/w185{poster}" if poster else None
-            })
+    for m in cast:
+        content_id = m["id"]
+        content_name = m.get("title") or m.get("name")
+        content_type = "movie" if "title" in m else "tv"
+
+        if content_name and title:
+            if content_name.lower() not in title.lower() and title.lower() not in content_name.lower():
+                continue
+        else:
+            continue
+
+        # ✅ use aggregate_credits for TV, credits for movies
+        if content_type == "tv":
+            credits_url = f"https://api.themoviedb.org/3/tv/{content_id}/aggregate_credits?api_key={TMDB_API_KEY}"
+            credits = requests.get(credits_url).json()
+            cast_list = credits.get("cast", [])
+            for a in cast_list:
+                name = a.get("name") or a.get("original_name")
+                if name and name.strip().lower() == next_actor.strip().lower():
+                    actor_image = a.get("profile_path")
+                    poster = m.get("poster_path")
+                    return jsonify({
+                        "valid": True,
+                        "actor_image": f"https://image.tmdb.org/t/p/w185{actor_image}" if actor_image else None,
+                        "poster": f"https://image.tmdb.org/t/p/w185{poster}" if poster else None
+                    })
+        else:
+            credits_url = f"https://api.themoviedb.org/3/movie/{content_id}/credits?api_key={TMDB_API_KEY}"
+            credits = requests.get(credits_url).json()
+            cast_list = credits.get("cast", [])
+            for a in cast_list:
+                if a["name"].strip().lower() == next_actor.strip().lower():
+                    actor_image = a.get("profile_path")
+                    poster = m.get("poster_path")
+                    return jsonify({
+                        "valid": True,
+                        "actor_image": f"https://image.tmdb.org/t/p/w185{actor_image}" if actor_image else None,
+                        "poster": f"https://image.tmdb.org/t/p/w185{poster}" if poster else None
+                    })
 
     return jsonify({"valid": False})
-
-@app.route("/get-shortest-path")
-def get_shortest_path():
-    start_id = request.args.get("startId")
-    goal_id = request.args.get("goalId")
-
-    if not start_id or not goal_id:
-        return jsonify({"path": []})
-
-    visited = set()
-    queue = [(start_id, [])]
-    while queue:
-        current, path = queue.pop(0)
-        if current in visited:
-            continue
-        visited.add(current)
-
-        person_url = f"https://api.themoviedb.org/3/person/{current}?api_key={TMDB_API_KEY}"
-        person_res = requests.get(person_url).json()
-        name = person_res.get("name")
-        profile = person_res.get("profile_path")
-        image = f"https://image.tmdb.org/t/p/w185{profile}" if profile else None
-        path = path + [{"name": name, "type": "actor", "image": image}]
-
-        if current == goal_id:
-            return jsonify({"path": path})
-
-        credits_url = f"https://api.themoviedb.org/3/person/{current}/movie_credits?api_key={TMDB_API_KEY}"
-        credits = requests.get(credits_url).json()
-        cast = credits.get("cast", [])
-
-        for c in cast[:5]:
-            movie_id = c["id"]
-            movie_name = c.get("title") or c.get("original_title")
-            poster = c.get("poster_path")
-            movie_image = f"https://image.tmdb.org/t/p/w185{poster}" if poster else None
-            movie_item = {"name": movie_name, "type": "title", "image": movie_image}
-
-            movie_credits_url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={TMDB_API_KEY}"
-            movie_credits = requests.get(movie_credits_url).json()
-            cast_members = movie_credits.get("cast", [])
-
-            for cm in cast_members[:5]:
-                if cm["id"] not in visited:
-                    queue.append((str(cm["id"]), path + [movie_item]))
-
-    return jsonify({"path": []})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

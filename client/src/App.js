@@ -3,7 +3,7 @@ import axios from "axios";
 import confetti from "canvas-confetti";
 import "./App.css";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 function App() {
   const [mode, setMode] = useState("free");
