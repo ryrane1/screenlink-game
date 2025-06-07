@@ -34,7 +34,6 @@ function App() {
     ) {
       setGameOver(true);
       confetti();
-      setTimeout(() => setGameOver(false), 5000);
     }
   }, [chain, goalActor]);
 
