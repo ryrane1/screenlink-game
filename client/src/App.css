@@ -270,3 +270,19 @@ h3 {
   100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
 }
 
+@media (max-width: 480px) {
+  .actor-card {
+    width: 120px;
+    padding: 8px;
+  }
+
+  .actor-card img {
+    width: 100px;
+    height: 140px;
+  }
+
+  .actor-pair {
+    gap: 20px;
+  }
+}
+
