@@ -136,6 +136,27 @@ function App() {
     }
   };
 
+  const handleShare = () => {
+    if (!startActor || !goalActor || chain.length === 0) return;
+    const steps = (chain.length - 1).toString();
+    let text = `🎬 I just connected ${startActor.name} to ${goalActor.name} in ${steps}️⃣ steps!\n\n`;
+
+    chain.forEach((item) => {
+      if (item.type === "actor") text += `🧍 ${item.name}\n`;
+      else text += `🎞️ ${item.name}\n`;
+    });
+
+    text += `\nThink you can beat my path? 🔗 screenlink.game`;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const toast = document.createElement("div");
+toast.textContent = "🎉 Copied to clipboard!";
+toast.className = "toast";
+document.body.appendChild(toast);
+setTimeout(() => toast.remove(), 3000);
+    });
+  };
+
   return (
     <div className="App">
       <h1>🎬 <span className="highlight">ScreenLink</span></h1>
@@ -145,7 +166,7 @@ at a time.
       </p>
 
       <div className="stats-panel">
-        <p>🔥 Streak: {stats.currentStreak} | 🏆 Best Links: {stats.bestLinkCount ?? "—"}</p>
+        <p>🔥 Streak: {stats.currentStreak} | 🧠 Best Links: {stats.bestLinkCount ?? "—"}</p>
       </div>
 
       <div className="actor-pair">
@@ -238,6 +259,7 @@ at a time.
         <div className="end-credits">
           <h2>🎉 Thanks for playing!</h2>
           <button onClick={() => fetchNewGame(true)}>Play Again</button>
+          <button onClick={handleShare} style={{ marginLeft: "10px" }}>📤 Share</button>
         </div>
       )}
     </div>
