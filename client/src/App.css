@@ -1,4 +1,4 @@
-/* App.css (updated with top 3 leaderboard + mobile layout fix) */
+/* App.css (updated with mobile optimizations & leaderboard) */
 
 .App {
   text-align: center;
@@ -46,6 +46,8 @@
 .actor-card img {
   width: 100%;
   height: auto;
+  max-height: 180px;
+  object-fit: cover;
   border-radius: 12px;
   margin-bottom: 6px;
 }
@@ -57,10 +59,15 @@
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 15px;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 10px;
 }
 
 .input-wrapper {
   position: relative;
+  width: 100%;
+  max-width: 400px;
 }
 
 input {
@@ -68,7 +75,7 @@ input {
   font-size: 16px;
   border-radius: 8px;
   border: none;
-  width: 250px;
+  width: 100%;
 }
 
 .suggestions-dropdown {
@@ -76,11 +83,12 @@ input {
   background-color: #1c2d26;
   border: 1px solid #00ffcc;
   width: 100%;
-  z-index: 10;
+  z-index: 100;
   max-height: 200px;
   overflow-y: auto;
   border-radius: 0 0 10px 10px;
   text-align: left;
+  font-size: 15px;
 }
 
 .suggestion {
@@ -157,6 +165,7 @@ input {
   font-weight: bold;
   color: white;
   box-shadow: 0 0 10px #00ffcc33;
+  font-size: 15px;
 }
 
 .chain-item.movie {
@@ -173,8 +182,10 @@ input {
 .chain-item img {
   width: 100%;
   height: auto;
+  max-height: 120px;
   border-radius: 8px;
   margin-bottom: 5px;
+  object-fit: cover;
 }
 
 .arrow {
@@ -291,10 +302,14 @@ input {
 
 /* Mobile Optimizations */
 @media (max-width: 600px) {
+  .App {
+    padding: 12px;
+    font-size: 16px;
+  }
+
   .actor-pair {
-    gap: 12px;
-    flex-direction: row;
-    justify-content: center;
+    gap: 16px;
+    flex-direction: column;
   }
 
   .actor-card {
@@ -303,6 +318,7 @@ input {
   }
 
   .actor-card img {
+    max-height: 120px;
     border-radius: 10px;
     margin-bottom: 4px;
   }
@@ -317,9 +333,22 @@ input {
     align-items: center;
   }
 
-  input {
+  .input-wrapper {
     width: 85vw;
+  }
+
+  input {
+    width: 100%;
     font-size: 15px;
+  }
+
+  .suggestions-dropdown {
+    font-size: 13px;
+  }
+
+  .suggestion img {
+    width: 24px;
+    height: 36px;
   }
 
   .submit-btn, .undo-btn {
@@ -331,6 +360,34 @@ input {
   .button-row-below {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .chain-item {
+    max-width: 100px;
+    font-size: 13px;
+  }
+
+  .arrow {
+    font-size: 18px;
+  }
+
+  .leaderboard table {
+    font-size: 12px;
+  }
+
+  .leaderboard th, .leaderboard td {
+    padding: 8px 10px;
+  }
+
+  .modal {
+    max-width: 90vw;
+    font-size: 15px;
+    padding: 20px 15px;
+  }
+
+  .modal input {
+    font-size: 14px;
+    width: 100%;
   }
 }
 
