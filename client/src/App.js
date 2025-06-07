@@ -20,9 +20,7 @@ function App() {
   const chainContainerRef = useRef(null);
   const inputRef = useRef(null);
 
-  const resetGame = () => {
-    window.location.reload();
-  };
+  const resetGame = () => window.location.reload();
 
   useEffect(() => {
     const fetchActors = async () => {
@@ -134,7 +132,7 @@ function App() {
       <h1>🎬 ScreenLink</h1>
       <p className="instructions">
         Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering movie titles and actors they’ve worked with — one link 
-at a time. You win when you reach the goal!
+at a time.
       </p>
 
       {startActor && goalActor && (
