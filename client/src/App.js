@@ -172,7 +172,7 @@ at a time.
         <div className="chain-container" ref={chainContainerRef}>
           {chain.map((entry, i) => (
             <React.Fragment key={`${entry.name}-${i}`}>
-              <div className={`chain-item ${entry.type} ${i === chain.length - 1 ? "latest" : ""}`}>
+              <div className={`chain-item ${entry.type} ${i === chain.length - 1 ? "latest" : ""} ${entry.name === goalActor?.name ? "goal" : ""}`}>
                 <img src={entry.image} alt={entry.name} />
                 <div>{entry.name}</div>
               </div>

@@ -23,6 +23,7 @@
   align-items: center;
   gap: 50px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .actor-card {
@@ -53,15 +54,16 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 12px;
-  margin: 20px 0;
   flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .input-wrapper {
   position: relative;
-  width: 230px;
-  margin-bottom: 10px; /* ✅ spacing between stacked items */
+  flex: 1;
+  min-width: 220px;
+  max-width: 280px;
 }
 
 input {
@@ -70,6 +72,7 @@ input {
   font-size: 15px;
   border-radius: 6px;
   border: none;
+  box-sizing: border-box;
 }
 
 button {
@@ -84,7 +87,10 @@ button {
 .submit-btn {
   background-color: #00ffcc;
   color: black;
-  margin-top: 10px; /* ✅ spacing below inputs when stacked */
+  height: 40px;
+  padding: 0 16px;
+  font-weight: bold;
+  margin-top: 2px;
 }
 
 .undo-btn {
@@ -157,6 +163,10 @@ button {
 
 .chain-item.latest {
   border: 2px solid limegreen;
+}
+
+.chain-item.goal {
+  border: 2px solid gold !important;
 }
 
 .chain-item img {
