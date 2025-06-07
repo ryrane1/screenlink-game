@@ -36,7 +36,7 @@ actors = [
     "Noah Schnapp", "Caleb McLaughlin", "Gaten Matarazzo", "Maya Hawke",
     "Natalia Dyer", "Joe Keery", "Mckenna Grace", "Thomasin McKenzie",
     "Dev Patel", "Freddie Highmore", "Logan Lerman", "Nat Wolff",
-    "Justice Smith", "Jharrel Jerome", "Kelvin Harrison Jr.", "Amandla Stenberg"
+    "Amandla Stenberg"
 ]
 
 
