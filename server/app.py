@@ -3,18 +3,21 @@ from flask_cors import CORS
 import requests
 import random
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
 
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
+# ✅ Replace or extend this list with your full list of 100 popular actors
 actors = [
     "Timothée Chalamet", "Zendaya", "Tom Holland", "Florence Pugh",
     "Chris Evans", "Ana de Armas", "Ryan Gosling", "Emma Stone",
     "Denzel Washington", "Margot Robbie", "Brad Pitt", "Saoirse Ronan",
     "Robert Pattinson", "Natalie Portman", "Mahershala Ali", "Scarlett Johansson",
-    "Joaquin Phoenix", "Jennifer Lawrence", "Daniel Kaluuya", "Awkwafina"
+    "Joaquin Phoenix", "Jennifer Lawrence", "Daniel Kaluuya", "Awkwafina",
+    # Add the rest of your 100 popular actors here...
 ]
 
 @app.route("/")
@@ -26,18 +29,29 @@ def get_random_actors():
     selected = random.sample(actors, 2)
     start = selected[0]
     goal = selected[1]
+    return jsonify({
+        "start": get_actor_data(start),
+        "goal": get_actor_data(goal)
+    })
 
-    def get_actor_data(name):
-        url = f"https://api.themoviedb.org/3/search/person?query={name}&api_key={TMDB_API_KEY}"
-        res = requests.get(url).json()
-        result = res.get("results", [{}])[0]
-        image = f"https://image.tmdb.org/t/p/w185{result.get('profile_path')}" if result.get("profile_path") else None
-        return {"name": name, "id": result.get("id"), "image": image}
+@app.route("/get-daily-actors")
+def get_daily_actors():
+    today_seed = datetime.utcnow().strftime("%Y-%m-%d")
+    rng = random.Random(today_seed)
+    selected = rng.sample(actors, 2)
+    start = selected[0]
+    goal = selected[1]
+    return jsonify({
+        "start": get_actor_data(start),
+        "goal": get_actor_data(goal)
+    })
 
-    start_data = get_actor_data(start)
-    goal_data = get_actor_data(goal)
-
-    return jsonify({"start": start_data, "goal": goal_data})
+def get_actor_data(name):
+    url = f"https://api.themoviedb.org/3/search/person?query={name}&api_key={TMDB_API_KEY}"
+    res = requests.get(url).json()
+    result = res.get("results", [{}])[0]
+    image = f"https://image.tmdb.org/t/p/w185{result.get('profile_path')}" if result.get("profile_path") else None
+    return {"name": name, "id": result.get("id"), "image": image}
 
 @app.route("/suggest")
 def suggest():
@@ -142,4 +156,6 @@ def get_shortest_path():
     return jsonify({"path": []})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host="0.0.0.0", port=port)
+
