@@ -154,15 +154,15 @@ button {
 }
 
 .chain-item.actor {
-  border: 2px solid #4ebbef;
+  border: 2px solid #4cfdac;
 }
 
 .chain-item.title {
-  border: 2px solid #3f92ff;
+  border: 2px solid #4ebbef;
 }
 
 .chain-item.latest {
-  border: 2px solid #4ebbef;
+  border: 2px solid #4cfdac;
 }
 
 .chain-item.goal {
