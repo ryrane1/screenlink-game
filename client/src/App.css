@@ -1,6 +1,6 @@
 .App {
   text-align: center;
-  background-color: #102d27;
+  background-color: #0b1f1a;
   color: white;
   min-height: 100vh;
   padding: 20px;
@@ -52,7 +52,7 @@
 .inputs-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   margin: 20px 0;
   flex-wrap: wrap;
@@ -61,6 +61,7 @@
 .input-wrapper {
   position: relative;
   width: 230px;
+  margin-bottom: 10px; /* ✅ spacing between stacked items */
 }
 
 input {
@@ -83,6 +84,7 @@ button {
 .submit-btn {
   background-color: #00ffcc;
   color: black;
+  margin-top: 10px; /* ✅ spacing below inputs when stacked */
 }
 
 .undo-btn {
