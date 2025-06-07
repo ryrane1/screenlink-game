@@ -34,9 +34,7 @@ function App() {
     ) {
       setGameOver(true);
       confetti();
-      setTimeout(() => {
-        setGameOver(false);
-      }, 5000);
+      setTimeout(() => setGameOver(false), 5000);
     }
   }, [chain, goalActor]);
 
@@ -65,12 +63,12 @@ function App() {
   };
 
   const handleSelect = (selected) => {
-    setSuggestions([]);
     if (suggestType === "title") {
       setTitleInput(selected.name);
     } else {
       setActorInput(selected.name);
     }
+    setSuggestions([]);
   };
 
   const handleSubmit = async () => {
@@ -107,29 +105,24 @@ function App() {
     }
   };
 
-  const resetGame = () => {
-    window.location.reload();
-  };
+  const resetGame = () => window.location.reload();
 
   return (
     <div className="App">
-      <h1>🎬 <span style={{ color: "#00ffcc" }}>ScreenLink</span></h1>
-      <p style={{ marginTop: "-10px", color: "#ccc" }}>
+      <h1>🎬 <span className="highlight">ScreenLink</span></h1>
+      <p className="description">
         Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering movie titles and actors they’ve worked with — one link 
 at a time.
       </p>
 
       <div className="actor-pair">
-        <div className="actor-card start">
-          <p><strong>Start:</strong></p>
+        <div className="actor-card">
           <img src={startActor?.image} alt={startActor?.name} />
-          <p>{startActor?.name}</p>
+          <p><strong>Start:</strong> {startActor?.name}</p>
         </div>
-        <span className="arrow">➡️</span>
-        <div className="actor-card goal">
-          <p><strong>Goal:</strong></p>
+        <div className="actor-card">
           <img src={goalActor?.image} alt={goalActor?.name} />
-          <p>{goalActor?.name}</p>
+          <p><strong>Goal:</strong> {goalActor?.name}</p>
         </div>
       </div>
 
@@ -170,7 +163,7 @@ at a time.
           )}
         </div>
 
-        <button onClick={handleSubmit}>Submit</button>
+        <button onClick={handleSubmit} className="submit-btn">Submit</button>
       </div>
 
       <button onClick={handleUndo} className="undo-btn">Undo</button>
