@@ -36,7 +36,7 @@ function App() {
   }, [mode]);
 
   const fetchNewGame = async (preserveStreak = true) => {
-    const route = mode === "daily" ? "/daily-start-goal" : "/random-start-goal";
+    const route = mode === "daily" ? "/get-daily-actors" : "/random-start-goal";
     try {
       const res = await axios.get(`${BACKEND_URL}${route}`);
       setStartActor(res.data.start);
