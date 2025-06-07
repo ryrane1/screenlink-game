@@ -343,15 +343,27 @@ input {
     font-size: 20px;
   }
 
+
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
   .submit-btn, .undo-btn {
-    width: 85vw;
-    font-size: 16px;
-    margin-top: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    width: auto;
+    min-width: 90px;
   }
 
   .button-row-below {
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
   }
 }
 
