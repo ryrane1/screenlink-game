@@ -64,34 +64,40 @@ function App() {
     }
   };
 
-  const handleSelect = async (selected) => {
+  const handleSelect = (selected) => {
     setSuggestions([]);
     if (suggestType === "title") {
       setTitleInput(selected.name);
-      try {
-        const res = await axios.post(`${BACKEND_URL}/validate-link`, {
-          actor: chain[chain.length - 1].name,
-          title: selected.name,
-          next_actor: actorInput
-        });
-        if (res.data.valid) {
-          const titleItem = { ...selected, type: "title" };
-          const actorItem = {
-            name: actorInput,
-            image: res.data.actor_image || null,
-            type: "actor"
-          };
-          setChain([...chain, titleItem, actorItem]);
-          setActorInput("");
-          setTitleInput("");
-        } else {
-          alert("Invalid link.");
-        }
-      } catch (err) {
-        console.error(err);
-      }
     } else {
       setActorInput(selected.name);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!titleInput || !actorInput) return;
+    try {
+      const res = await axios.post(`${BACKEND_URL}/validate-link`, {
+        actor: chain[chain.length - 1].name,
+        title: titleInput,
+        next_actor: actorInput,
+      });
+
+      if (res.data.valid) {
+        const titleItem = { name: titleInput, type: "title", image: res.data.poster };
+        const actorItem = {
+          name: actorInput,
+          type: "actor",
+          image: res.data.actor_image,
+        };
+        setChain([...chain, titleItem, actorItem]);
+        setTitleInput("");
+        setActorInput("");
+        setSuggestions([]);
+      } else {
+        alert("Invalid link.");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -107,14 +113,21 @@ function App() {
 
   return (
     <div className="App">
-      <h1>🎬 Actor Connection Game</h1>
+      <h1>🎬 <span style={{ color: "#00ffcc" }}>ScreenLink</span></h1>
+      <p style={{ marginTop: "-10px", color: "#ccc" }}>
+        Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering movie titles and actors they’ve worked with — one link 
+at a time.
+      </p>
+
       <div className="actor-pair">
-        <div className="actor-card">
+        <div className="actor-card start">
+          <p><strong>Start:</strong></p>
           <img src={startActor?.image} alt={startActor?.name} />
           <p>{startActor?.name}</p>
         </div>
         <span className="arrow">➡️</span>
         <div className="actor-card goal">
+          <p><strong>Goal:</strong></p>
           <img src={goalActor?.image} alt={goalActor?.name} />
           <p>{goalActor?.name}</p>
         </div>
@@ -125,7 +138,7 @@ function App() {
           <input
             value={titleInput}
             onChange={(e) => handleInputChange(e.target.value, "title")}
-            placeholder="Enter movie/show"
+            placeholder="Enter a film/tv title"
           />
           {suggestType === "title" && suggestions.length > 0 && (
             <div className="suggestions-dropdown">
@@ -143,7 +156,7 @@ function App() {
           <input
             value={actorInput}
             onChange={(e) => handleInputChange(e.target.value, "actor")}
-            placeholder="Enter actor"
+            placeholder="Enter an actor"
           />
           {suggestType === "actor" && suggestions.length > 0 && (
             <div className="suggestions-dropdown">
@@ -156,6 +169,8 @@ function App() {
             </div>
           )}
         </div>
+
+        <button onClick={handleSubmit}>Submit</button>
       </div>
 
       <button onClick={handleUndo} className="undo-btn">Undo</button>
@@ -164,7 +179,7 @@ function App() {
         <div className="chain-container" ref={chainContainerRef}>
           {chain.map((entry, i) => (
             <React.Fragment key={`${entry.name}-${i}`}>
-              <div className={`chain-item ${entry.type} ${i === chain.length - 1 ? 'latest' : ''}`}>
+              <div className={`chain-item ${entry.type} ${i === chain.length - 1 ? "latest" : ""}`}>
                 <img src={entry.image} alt={entry.name} />
                 <div>{entry.name}</div>
               </div>
