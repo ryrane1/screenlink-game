@@ -1,190 +1,146 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-import random
 import requests
+import random
 import os
-from collections import deque
 
 app = Flask(__name__)
 CORS(app)
 
-TMDB_API_KEY = os.getenv('TMDB_API_KEY')
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
-ACTORS = [
-    # Women
-    "Zendaya", "Florence Pugh", "Emma Stone", "Margot Robbie", "Jennifer Lawrence",
-    "Scarlett Johansson", "Anya Taylor-Joy", "Millie Bobby Brown", "Natalie Portman",
-    "Saoirse Ronan", "Ana de Armas", "Sydney Sweeney", "Lupita Nyong'o", "Zendaya",
-    "Jenna Ortega", "Emily Blunt", "Rachel Zegler", "Viola Davis", "Kristen Stewart",
-    "Elizabeth Olsen", "Gal Gadot", "Tessa Thompson", "Jessica Chastain", "Michelle Yeoh",
-    "Kate Winslet", "Emma Watson", "Hailee Steinfeld", "Ayo Edebiri", "Meryl Streep",
-    "Reese Witherspoon", "Amy Adams", "Awkwafina", "Lily James", "Sophie Turner",
-    "Maya Hawke", "Kaitlyn Dever", "Dakota Johnson", "Hunter Schafer", "Natalie Dyer",
-
-    # Men
-    "Timothée Chalamet", "Pedro Pascal", "Cillian Murphy", "Austin Butler", "Ryan Gosling",
-    "Paul Mescal", "Tom Holland", "Robert Pattinson", "Adam Driver", "Leonardo DiCaprio",
-    "Dwayne Johnson", "Chris Hemsworth", "Chris Evans", "Ryan Reynolds", "Chadwick Boseman",
-    "Keanu Reeves", "Jason Momoa", "Oscar Isaac", "Andrew Garfield", "Tom Hiddleston",
-    "Ben Affleck", "Jake Gyllenhaal", "Donald Glover", "Joseph Quinn", "Jamie Dornan",
-    "Josh O'Connor", "Daniel Kaluuya", "Jeremy Allen White", "Noah Centineo", "Michael B. Jordan",
-    "Daniel Radcliffe", "John Boyega", "Finn Wolfhard", "Gaten Matarazzo", "Joe Keery",
-    "Sebastian Stan", "Henry Cavill", "Anthony Mackie", "Paul Rudd", "Matt Damon",
-
-    # TV & Streaming stars
-    "Steve Carell", "John Krasinski", "Penn Badgley", "Idris Elba", "David Harbour",
-    "Natasha Lyonne", "Pedro Pascal", "Bella Ramsey", "Gael García Bernal", "Evan Peters"
+actors = [
+    "Timothée Chalamet", "Zendaya", "Tom Holland", "Florence Pugh",
+    "Chris Evans", "Ana de Armas", "Ryan Gosling", "Emma Stone",
+    "Denzel Washington", "Margot Robbie", "Brad Pitt", "Saoirse Ronan",
+    "Robert Pattinson", "Natalie Portman", "Mahershala Ali", "Scarlett Johansson",
+    "Joaquin Phoenix", "Jennifer Lawrence", "Daniel Kaluuya", "Awkwafina"
 ]
 
+@app.route("/")
+def index():
+    return "✅ Flask backend is running!"
 
-@app.route('/get-random-actors')
+@app.route("/get-random-actors")
 def get_random_actors():
-    start, goal = random.sample(ACTORS, 2)
+    selected = random.sample(actors, 2)
+    start = selected[0]
+    goal = selected[1]
 
-    def get_image(name):
+    def get_actor_data(name):
         url = f"https://api.themoviedb.org/3/search/person?query={name}&api_key={TMDB_API_KEY}"
         res = requests.get(url).json()
-        results = res.get("results")
-        if results:
-            path = results[0].get("profile_path")
-            return f"https://image.tmdb.org/t/p/w185{path}" if path else None
-        return None
+        result = res.get("results", [{}])[0]
+        image = f"https://image.tmdb.org/t/p/w185{result.get('profile_path')}" if result.get("profile_path") else None
+        return {"name": name, "id": result.get("id"), "image": image}
 
-    return jsonify({
-        "start": {"name": start, "image": get_image(start)},
-        "goal": {"name": goal, "image": get_image(goal)}
-    })
+    start_data = get_actor_data(start)
+    goal_data = get_actor_data(goal)
 
+    return jsonify({"start": start_data, "goal": goal_data})
 
-@app.route('/validate-link', methods=['POST'])
+@app.route("/suggest")
+def suggest():
+    query = request.args.get("query")
+    type_ = request.args.get("type")
+    endpoint = "search/person" if type_ == "actor" else "search/multi"
+
+    url = f"https://api.themoviedb.org/3/{endpoint}?query={query}&api_key={TMDB_API_KEY}"
+    res = requests.get(url).json()
+    results = res.get("results", [])
+
+    suggestions = []
+    for r in results:
+        name = r.get("name") or r.get("title") or r.get("original_name")
+        if not name:
+            continue
+        profile_path = r.get("profile_path") or r.get("poster_path")
+        image = f"https://image.tmdb.org/t/p/w185{profile_path}" if profile_path else None
+        suggestions.append({"name": name, "image": image})
+
+    return jsonify(suggestions)
+
+@app.route("/validate-link", methods=["POST"])
 def validate_link():
-    data = request.json
-    actor = data.get('actor')
-    title = data.get('title')
-    next_actor = data.get('next_actor')
+    data = request.get_json()
+    actor = data.get("actor")
+    title = data.get("title")
+    next_actor = data.get("next_actor")
 
-    search_url = f"https://api.themoviedb.org/3/search/multi?query={title}&api_key={TMDB_API_KEY}"
-    search_response = requests.get(search_url).json()
+    url = f"https://api.themoviedb.org/3/search/person?query={actor}&api_key={TMDB_API_KEY}"
+    res = requests.get(url).json()
+    actor_id = res["results"][0]["id"]
 
-    for media in search_response.get('results', [])[:5]:
-        media_id = media['id']
-        media_type = media['media_type']
-        if media_type not in ['movie', 'tv']:
-            continue
+    credits_url = f"https://api.themoviedb.org/3/person/{actor_id}/movie_credits?api_key={TMDB_API_KEY}"
+    credits = requests.get(credits_url).json()
+    cast = credits.get("cast", [])
 
-        media_title = media.get('title') or media.get('name')
-        if not media_title or media_title.strip().lower() != title.strip().lower():
-            continue
+    matched = [c for c in cast if c.get("title") == title or c.get("original_title") == title]
 
-        credits_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
-        credits = requests.get(credits_url).json()
-        cast = credits.get('cast', []) + credits.get('guest_stars', [])
+    for m in matched:
+        movie_id = m["id"]
+        movie_credits_url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={TMDB_API_KEY}"
+        movie_credits = requests.get(movie_credits_url).json()
+        cast_names = [a["name"] for a in movie_credits.get("cast", [])]
 
-        cast_names = [c.get('name', '').strip().lower() for c in cast]
-
-        if (
-            next_actor.strip().lower() in cast_names and
-            actor.strip().lower() in cast_names
-        ):
-            poster = f"https://image.tmdb.org/t/p/w185{media.get('poster_path')}" if media.get('poster_path') else None
-            actor_image = next(
-                (f"https://image.tmdb.org/t/p/w185{c.get('profile_path')}"
-                 for c in cast
-                 if next_actor.strip().lower() == c.get('name', '').strip().lower() and c.get('profile_path')),
-                None
-            )
-            return jsonify({"valid": True, "poster": poster, "actor_image": actor_image})
+        if next_actor in cast_names:
+            actor_image = next((a["profile_path"] for a in movie_credits["cast"] if a["name"] == next_actor), None)
+            poster = m.get("poster_path")
+            return jsonify({
+                "valid": True,
+                "actor_image": f"https://image.tmdb.org/t/p/w185{actor_image}" if actor_image else None,
+                "poster": f"https://image.tmdb.org/t/p/w185{poster}" if poster else None
+            })
 
     return jsonify({"valid": False})
 
-
-@app.route('/suggest')
-def suggest():
-    query = request.args.get('query')
-    type_ = request.args.get('type')
-    if not query or not type_:
-        return jsonify([])
-
-    search_type = 'person' if type_ == 'actor' else 'multi'
-    url = f"https://api.themoviedb.org/3/search/{search_type}?query={query}&api_key={TMDB_API_KEY}"
-    response = requests.get(url).json()
-
-    if type_ == 'actor':
-        results = [
-            {
-                "name": res['name'],
-                "image": f"https://image.tmdb.org/t/p/w185{res['profile_path']}" if res.get('profile_path') else None
-            }
-            for res in response.get('results', [])
-            if res.get('known_for_department') == 'Acting'
-        ]
-    else:
-        results = [
-            {
-                "name": res.get('title') or res.get('name'),
-                "image": f"https://image.tmdb.org/t/p/w185{res['poster_path']}"
-            }
-            for res in response.get('results', [])
-            if res.get('media_type') in ['movie', 'tv'] and res.get('poster_path')
-        ]
-
-    return jsonify(results[:5])
-
-
-@app.route('/get-shortest-path')
+@app.route("/get-shortest-path")
 def get_shortest_path():
-    start = request.args.get('start')
-    goal = request.args.get('goal')
-    if not start or not goal:
+    start_id = request.args.get("startId")
+    goal_id = request.args.get("goalId")
+
+    if not start_id or not goal_id:
         return jsonify({"path": []})
 
     visited = set()
-    queue = deque()
-    queue.append((start, [{"type": "actor", "name": start}]))
-
+    queue = [(start_id, [])]
     while queue:
-        current, path = queue.popleft()
-
-        search_url = f"https://api.themoviedb.org/3/search/person?query={current}&api_key={TMDB_API_KEY}"
-        res = requests.get(search_url).json()
-        if not res or 'results' not in res or not res['results']:
+        current, path = queue.pop(0)
+        if current in visited:
             continue
+        visited.add(current)
 
-        actor_id = res['results'][0]['id']
-        credits_url = f"https://api.themoviedb.org/3/person/{actor_id}/combined_credits?api_key={TMDB_API_KEY}"
+        person_url = f"https://api.themoviedb.org/3/person/{current}?api_key={TMDB_API_KEY}"
+        person_res = requests.get(person_url).json()
+        name = person_res.get("name")
+        profile = person_res.get("profile_path")
+        image = f"https://image.tmdb.org/t/p/w185{profile}" if profile else None
+        path = path + [{"name": name, "type": "actor", "image": image}]
+
+        if current == goal_id:
+            return jsonify({"path": path})
+
+        credits_url = f"https://api.themoviedb.org/3/person/{current}/movie_credits?api_key={TMDB_API_KEY}"
         credits = requests.get(credits_url).json()
+        cast = credits.get("cast", [])
 
-        for media in credits.get('cast', [])[:5]:
-            title = media.get('title') or media.get('name')
-            media_id = media['id']
-            media_type = media.get('media_type')
-            if not title or media_type not in ['movie', 'tv']:
-                continue
+        for c in cast[:5]:
+            movie_id = c["id"]
+            movie_name = c.get("title") or c.get("original_title")
+            poster = c.get("poster_path")
+            movie_image = f"https://image.tmdb.org/t/p/w185{poster}" if poster else None
+            movie_item = {"name": movie_name, "type": "title", "image": movie_image}
 
-            cast_url = f"https://api.themoviedb.org/3/{media_type}/{media_id}/credits?api_key={TMDB_API_KEY}"
-            cast_data = requests.get(cast_url).json()
-            cast = cast_data.get('cast', []) + cast_data.get('guest_stars', [])
+            movie_credits_url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={TMDB_API_KEY}"
+            movie_credits = requests.get(movie_credits_url).json()
+            cast_members = movie_credits.get("cast", [])
 
-            cast_names = [c.get('name', '').strip().lower() for c in cast]
-            if current.strip().lower() not in cast_names:
-                continue
-
-            for c in cast:
-                next_actor = c['name']
-                if next_actor in visited or not next_actor:
-                    continue
-
-                new_path = path + [{"type": "title", "name": title}, {"type": "actor", "name": next_actor}]
-                if next_actor.strip().lower() == goal.strip().lower():
-                    return jsonify({"path": new_path})
-
-                visited.add(next_actor)
-                queue.append((next_actor, new_path))
+            for cm in cast_members[:5]:
+                if cm["id"] not in visited:
+                    queue.append((str(cm["id"]), path + [movie_item]))
 
     return jsonify({"path": []})
 
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5001))
-    app.run(host='0.0.0.0', port=port)
+if __name__ == "__main__":
+    app.run(debug=True)
 
