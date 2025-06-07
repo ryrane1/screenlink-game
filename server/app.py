@@ -3,10 +3,30 @@ from flask_cors import CORS
 import requests
 import random
 import os
-from datetime import datetime
+from datetime import datetime, date
+import json
+
+# Leaderboard setup
+LEADERBOARD_FILE = "daily_leaderboard.json"
+
+def load_leaderboard():
+    try:
+        with open(LEADERBOARD_FILE, "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+def save_leaderboard(data):
+    with open(LEADERBOARD_FILE, "w") as f:
+        json.dump(data, f)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {
+    "origins": [
+        "http://localhost:3000",
+        "https://screenlink-game-rohan-ranes-projects.vercel.app"
+    ]
+}})
 
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
@@ -115,7 +135,6 @@ def validate_link():
         else:
             continue
 
-        # ✅ use aggregate_credits for TV, credits for movies
         if content_type == "tv":
             credits_url = f"https://api.themoviedb.org/3/tv/{content_id}/aggregate_credits?api_key={TMDB_API_KEY}"
             credits = requests.get(credits_url).json()
@@ -145,6 +164,33 @@ def validate_link():
                     })
 
     return jsonify({"valid": False})
+
+@app.route("/submit-daily-score", methods=["POST"])
+def submit_daily_score():
+    data = request.get_json()
+    player = data.get("player")
+    steps = data.get("steps")
+    duration = data.get("duration")
+
+    if not player or steps is None or duration is None:
+        return jsonify({"error": "Missing fields"}), 400
+
+    today = str(date.today())
+    leaderboard = load_leaderboard()
+    leaderboard.setdefault(today, []).append({
+        "player": player,
+        "steps": steps,
+        "duration": duration
+    })
+    save_leaderboard(leaderboard)
+    return jsonify({"message": "Score submitted successfully"})
+
+@app.route("/get-daily-leaderboard")
+def get_daily_leaderboard():
+    today = str(date.today())
+    leaderboard = load_leaderboard().get(today, [])
+    top_scores = sorted(leaderboard, key=lambda x: (x["steps"], x["duration"]))[:5]
+    return jsonify(top_scores)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
