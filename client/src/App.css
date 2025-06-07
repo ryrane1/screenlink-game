@@ -304,12 +304,14 @@ input {
 @media (max-width: 600px) {
   .App {
     padding: 12px;
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .actor-pair {
-    gap: 16px;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
   }
 
   .actor-card {
@@ -352,14 +354,21 @@ input {
   }
 
   .submit-btn, .undo-btn {
-    width: 85vw;
-    font-size: 16px;
-    margin-top: 8px;
+    width: auto;
+    font-size: 14px;
+    padding: 8px 16px;
+    margin-top: 6px;
   }
 
   .button-row-below {
     flex-direction: column;
     gap: 8px;
+    margin-top: 12px;
+  }
+
+  .mode-toggle button {
+    font-size: 13px;
+    padding: 6px 12px;
   }
 
   .chain-item {
