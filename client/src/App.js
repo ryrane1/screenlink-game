@@ -19,28 +19,65 @@ function App() {
   const chainContainerRef = useRef(null);
 
   const fetchNewGame = async (preserveStreak = true) => {
+    const res = await axios.get(`${BACKEND_URL}/get-random-actors`);
+    setStartActor(res.data.start);
+    setGoalActor(res.data.goal);
+    setChain([{ ...res.data.start, type: "actor" }]);
+    setActorInput("");
+    setTitleInput("");
+    setSuggestions([]);
+    setGameOver(false);
+
     try {
-      const res = await axios.get(`${BACKEND_URL}/new-game`);
-      setStartActor(res.data.start);
-      setGoalActor(res.data.goal);
-      setChain([res.data.start]);
-      setGameOver(false);
-      setOptimalPath(res.data.optimalPath);
-      if (!preserveStreak) {
-        setStats((prev) => ({ ...prev, currentStreak: 0 }));
-      }
+      const pathRes = await axios.get(`${BACKEND_URL}/get-shortest-path?start=${res.data.start.name}&goal=${res.data.goal.name}`);
+      setOptimalPath(pathRes.data.path || []);
     } catch (err) {
-      console.error("Failed to fetch new game:", err);
+      console.error("Failed to fetch optimal path", err);
     }
+
+    const storedStats = JSON.parse(localStorage.getItem("screenlink-stats")) || {
+      currentStreak: 0,
+      bestLinkCount: null
+    };
+
+    if (!preserveStreak) storedStats.currentStreak = 0;
+    setStats(storedStats);
+    localStorage.setItem("screenlink-stats", JSON.stringify(storedStats));
   };
 
   useEffect(() => {
-    fetchNewGame();
+    fetchNewGame(false);
   }, []);
 
-  const handleInputChange = (value, type) => {
-    if (type === "actor") setActorInput(value);
-    else setTitleInput(value);
+  useEffect(() => {
+    if (
+      chain.length > 0 &&
+      goalActor &&
+      chain[chain.length - 1].name === goalActor.name
+    ) {
+      setGameOver(true);
+      confetti();
+
+      const linkCount = (chain.length - 1) / 2;
+      const updatedStats = { ...stats };
+      updatedStats.currentStreak += 1;
+      if (updatedStats.bestLinkCount === null || linkCount < updatedStats.bestLinkCount) {
+        updatedStats.bestLinkCount = linkCount;
+      }
+      setStats(updatedStats);
+      localStorage.setItem("screenlink-stats", JSON.stringify(updatedStats));
+    }
+  }, [chain, goalActor]);
+
+  useEffect(() => {
+    if (chainContainerRef.current) {
+      chainContainerRef.current.scrollLeft = chainContainerRef.current.scrollWidth;
+    }
+  }, [chain]);
+
+  const handleInputChange = async (value, type) => {
+    if (type === "title") setTitleInput(value);
+    else setActorInput(value);
 
     setSuggestType(type);
     if (!value) {
@@ -48,67 +85,84 @@ function App() {
       return;
     }
 
-    axios
-      .get(`${BACKEND_URL}/suggest?type=${type}&query=${value}`)
-      .then((res) => {
-        setSuggestions(res.data);
-      })
-      .catch((err) => console.error("Suggestion error:", err));
+    try {
+      const res = await axios.get(`${BACKEND_URL}/suggest?type=${type}&query=${value}`);
+      setSuggestions(res.data || []);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleSelect = (s) => {
-    if (suggestType === "actor") {
-      setActorInput(s.name);
+  const handleSelect = (selected) => {
+    if (suggestType === "title") {
+      setTitleInput(selected.name);
     } else {
-      setTitleInput(s.name);
+      setActorInput(selected.name);
     }
     setSuggestions([]);
   };
 
-  const handleSubmit = () => {
-    if (!actorInput || !titleInput) return;
-
-    axios
-      .post(`${BACKEND_URL}/validate-link`, {
-        actor: actorInput,
+  const handleSubmit = async () => {
+    if (!titleInput || !actorInput) return;
+    try {
+      const res = await axios.post(`${BACKEND_URL}/validate-link`, {
+        actor: chain[chain.length - 1].name,
         title: titleInput,
-        chain,
-      })
-      .then((res) => {
-        const newChain = [...chain, res.data.movie, res.data.actor];
-        setChain(newChain);
+        next_actor: actorInput,
+      });
+
+      if (res.data.valid) {
+        const titleItem = { name: titleInput, type: "title", image: res.data.poster };
+        const actorItem = {
+          name: actorInput,
+          type: "actor",
+          image: res.data.actor_image,
+        };
+        setChain([...chain, titleItem, actorItem]);
         setTitleInput("");
         setActorInput("");
-
-        if (res.data.actor.id === goalActor.id) {
-          confetti();
-          setGameOver(true);
-          const linkCount = Math.floor((newChain.length - 1) / 2);
-          const better =
-            stats.bestLinkCount === null || linkCount < stats.bestLinkCount;
-          setStats((prev) => ({
-            currentStreak: prev.currentStreak + 1,
-            bestLinkCount: better ? linkCount : prev.bestLinkCount,
-          }));
-        }
-      })
-      .catch((err) => {
-        console.error("Validation error:", err);
-      });
+        setSuggestions([]);
+      } else {
+        alert("Invalid link.");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleUndo = () => {
-    if (chain.length >= 3) {
-      setChain(chain.slice(0, -2));
+    if (chain.length > 2) {
+      setChain(chain.slice(0, chain.length - 2));
     }
+  };
+
+  const handleShare = () => {
+    if (!startActor || !goalActor || chain.length === 0) return;
+    const steps = Math.floor((chain.length - 1) / 2).toString();
+    let text = `🎬 I just connected ${startActor.name} to ${goalActor.name} in ${steps}️⃣ steps!\n\n`;
+
+    chain.forEach((item) => {
+      if (item.type === "actor") text += `🧍 ${item.name}\n`;
+      else text += `🎞️ ${item.name}\n`;
+    });
+
+    text += `\nTry playing now!  https://screenlink-game-rohan-ranes-projects.vercel.app/`;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const toast = document.createElement("div");
+toast.textContent = "🎉 Copied to clipboard!";
+toast.className = "toast";
+document.body.appendChild(toast);
+setTimeout(() => toast.remove(), 3000);
+    });
   };
 
   return (
     <div className="App">
       <h1>🎬 <span className="highlight">ScreenLink</span></h1>
       <p className="description">
-        Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering movie titles and actors they’ve worked with — one link at a 
-time.
+        Connect the <strong>Start</strong> actor to the <strong>Goal</strong> actor by entering movie titles and actors they’ve worked with — one link 
+at a time.
       </p>
 
       <div className="stats-panel">
@@ -117,20 +171,12 @@ time.
 
       <div className="actor-pair">
         <div className="actor-card">
-          {startActor && (
-            <>
-              <img src={startActor.image} alt={startActor.name} />
-              <p><strong>Start:</strong> {startActor.name}</p>
-            </>
-          )}
+          <img src={startActor?.image} alt={startActor?.name} />
+          <p><strong>Start:</strong> {startActor?.name}</p>
         </div>
         <div className="actor-card">
-          {goalActor && (
-            <>
-              <img src={goalActor.image} alt={goalActor.name} />
-              <p><strong>Goal:</strong> {goalActor.name}</p>
-            </>
-          )}
+          <img src={goalActor?.image} alt={goalActor?.name} />
+          <p><strong>Goal:</strong> {goalActor?.name}</p>
         </div>
       </div>
 
@@ -170,11 +216,52 @@ time.
             </div>
           )}
         </div>
+
+        <button onClick={handleSubmit} className="submit-btn">Submit</button>
       </div>
 
-      <button onClick={handleSubmit}>Submit</button>
-      <button onClick={handleUndo}>Undo</button>
-      <button onClick={() => fetchNewGame(false)}>New Game</button>
+      <button onClick={handleUndo} className="undo-btn">Undo</button>
+      <button onClick={() => fetchNewGame(false)} className="undo-btn">🔄 New Game</button>
+
+      <div className="chain-scroll-wrapper">
+        <div className="chain-container" ref={chainContainerRef}>
+          {chain.map((entry, i) => (
+            <React.Fragment key={`${entry.name}-${i}`}>
+              <div className={`chain-item ${entry.type} ${i === chain.length - 1 ? "latest" : ""} ${entry.name === goalActor?.name ? "goal" : ""}`}>
+                <img src={entry.image} alt={entry.name} />
+                <div>{entry.name}</div>
+              </div>
+              {i < chain.length - 1 && <div className="arrow">➡️</div>}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
+      {gameOver && optimalPath.length > 0 && (
+        <div>
+          <h3 style={{ marginTop: "30px" }}>🔍 Optimal Path</h3>
+          <div className="chain-scroll-wrapper">
+            <div className="chain-container">
+              {optimalPath.map((entry, i) => (
+                <React.Fragment key={`${entry.name}-${i}`}>
+                  <div className={`chain-item ${entry.type} ${entry.name === goalActor?.name ? "goal" : ""}`}>
+                    <div>{entry.name}</div>
+                  </div>
+                  {i < optimalPath.length - 1 && <div className="arrow">➡️</div>}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {gameOver && (
+        <div className="end-credits">
+          <h2>🎉 Thanks for playing!</h2>
+          <button onClick={() => fetchNewGame(true)}>Play Again</button>
+          <button onClick={handleShare} style={{ marginLeft: "10px" }}>📤 Share</button>
+        </div>
+      )}
     </div>
   );
 }

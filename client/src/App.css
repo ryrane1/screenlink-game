@@ -270,34 +270,3 @@ h3 {
   100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
 }
 
-.actor-pair {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
-.actor-card {
-  background-color: #111a1b;
-  padding: 16px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 0 10px rgba(0,255,200,0.2);
-  width: 140px;
-}
-
-.actor-card img {
-  width: 100%;
-  border-radius: 10px;
-  margin-bottom: 8px;
-}
-
-@media (max-width: 480px) {
-  .actor-pair {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
