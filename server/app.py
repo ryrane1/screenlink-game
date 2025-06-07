@@ -16,7 +16,7 @@ actors = [
     "Austin Butler", "Jacob Elordi", "Paul Mescal", "Sydney Sweeney",
     "Jennifer Lawrence", "Margot Robbie", "Emma Stone", "Ryan Gosling",
     "Anya Taylor-Joy", "Jenna Ortega", "Pedro Pascal", "Chris Evans",
-    "Scarlett Johansson", "Brie Larson", "Robert Pattinson", "Saoirse Ronan",
+    "Scarlett Johansson","Michael Cera", "Brie Larson", "Robert Pattinson", "Saoirse Ronan",
     "Jonathan Majors", "Hunter Schafer", "Keke Palmer", "Barry Keoghan",
     "Hailee Steinfeld", "Sadie Sink", "Glen Powell", "Miles Teller",
     "Zoë Kravitz", "Jacob Tremblay", "Josh O’Connor", "Natalie Portman",
