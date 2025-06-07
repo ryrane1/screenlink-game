@@ -298,12 +298,15 @@ input {
   }
 
   .actor-card {
-    width: 130px;
+    width: 120px;
+    max-height: 200px;
     padding: 8px;
   }
 
   .actor-card img {
-    border-radius: 10px;
+    max-height: 140px;
+    width: auto;
+    object-fit: cover;
     margin-bottom: 4px;
   }
 
