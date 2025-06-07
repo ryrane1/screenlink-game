@@ -12,13 +12,33 @@ TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 # ✅ Replace or extend this list with your full list of 100 popular actors
 actors = [
-    "Timothée Chalamet", "Zendaya", "Tom Holland", "Florence Pugh",
-    "Chris Evans", "Ana de Armas", "Ryan Gosling", "Emma Stone",
-    "Denzel Washington", "Margot Robbie", "Brad Pitt", "Saoirse Ronan",
-    "Robert Pattinson", "Natalie Portman", "Mahershala Ali", "Scarlett Johansson",
-    "Joaquin Phoenix", "Jennifer Lawrence", "Daniel Kaluuya", "Awkwafina",
-    # Add the rest of your 100 popular actors here...
+    "Timothée Chalamet", "Zendaya", "Florence Pugh", "Tom Holland",
+    "Austin Butler", "Jacob Elordi", "Paul Mescal", "Sydney Sweeney",
+    "Jennifer Lawrence", "Margot Robbie", "Emma Stone", "Ryan Gosling",
+    "Anya Taylor-Joy", "Jenna Ortega", "Pedro Pascal", "Chris Evans",
+    "Scarlett Johansson", "Brie Larson", "Robert Pattinson", "Saoirse Ronan",
+    "Jonathan Majors", "Hunter Schafer", "Keke Palmer", "Barry Keoghan",
+    "Hailee Steinfeld", "Sadie Sink", "Glen Powell", "Miles Teller",
+    "Zoë Kravitz", "Jacob Tremblay", "Josh O’Connor", "Natalie Portman",
+    "Daniel Kaluuya", "Lakeith Stanfield", "Jodie Comer", "Daisy Edgar-Jones",
+    "Angela Bassett", "Jessica Chastain", "Emily Blunt", "Viola Davis",
+    "Tom Hanks", "Brad Pitt", "Leonardo DiCaprio", "Joaquin Phoenix",
+    "Christian Bale", "Jake Gyllenhaal", "Chris Hemsworth", "Jason Momoa",
+    "Paul Rudd", "Elizabeth Olsen", "Oscar Isaac", "Anthony Mackie",
+    "Sebastian Stan", "Jeremy Renner", "Mark Ruffalo", "Chadwick Boseman",
+    "Cillian Murphy", "Robert Downey Jr.", "Ben Affleck", "Matt Damon",
+    "Adam Driver", "Tessa Thompson", "Josh Brolin", "Jeffrey Wright",
+    "Zoe Saldana", "Michelle Yeoh", "Danai Gurira", "Letitia Wright",
+    "Lupita Nyong’o", "Regé-Jean Page", "Idris Elba", "Dwayne Johnson",
+    "John Krasinski", "Emily Ratajkowski", "Ana de Armas", "Blake Lively",
+    "Ryan Reynolds", "Channing Tatum", "Jamie Foxx", "Hailee Steinfeld",
+    "Steve Carell", "Bryce Dallas Howard", "Millie Bobby Brown", "Finn Wolfhard",
+    "Noah Schnapp", "Caleb McLaughlin", "Gaten Matarazzo", "Maya Hawke",
+    "Natalia Dyer", "Joe Keery", "Mckenna Grace", "Thomasin McKenzie",
+    "Dev Patel", "Freddie Highmore", "Logan Lerman", "Nat Wolff",
+    "Justice Smith", "Jharrel Jerome", "Kelvin Harrison Jr.", "Amandla Stenberg"
 ]
+
 
 @app.route("/")
 def index():
