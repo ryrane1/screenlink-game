@@ -145,7 +145,7 @@ at a time.
       </p>
 
       <div className="stats-panel">
-        <p>🔥 Streak: {stats.currentStreak} | 🧠 Best Links: {stats.bestLinkCount ?? "—"}</p>
+        <p>🔥 Streak: {stats.currentStreak} | 🏆 Best Links: {stats.bestLinkCount ?? "—"}</p>
       </div>
 
       <div className="actor-pair">
