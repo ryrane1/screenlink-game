@@ -270,3 +270,31 @@ h3 {
   100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
 }
 
+/* 🗂 Game Mode Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+.tabs button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background-color: #3f4e51;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.tabs button:hover {
+  background-color: #66746c;
+}
+
+.tabs .active-tab {
+  background-color: #4cfdac;
+  color: #1a1f1d;
+}
+

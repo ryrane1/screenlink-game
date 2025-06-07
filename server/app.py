@@ -3,6 +3,7 @@ from flask_cors import CORS
 import requests
 import random
 import os
+import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -10,11 +11,31 @@ CORS(app)
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 actors = [
-    "Timothée Chalamet", "Zendaya", "Tom Holland", "Florence Pugh",
-    "Chris Evans", "Ana de Armas", "Ryan Gosling", "Emma Stone",
-    "Denzel Washington", "Margot Robbie", "Brad Pitt", "Saoirse Ronan",
-    "Robert Pattinson", "Natalie Portman", "Mahershala Ali", "Scarlett Johansson",
-    "Joaquin Phoenix", "Jennifer Lawrence", "Daniel Kaluuya", "Awkwafina"
+    "Leonardo DiCaprio", "Brad Pitt", "Tom Hanks", "Robert Downey Jr.",
+    "Chris Hemsworth", "Scarlett Johansson", "Jennifer Lawrence", "Denzel Washington",
+    "Margot Robbie", "Timothée Chalamet", "Florence Pugh", "Ana de Armas",
+    "Zendaya", "Tom Holland", "Emma Stone", "Ryan Gosling",
+    "Christian Bale", "Cillian Murphy", "Matt Damon", "Ben Affleck",
+    "Gal Gadot", "Emily Blunt", "Natalie Portman", "Robert Pattinson",
+    "Saoirse Ronan", "Jake Gyllenhaal", "Michael B. Jordan", "Daniel Kaluuya",
+    "Viola Davis", "Jamie Foxx", "Oscar Isaac", "Jessica Chastain",
+    "Paul Mescal", "Pedro Pascal", "Austin Butler", "Anya Taylor-Joy",
+    "Idris Elba", "Taron Egerton", "John Boyega", "Chris Evans",
+    "Miles Teller", "Rachel Zegler", "Millie Bobby Brown", "Jenna Ortega",
+    "Bryan Cranston", "Aaron Paul", "Tom Cruise", "Keanu Reeves",
+    "Winona Ryder", "Kate Winslet", "Emily Watson", "Carey Mulligan",
+    "Rosamund Pike", "Rami Malek", "Andrew Garfield", "Joseph Gordon-Levitt",
+    "Zoe Saldaña", "Ethan Hawke", "Jeffrey Wright", "Lakeith Stanfield",
+    "Awkwafina", "Simu Liu", "Michelle Yeoh", "Hong Chau",
+    "Brendan Fraser", "Barry Keoghan", "Jodie Comer", "Michael Fassbender",
+    "Greta Lee", "Steven Yeun", "Joaquin Phoenix", "Christian Slater",
+    "Hayley Atwell", "Reese Witherspoon", "Amy Adams", "Chadwick Boseman",
+    "Benedict Cumberbatch", "Elisabeth Moss", "Josh Brolin", "Glen Powell",
+    "Dakota Johnson", "Jason Momoa", "Jeremy Renner", "Hugh Jackman",
+    "Anne Hathaway", "Matthew McConaughey", "Bryce Dallas Howard", "Chris Pine",
+    "Paul Rudd", "Daniel Craig", "Lupita Nyong'o", "Helen Mirren",
+    "Morgan Freeman", "Anthony Hopkins", "Meryl Streep", "Kate Hudson",
+    "Naomi Watts", "Tilda Swinton", "Forest Whitaker", "Don Cheadle"
 ]
 
 @app.route("/")
@@ -23,6 +44,26 @@ def index():
 
 @app.route("/get-random-actors")
 def get_random_actors():
+    selected = random.sample(actors, 2)
+    start = selected[0]
+    goal = selected[1]
+
+    def get_actor_data(name):
+        url = f"https://api.themoviedb.org/3/search/person?query={name}&api_key={TMDB_API_KEY}"
+        res = requests.get(url).json()
+        result = res.get("results", [{}])[0]
+        image = f"https://image.tmdb.org/t/p/w185{result.get('profile_path')}" if result.get("profile_path") else None
+        return {"name": name, "id": result.get("id"), "image": image}
+
+    start_data = get_actor_data(start)
+    goal_data = get_actor_data(goal)
+
+    return jsonify({"start": start_data, "goal": goal_data})
+
+@app.route("/get-daily-actors")
+def get_daily_actors():
+    today = datetime.date.today().isoformat()
+    random.seed(today)
     selected = random.sample(actors, 2)
     start = selected[0]
     goal = selected[1]
