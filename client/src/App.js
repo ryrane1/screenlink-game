@@ -74,16 +74,6 @@ function App() {
     }
   };
 
-  const handleHint = () => {
-    const current = chain[chain.length - 1];
-    axios
-      .post("/hint", { current, goal: goalActor })
-      .then((res) => {
-        const { title, actor } = res.data;
-        setChain([...chain, title, actor]);
-      });
-  };
-
   return (
     <div className="App">
       <h1>🎬 Actor Link Game</h1>
@@ -132,7 +122,6 @@ function App() {
 
       <div className="controls">
         <button onClick={handleUndo}>↩️ Undo</button>
-        <button onClick={handleHint}>💡 Hint</button>
         <button onClick={handleSubmit}>Submit</button>
       </div>
 
