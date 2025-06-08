@@ -34,115 +34,98 @@
   flex-direction: column;
   align-items: center;
   background-color: #121c2b;
-  border-radius: 18px;
-  padding: 12px;
+  border-radius: 16px;
+  padding: 14px;
   width: 180px;
-  box-shadow: 0 0 16px #00ffcc55;
+  box-shadow: 0 0 15px #00ffcc55;
   color: white;
 }
 
 .actor-card img {
-  width: 100%;
-  height: auto;
-  max-height: 180px;
+  width: 140px;
+  height: 180px;
   object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 6px;
+  border-radius: 10px;
+  margin-bottom: 5px;
 }
 
-/* COMPACT INPUT LAYOUT */
+.actor-card p {
+  font-size: 14px;
+  margin: 0;
+}
+
 .inputs-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap;
   gap: 10px;
   margin-bottom: 15px;
-  max-width: 550px;
-  width: 100%;
-  margin-inline: auto;
+  max-width: 700px;
+  margin: auto;
+  flex-wrap: nowrap;
 }
 
 .input-wrapper {
   position: relative;
   flex: 1;
-  min-width: 100px;
+  min-width: 200px;
 }
 
 input {
   padding: 10px;
-  font-size: 15px;
+  font-size: 16px;
   border-radius: 8px;
   border: none;
   width: 100%;
 }
 
-.submit-btn {
-  padding: 8px 14px;
-  font-size: 14px;
-  background-color: #00ffcc;
-  border: none;
-  color: #000;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-  height: 38px;
-  white-space: nowrap;
-  flex-shrink: 0;
+.suggestions-dropdown {
+  position: absolute;
+  background-color: #1c2d26;
+  border: 1px solid #00ffcc;
+  width: 100%;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 0 0 10px 10px;
+  text-align: left;
 }
 
-.undo-btn {
-  background-color: #3f4e51;
-  color: white;
-  padding: 8px 14px;
-  font-size: 14px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.submit-btn:hover {
-  background-color: #00e6b8;
-}
-
-.undo-btn:hover {
-  background-color: #556c6f;
-}
-
-.button-row-below {
+.suggestion {
+  padding: 8px 10px;
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 12px;
-  margin-bottom: 30px;
-}
-
-.chain-scroll-wrapper {
-  overflow-x: auto;
-  padding: 20px 0;
-}
-
-.chain-container {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
-  padding: 0 10px;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  background-color: #2a4038;
+}
+
+.suggestion img {
+  width: 30px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .chain-item {
+  width: 140px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   background-color: #1c2d26;
   border: 2px solid #00ffcc;
   padding: 10px;
   border-radius: 12px;
-  max-width: 150px;
   text-align: center;
   font-weight: bold;
   color: white;
   box-shadow: 0 0 10px #00ffcc33;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .chain-item.movie {
@@ -158,16 +141,60 @@ input {
 
 .chain-item img {
   width: 100%;
-  height: auto;
-  max-height: 120px;
-  border-radius: 8px;
-  margin-bottom: 5px;
+  height: 140px;
   object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.chain-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  padding: 0 10px;
+}
+
+.chain-scroll-wrapper {
+  overflow-x: auto;
+  padding: 20px 0;
 }
 
 .arrow {
   font-size: 24px;
   color: #00ffcc;
+}
+
+.submit-btn, .undo-btn {
+  padding: 10px 18px;
+  font-size: 16px;
+  background-color: #00ffcc;
+  border: none;
+  color: #000;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.undo-btn {
+  background-color: #3f4e51;
+  color: white;
+}
+
+.submit-btn:hover {
+  background-color: #00e6b8;
+}
+
+.undo-btn:hover {
+  background-color: #556c6f;
+}
+
+.button-row-below {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
 }
 
 .mode-toggle {
@@ -193,38 +220,6 @@ input {
 .stats-panel {
   margin-bottom: 15px;
   color: #ccc;
-}
-
-.suggestions-dropdown {
-  position: absolute;
-  background-color: #1c2d26;
-  border: 1px solid #00ffcc;
-  width: 100%;
-  z-index: 100;
-  max-height: 200px;
-  overflow-y: auto;
-  border-radius: 0 0 10px 10px;
-  text-align: left;
-  font-size: 15px;
-}
-
-.suggestion {
-  padding: 8px 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.suggestion:hover {
-  background-color: #2a4038;
-}
-
-.suggestion img {
-  width: 30px;
-  height: 45px;
-  object-fit: cover;
-  border-radius: 4px;
 }
 
 .leaderboard {
@@ -309,98 +304,46 @@ input {
   margin-top: 10px;
 }
 
-/* MOBILE */
 @media (max-width: 600px) {
-  .App {
-    padding: 12px;
-    font-size: 15px;
-  }
-
-  .actor-pair {
-    flex-direction: row;
-    gap: 20px;
-    justify-content: center;
-    align-items: flex-start;
-  }
-
-  .actor-card {
-    width: 130px;
-    padding: 8px;
-  }
-
-  .actor-card img {
-    max-height: 120px;
-    border-radius: 10px;
-    margin-bottom: 4px;
-  }
-
-  .description {
-    font-size: 15px;
-    padding: 0 15px;
-  }
-
   .inputs-container {
     flex-direction: column;
+    gap: 8px;
     align-items: center;
   }
 
-  .input-wrapper {
-    width: 85vw;
-    margin-right: 0;
+  .input-wrapper, .submit-btn {
+    width: 90%;
   }
 
-  input {
-    width: 100%;
+  .submit-btn {
+    font-size: 14px;
+  }
+
+  .actor-card {
+    width: 140px;
+    padding: 10px;
+  }
+
+  .actor-card img {
+    width: 120px;
+    height: 160px;
+  }
+
+  .leaderboard th,
+  .leaderboard td {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .modal {
+    padding: 20px 15px;
     font-size: 15px;
-  }
-
-  .submit-btn,
-  .undo-btn {
-    font-size: 13px;
-    padding: 6px 12px;
-    margin-top: 6px;
-    width: auto;
-    min-width: 90px;
-    margin-left: 0;
   }
 
   .button-row-below {
     flex-direction: column;
-    gap: 6px;
     align-items: center;
-  }
-
-  .mode-toggle button {
-    font-size: 13px;
-    padding: 6px 12px;
-  }
-
-  .chain-item {
-    max-width: 100px;
-    font-size: 13px;
-  }
-
-  .arrow {
-    font-size: 18px;
-  }
-
-  .leaderboard table {
-    font-size: 12px;
-  }
-
-  .leaderboard th, .leaderboard td {
-    padding: 8px 10px;
-  }
-
-  .modal {
-    max-width: 90vw;
-    font-size: 15px;
-    padding: 20px 15px;
-  }
-
-  .modal input {
-    font-size: 14px;
-    width: 100%;
+    gap: 10px;
   }
 }
 
