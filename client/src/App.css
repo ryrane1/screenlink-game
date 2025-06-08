@@ -279,8 +279,9 @@ input[type="text"] {
   }
 
   .actor-card {
-    flex: 1 1 45%;
-    max-width: 160px;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 4px 0 0 0;
   }
 
   /* Chain scrolls horizontally */
