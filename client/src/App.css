@@ -269,28 +269,36 @@ input[type="text"] {
 /* ✅ Mobile Scroll Styling */
 /* ------------------------ */
 @media (max-width: 768px) {
-  /* Actor pair stacks/wraps naturally, no scroll */
   .actor-pair {
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
-    gap: 20px;
+    gap: 16px;
     overflow-x: hidden;
   }
 
   .actor-card {
-    font-size: 14px;
-    font-weight: bold;
-    margin: 4px 0 0 0;
+    flex: 0 0 auto;
+    width: 140px;
   }
 
-  /* Chain scrolls horizontally */
+  .actor-card img {
+    width: 120px;
+    height: 160px;
+  }
+
+  .actor-card p {
+    font-size: 14px;
+  }
+
   .chain-container {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    justify-content: flex-start;
     padding-bottom: 10px;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
   }
 
   .chain-item {
