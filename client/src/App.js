@@ -196,16 +196,14 @@ function App() {
       <div className="actor-pair">
         {startActor && (
           <div className="actor-card">
-            <h3>Start</h3>
             <img src={startActor.image} alt={startActor.name} />
-            <p>{startActor.name}</p>
+            <p>(Start: {startActor.name})</p>
           </div>
         )}
         {goalActor && (
           <div className="actor-card">
-            <h3>Goal</h3>
             <img src={goalActor.image} alt={goalActor.name} />
-            <p>{goalActor.name}</p>
+            <p>(Goal: {goalActor.name})</p>
           </div>
         )}
       </div>
