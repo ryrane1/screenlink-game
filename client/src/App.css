@@ -112,7 +112,7 @@ input {
 
 .chain-item {
   width: 140px;
-  min-height: 220px;
+  height: 220px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -126,6 +126,7 @@ input {
   color: white;
   box-shadow: 0 0 10px #00ffcc33;
   font-size: 14px;
+  overflow: hidden;
 }
 
 .chain-item.movie {
@@ -144,7 +145,15 @@ input {
   height: 140px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
+}
+
+.chain-item p {
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
 }
 
 .chain-scroll-wrapper {
