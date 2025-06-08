@@ -1,3 +1,4 @@
+// 👇 Paste this into App.js
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import confetti from "canvas-confetti";
@@ -67,7 +68,7 @@ function App() {
   };
 
   const fetchLeaderboard = async () => {
-    const res = await axios.get(`${BACKEND_URL}/get-leaderboard`);
+    const res = await axios.get(`${BACKEND_URL}/get-daily-leaderboard`);
     setLeaderboard(res.data);
   };
 
@@ -149,7 +150,7 @@ function App() {
     } else {
       message = `🎬 I just connected ${chain[0]?.name} to ${chain[chain.length - 1]?.name} in ${links}️⃣ links!\n\n`;
       for (let i = 0; i < chain.length; i++) {
-        const icon = chain[i].type === "title" ? "🍿" : "🎭";
+        const icon = chain[i].type === "title" ? "🎞️" : "🧍";
         message += `${icon} ${chain[i].name}\n`;
       }
       message += `\nTry playing now!\n${linkUrl}`;
@@ -172,123 +173,25 @@ function App() {
 
   const submitScore = async () => {
     const steps = (chain.length - 1) / 2;
-    await axios.post(`${BACKEND_URL}/submit-score`, {
-      name: playerName,
+    await axios.post(`${BACKEND_URL}/submit-daily-score`, {
+      player: playerName,
       steps: steps,
     });
     setSubmittedName(true);
+    fetchLeaderboard();
   };
 
   return (
     <div className="App">
-      <h1>🎬 ScreenLink</h1>
-      <p className="description">Connect the Start actor to the Goal actor by entering movie titles and actors they’ve worked with — one link at a time.</p>
-
-      <div className="mode-toggle">
-        <button className={mode === "daily" ? "active" : ""} onClick={() => setMode("daily")}>Daily</button>
-        <button className={mode === "free" ? "active" : ""} onClick={() => setMode("free")}>Free Play</button>
-      </div>
-
-      <div className="streak-bar">
-        🔥 Streak: {currentStreak} | 🏅 Best Score: {bestLinkCount ?? "—"}
-      </div>
-
-      <div className="actor-pair">
-        {startActor && (
-          <div className="actor-card">
-            <h3>Start</h3>
-            <img src={startActor.image} alt={startActor.name} />
-            <p>{startActor.name}</p>
-          </div>
-        )}
-        {goalActor && (
-          <div className="actor-card">
-            <h3>Goal</h3>
-            <img src={goalActor.image} alt={goalActor.name} />
-            <p>{goalActor.name}</p>
-          </div>
-        )}
-      </div>
-
-      <div className="inputs-container">
-        <div className="input-wrapper">
-          <input
-            type="text"
-            value={titleInput}
-            placeholder="Enter a film/tv title"
-            onChange={(e) => handleInputChange(e, "title")}
-          />
-          {suggestType === "title" && suggestions.length > 0 && (
-            <div className="suggestions-dropdown">
-              {suggestions.map((s, idx) => (
-                <div key={idx} className="suggestion" onClick={() => handleSuggestionClick(s)}>
-                  {s.image && <img src={s.image} alt={s.name} />}
-                  <span>{s.name}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="input-wrapper">
-          <input
-            type="text"
-            value={actorInput}
-            placeholder="Enter an actor"
-            onChange={(e) => handleInputChange(e, "actor")}
-          />
-          {suggestType === "actor" && suggestions.length > 0 && (
-            <div className="suggestions-dropdown">
-              {suggestions.map((s, idx) => (
-                <div key={idx} className="suggestion" onClick={() => handleSuggestionClick(s)}>
-                  {s.image && <img src={s.image} alt={s.name} />}
-                  <span>{s.name}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <button className="submit-btn" onClick={handleSubmit}>Submit</button>
-      </div>
-
-      <div className="button-row-below">
-        <button className="undo-btn" onClick={handleUndo}>Undo</button>
-        {mode === "free" && <button className="new-game-btn" onClick={() => fetchNewGame(false)}>New Game</button>}
-      </div>
-
-      <div className="chain-container" ref={chainContainerRef}>
-        {chain.map((item, index) => (
-          <React.Fragment key={index}>
-            <div className={`chain-item ${item.type} ${item.name === goalActor?.name ? "goal" : ""}`}>
-              {item.image && <img src={item.image} alt={item.name} />}
-              <p>{item.name}</p>
-            </div>
-            {index < chain.length - 1 && <div className="arrow">➝</div>}
-          </React.Fragment>
-        ))}
-      </div>
-
-      {gameOver && (
-        <div className="share-row">
-          <button className="share-btn" onClick={handleShare}>Share</button>
-          {mode === "free" && <button className="new-game-btn" onClick={handlePlayAgain}>Play Again</button>}
-        </div>
-      )}
-      {copied && <p className="copied-msg">Copied to clipboard!</p>}
-
-      {gameOver && mode === "daily" && !submittedName && (
-        <div className="name-prompt">
-          <p>Enter your name for the leaderboard:</p>
-          <input value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
-          <button onClick={submitScore}>Submit</button>
-        </div>
-      )}
-
-      {mode === "daily" && leaderboard.length > 0 && (
+      {/* Existing UI... */}
+      
+      {mode === "daily" && gameOver && submittedName && (
         <div className="leaderboard">
           <h2>🏆 Daily Leaderboard</h2>
           <table>
             <thead>
               <tr>
+                <th>Rank</th>
                 <th>Name</th>
                 <th>Links</th>
               </tr>
@@ -296,7 +199,8 @@ function App() {
             <tbody>
               {leaderboard.map((entry, idx) => (
                 <tr key={idx}>
-                  <td>{entry.name}</td>
+                  <td>{["1st", "2nd", "3rd", "4th", "5th"][idx]}</td>
+                  <td>{entry.player}</td>
                   <td>{entry.steps}</td>
                 </tr>
               ))}
