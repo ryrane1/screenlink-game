@@ -269,18 +269,18 @@ input[type="text"] {
 /* ✅ Mobile Scroll Styling */
 /* ------------------------ */
 @media (max-width: 768px) {
+  /* Actor pair stacks/wraps naturally, no scroll */
   .actor-pair {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 20px;
-    padding-bottom: 10px;
   }
 
   .actor-card {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
   }
 
+  /* Chain scrolls horizontally */
   .chain-container {
     flex-wrap: nowrap;
     overflow-x: auto;
