@@ -67,7 +67,7 @@ function App() {
   };
 
   const fetchLeaderboard = async () => {
-    const res = await axios.get(`${BACKEND_URL}/get-leaderboard`);
+    const res = await axios.get(`${BACKEND_URL}/get-daily-leaderboard`);
     setLeaderboard(res.data);
   };
 
@@ -172,8 +172,8 @@ function App() {
 
   const submitScore = async () => {
     const steps = (chain.length - 1) / 2;
-    await axios.post(`${BACKEND_URL}/submit-score`, {
-      name: playerName,
+    await axios.post(`${BACKEND_URL}/submit-daily-score`, {
+      player: playerName,
       steps: steps,
     });
     setSubmittedName(true);
@@ -270,7 +270,7 @@ function App() {
       {gameOver && (
         <div className="share-row">
           <button className="share-btn" onClick={handleShare}>Share</button>
-          {mode === "free" && <button className="new-game-btn" onClick={handlePlayAgain}>Play Again</button>}
+          <button className="new-game-btn" onClick={handlePlayAgain}>Play Again</button>
         </div>
       )}
       {copied && <p className="copied-msg">Copied to clipboard!</p>}
@@ -296,7 +296,7 @@ function App() {
             <tbody>
               {leaderboard.map((entry, idx) => (
                 <tr key={idx}>
-                  <td>{entry.name}</td>
+                  <td>{entry.player}</td>
                   <td>{entry.steps}</td>
                 </tr>
               ))}
