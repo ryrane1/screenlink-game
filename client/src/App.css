@@ -352,13 +352,25 @@ input[type="text"] {
 }
 
 .modal {
-  background-color: #0c2522;
-  padding: 30px;
+  background-color: #0e2c27;
+  padding: 28px 24px;
   border-radius: 16px;
-  box-shadow: 0 0 20px #00ffcc55;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.25);
   text-align: center;
-  max-width: 300px;
+  max-width: 350px;
   width: 90%;
+  color: white;
+}
+
+.modal h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.modal p {
+  margin: 10px 0 20px;
+  font-size: 16px;
+  color: #ccc;
 }
 
 .modal input {
@@ -367,16 +379,18 @@ input[type="text"] {
   border-radius: 8px;
   border: none;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
 }
 
 .modal button {
   background-color: #00ffcc;
   color: black;
   font-weight: bold;
-  padding: 10px 20px;
+  padding: 10px 24px;
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  font-size: 16px;
 }
 
