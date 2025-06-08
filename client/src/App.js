@@ -1,5 +1,3 @@
-
-
 // App.js
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
@@ -165,8 +163,13 @@ function App() {
       )}
 
       <div className="inputs-container">
-        <div className="input-wrapper" style={{ flex: "none", minWidth: "250px" }}>
-          <input type="text" value={titleInput} placeholder="Enter a film/tv title" onChange={(e) => handleInputChange(e, "title")} />
+        <div className="input-wrapper">
+          <input
+            type="text"
+            value={titleInput}
+            placeholder="Enter a film/tv title"
+            onChange={(e) => handleInputChange(e, "title")}
+          />
           {suggestType === "title" && suggestions.length > 0 && (
             <div className="suggestions-dropdown">
               {suggestions.map((s, idx) => (
@@ -178,9 +181,13 @@ function App() {
             </div>
           )}
         </div>
-
-        <div className="input-wrapper" style={{ flex: "none", minWidth: "250px" }}>
-          <input type="text" value={actorInput} placeholder="Enter an actor" onChange={(e) => handleInputChange(e, "actor")} />
+        <div className="input-wrapper">
+          <input
+            type="text"
+            value={actorInput}
+            placeholder="Enter an actor"
+            onChange={(e) => handleInputChange(e, "actor")}
+          />
           {suggestType === "actor" && suggestions.length > 0 && (
             <div className="suggestions-dropdown">
               {suggestions.map((s, idx) => (
@@ -192,10 +199,12 @@ function App() {
             </div>
           )}
         </div>
+        <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+      </div>
 
-        <div className="input-wrapper" style={{ flex: "none" }}>
-          <button className="submit-btn" onClick={handleSubmit}>Submit</button>
-        </div>
+      <div className="button-row-below">
+        <button className="undo-btn" onClick={handleUndo}>Undo</button>
+        {mode === "free" && <button className="undo-btn" onClick={() => fetchNewGame(false)}>New Game</button>}
       </div>
 
       {showNamePrompt && (
@@ -229,11 +238,6 @@ function App() {
             </React.Fragment>
           ))}
         </div>
-      </div>
-
-      <div className="button-row-below">
-        <button className="undo-btn" onClick={handleUndo}>Undo</button>
-        {mode === "free" && <button className="undo-btn" onClick={() => fetchNewGame(false)}>New Game</button>}
       </div>
 
       {mode === "daily" && (
