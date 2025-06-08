@@ -189,7 +189,7 @@ def submit_daily_score():
 
 @app.route("/get-daily-leaderboard")
 def get_daily_leaderboard():
-    today = str(date.today())
+    today = datetime.utcnow().strftime("%Y-%m-%d")
     leaderboard = load_leaderboard()
     return jsonify(leaderboard.get(today, []))
 
