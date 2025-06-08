@@ -58,7 +58,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #111;
+  background-color: #0c2522;
   border-radius: 10px;
   padding: 10px;
   width: 160px;
@@ -75,7 +75,7 @@
 
 .actor-card h3 {
   font-size: 14px;
-  color: #ccc;
+  color: #0c2522;
   margin: 0;
 }
 
@@ -129,8 +129,8 @@ input[type="text"] {
 .undo-btn,
 .new-game-btn,
 .share-btn {
-  background-color: #444;
-  color: white;
+  background-color: #00ffcc;
+  color: black;
   font-weight: bold;
   padding: 10px 20px;
   border: none;
@@ -148,7 +148,7 @@ input[type="text"] {
 }
 
 .chain-item {
-  background-color: #111;
+  background-color: #0c2522;
   padding: 10px;
   border-radius: 10px;
   margin: 5px;
@@ -165,7 +165,7 @@ input[type="text"] {
 }
 
 .chain-item.actor {
-  border: 2px solid #00ffcc;
+  border: 2px solid #31fccb;
 }
 
 .chain-item.title {
@@ -187,7 +187,7 @@ input[type="text"] {
   position: absolute;
   top: 100%;
   left: 0;
-  background: #222;
+  background: #238971;
   border: 1px solid #555;
   border-radius: 5px;
   z-index: 10;
