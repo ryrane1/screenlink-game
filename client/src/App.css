@@ -271,17 +271,21 @@ input[type="text"] {
 @media (max-width: 768px) {
   /* Actor pair stacks/wraps naturally, no scroll */
   .actor-pair {
-    flex-wrap: wrap;
+    display: flex;
+    flex-wrap: nowrap;
     justify-content: center;
     gap: 20px;
+    overflow-x: hidden;
   }
 
   .actor-card {
-    flex: 0 1 auto;
+    flex: 1 1 45%;
+    max-width: 160px;
   }
 
   /* Chain scrolls horizontally */
   .chain-container {
+    display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     justify-content: flex-start;
