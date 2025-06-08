@@ -3,8 +3,9 @@ from flask_cors import CORS
 import requests
 import random
 import os
-import json
 from datetime import datetime, date
+import firebase_admin
+from firebase_admin import credentials, db
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {
@@ -14,18 +15,15 @@ CORS(app, resources={r"/*": {
     ]
 }})
 
+# TMDB Setup
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
-LEADERBOARD_FILE = "daily_leaderboard.json"
 
-def load_leaderboard():
-    if os.path.exists(LEADERBOARD_FILE):
-        with open(LEADERBOARD_FILE, "r") as f:
-            return json.load(f)
-    return {}
-
-def save_leaderboard(data):
-    with open(LEADERBOARD_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+# Firebase setup
+if not firebase_admin._apps:
+    cred = credentials.Certificate("server/firebase_key.json")
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://screenlink-leaderboard-default-rtdb.firebaseio.com/'
+    })
 
 actors = [
     "Samuel L. Jackson", "Scarlett Johansson", "Robert Downey Jr.", "Zoe Saldana", "Chris Pratt",
@@ -172,26 +170,21 @@ def submit_daily_score():
     if not player or steps is None:
         return jsonify({"error": "Missing fields"}), 400
 
-    today = str(date.today())
-    leaderboard = load_leaderboard()
-    if today not in leaderboard:
-        leaderboard[today] = []
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    ref = db.reference(f"leaderboards/{today}")
+    current = ref.get() or []
 
-    leaderboard[today].append({
-        "player": player,
-        "steps": steps,
-        "duration": duration
-    })
+    current.append({"player": player, "steps": steps, "duration": duration})
+    current = sorted(current, key=lambda x: (x["steps"], x["duration"]))[:5]
+    ref.set(current)
 
-    leaderboard[today] = sorted(leaderboard[today], key=lambda x: (x["steps"], x["duration"]))[:5]
-    save_leaderboard(leaderboard)
-    return jsonify({"message": "Score submitted successfully"})
+    return jsonify({"message": "Score submitted to Firebase ✅"})
 
 @app.route("/get-daily-leaderboard")
 def get_daily_leaderboard():
     today = datetime.utcnow().strftime("%Y-%m-%d")
-    leaderboard = load_leaderboard()
-    return jsonify(leaderboard.get(today, []))
+    ref = db.reference(f"leaderboards/{today}")
+    return jsonify(ref.get() or [])
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
