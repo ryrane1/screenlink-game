@@ -71,7 +71,7 @@ function App() {
       const res = await axios.get(`${BACKEND_URL}/get-daily-leaderboard`);
       setLeaderboard(res.data || []);
     } catch (error) {
-      console.error("Error fetching leaderboard:" error);
+      console.error("Error fetching leaderboard:", error);
       setLeaderboard([]);
     }
   };
