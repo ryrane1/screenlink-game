@@ -274,10 +274,13 @@ function App() {
       {copied && <p className="copied-msg">Copied to clipboard!</p>}
 
       {gameOver && mode === "daily" && !submittedName && (
-        <div className="name-prompt">
-          <p>Enter your name for the leaderboard:</p>
-          <input value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
-          <button onClick={submitScore}>Submit</button>
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>🎉 You did it!</h3>
+            <p>Enter your name to be added to today's leaderboard:</p>
+            <input value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
+            <button onClick={submitScore}>Submit</button>
+          </div>
         </div>
       )}
 
@@ -294,7 +297,9 @@ function App() {
             <tbody>
               {leaderboard.map((entry, idx) => (
                 <tr key={idx}>
-                  <td>{entry.player}</td>
+                  <td>
+                    {["🥇 1st", "🥈 2nd", "🥉 3rd", "4th", "5th"][idx]} — {entry.player}
+                  </td>
                   <td>{entry.steps}</td>
                 </tr>
               ))}

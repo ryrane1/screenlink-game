@@ -244,35 +244,51 @@ input[type="text"] {
   margin-right: 10px;
 }
 
+/* ————— Enhanced Leaderboard Styling ————— */
 .leaderboard {
   margin-top: 40px;
-}
-
-.leaderboard h2 {
-  color: gold;
+  background: none; /* remove any parent bg */
+  padding: 20px;
+  border-radius: 12px;
 }
 
 .leaderboard table {
-  margin: 0 auto;
-  border-collapse: collapse;
-  width: 80%;
+  width: 100%;
   max-width: 600px;
-}
-
-.leaderboard th,
-.leaderboard td {
-  border: 1px solid #555;
-  padding: 10px;
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .leaderboard th {
-  background-color: #222;
+  background-color: #1f3934;    /* deep teal */
   color: #00ffcc;
+  font-size: 18px;
+  padding: 12px;
+  text-align: center;
 }
 
 .leaderboard td {
-  background-color: #111;
+  background-color: #0c2522;    /* softer dark green */
+  color: #e0f7f2;
+  padding: 12px;
+  text-align: center;
 }
+
+/* striped rows */
+.leaderboard tbody tr:nth-child(even) td {
+  background-color: #13332d;    /* slightly lighter on alternate rows */
+}
+
+/* remove inner borders, rely on spacing */
+.leaderboard th + th,
+.leaderboard td + td {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 
 /* ------------------------ */
 /* ✅ Mobile Scroll Styling */
@@ -317,5 +333,50 @@ input[type="text"] {
   .arrow {
     flex: 0 0 auto;
   }
+}
+
+/* ------------------------ */
+/* ✅ Modal Popup Styling   */
+/* ------------------------ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: #0c2522;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px #00ffcc55;
+  text-align: center;
+  max-width: 300px;
+  width: 90%;
+}
+
+.modal input {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.modal button {
+  background-color: #00ffcc;
+  color: black;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
