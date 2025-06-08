@@ -147,18 +147,21 @@ input {
   margin-bottom: 8px;
 }
 
+.chain-scroll-wrapper {
+  overflow-x: auto;
+  padding: 30px 0;
+  display: flex;
+  justify-content: center;
+}
+
 .chain-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 15px;
+  align-items: flex-start;
+  gap: 20px;
   flex-wrap: wrap;
-  padding: 0 10px;
-}
-
-.chain-scroll-wrapper {
-  overflow-x: auto;
-  padding: 20px 0;
+  max-width: 90vw;
+  margin-bottom: 20px;
 }
 
 .arrow {
@@ -180,6 +183,12 @@ input {
 .undo-btn {
   background-color: #3f4e51;
   color: white;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin: 10px auto 20px;
+  display: block;
+  max-width: 120px;
 }
 
 .submit-btn:hover {
