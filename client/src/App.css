@@ -76,8 +76,11 @@
 
 .actor-card h3 {
   font-size: 14px;
-  color: #0c2522;
+  color: #00ffcc;
   margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: bold;
 }
 
 .actor-card p {
