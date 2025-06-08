@@ -67,8 +67,13 @@ function App() {
   };
 
   const fetchLeaderboard = async () => {
-    const res = await axios.get(`${BACKEND_URL}/get-daily-leaderboard`);
-    setLeaderboard(res.data);
+    try {    
+      const res = await axios.get(`${BACKEND_URL}/get-daily-leaderboard`);
+      setLeaderboard(res.data || []);
+    } catch (error) {
+      console.error("Error fetching leaderboard:" error);
+      setLeaderboard([]);
+    }
   };
 
   const handleInputChange = (e, type) => {
