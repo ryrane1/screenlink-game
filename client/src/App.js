@@ -118,9 +118,9 @@ function App() {
       const movie = chain.length >= 3 ? chain[1]?.name || "" : "";
       message =
         `🎬 I just connected ${start} to ${end} in ${steps}️⃣ steps!\n\n` +
-        `🧍 ${start}\n` +
-        `🎞️ ${movie}\n` +
-        `🧍 ${end}\n\n` +
+        `🎭 ${start}\n` +
+        `🍿 ${movie}\n` +
+        `🎭 ${end}\n\n` +
         `Try playing now!\n${link}`;
     }
 
@@ -198,12 +198,14 @@ one link at a time.
       </div>
 
       <div className="chain-container">
-        {chain.map((item, index) => (
-          <div key={index} className="chain-item">
-            <img src={item.image} alt={item.name} />
-            <p>{item.name}</p>
-            {index < chain.length - 1 && <span className="arrow">➡️</span>}
-          </div>
+        {chain.map((item, idx) => (
+          <React.Fragment key={idx}>
+            <div className={`chain-item ${item.type === "title" ? "movie" : ""} ${item.name === goalActor?.name ? "goal" : ""}`}>
+              {item.image && <img src={item.image} alt={item.name} />}
+              <div>{item.name}</div>
+            </div>
+            {idx < chain.length - 1 && <div className="arrow">→</div>}
+          </React.Fragment>
         ))}
       </div>
 
