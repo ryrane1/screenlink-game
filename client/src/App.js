@@ -300,13 +300,15 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {leaderboard.map((entry, idx) => (
-                <tr key={idx}>
-                  <td>
-                    {["🥇 1st", "🥈 2nd", "🥉 3rd", "4th", "5th"][idx]} — {entry.player}
-                  </td>
-                  <td>{entry.steps}</td>
-                </tr>
+              {leaderboard
+                .filter(entry => entry !== null)
+                .map((entry, idx) => (
+                  <tr key={idx}>
+                    <td>
+                      {["🥇 1st", "🥈 2nd", "🥉 3rd", "4th", "5th"][idx]} — {entry.player}
+                    </td>
+                    <td>{entry.steps}</td>
+                  </tr>
               ))}
             </tbody>
           </table>
