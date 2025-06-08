@@ -60,7 +60,7 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin: 15px auto;
+  margin: 15px auto 30 px;
   max-width: 700px;
 }
 
