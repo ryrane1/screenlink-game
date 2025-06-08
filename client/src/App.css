@@ -69,14 +69,17 @@
 .inputs-container {
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin: 20px auto;
+  max-width: 700px
 }
 
 .input-wrapper {
   position: relative;
-  min-width: 240px;
+  flex: 1;
+  min-width: 200px;
 }
 
 input[type="text"] {
@@ -95,6 +98,7 @@ input[type="text"] {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .undo-btn, .new-game-btn {
@@ -102,7 +106,7 @@ input[type="text"] {
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
-  background-color: #444c4b;
+  background-color: #0cfecd;
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -119,7 +123,7 @@ input[type="text"] {
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: #222;
+  background-color: #55cfb5;
   border-radius: 6px;
   width: 100%;
   max-height: 200px;
@@ -183,7 +187,7 @@ input[type="text"] {
 .arrow {
   align-self: center;
   font-size: 24px;
-  color: #ccc;
+  color: #0cfecd;
   margin: 0 4px;
   display: flex;
   align-items: center;
