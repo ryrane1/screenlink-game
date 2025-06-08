@@ -59,10 +59,9 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
-  margin-bottom: 15px;
+  flex-wrap: wrap;
+  margin: 15px auto;
   max-width: 700px;
-  margin: auto;
-  flex-wrap: nowrap;
 }
 
 .input-wrapper {
@@ -207,9 +206,9 @@ input {
 
 .button-row-below {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 10px;
   margin-bottom: 20px;
 }
