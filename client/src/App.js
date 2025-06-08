@@ -189,7 +189,9 @@ function App() {
             </div>
           )}
         </div>
-        <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+        <div className="input-wrapper" style={{ flex: "none" }}>
+          <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+        </div>
       </div>
 
       {showNamePrompt && (
@@ -211,11 +213,6 @@ function App() {
         </div>
       )}
 
-      <div className="button-row-below">
-        <button className="undo-btn" onClick={handleUndo}>Undo</button>
-        {mode === "free" && <button className="undo-btn" onClick={() => fetchNewGame(false)}>New Game</button>}
-      </div>
-
       <div className="chain-scroll-wrapper">
         <div className="chain-container">
           {chain.map((item, idx) => (
@@ -228,6 +225,11 @@ function App() {
             </React.Fragment>
           ))}
         </div>
+      </div>
+
+      <div className="button-row-below">
+        <button className="undo-btn" onClick={handleUndo}>Undo</button>
+        {mode === "free" && <button className="undo-btn" onClick={() => fetchNewGame(false)}>New Game</button>}
       </div>
 
       {mode === "daily" && (
