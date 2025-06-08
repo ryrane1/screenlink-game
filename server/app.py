@@ -3,6 +3,8 @@ from flask_cors import CORS
 import requests
 import random
 import os
+import json
+import base64
 from datetime import datetime, date
 import firebase_admin
 from firebase_admin import credentials, db
@@ -15,17 +17,17 @@ CORS(app, resources={r"/*": {
     ]
 }})
 
-# TMDB Setup
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
-# Firebase setup
-if not firebase_admin._apps:
-    cred = credentials.Certificate("server/firebase_key.json")
-    firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://screenlink-leaderboard-default-rtdb.firebaseio.com/'
-    })
+# 🔐 Load Firebase credentials from environment variable
+key_b64 = os.environ.get("FIREBASE_CRED_B64")
+key_json = json.loads(base64.b64decode(key_b64))
+cred = credentials.Certificate(key_json)
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://screen-link-2025-default-rtdb.firebaseio.com/'  # <-- replace this
+})
 
-actors = [
+actors = [  # (unchanged actor list)
     "Samuel L. Jackson", "Scarlett Johansson", "Robert Downey Jr.", "Zoe Saldana", "Chris Pratt",
     "Tom Cruise", "Chris Hemsworth", "Vin Diesel", "Dwayne Johnson", "Bradley Cooper",
     "Chris Evans", "Tom Hanks", "Johnny Depp", "Tom Holland", "Mark Ruffalo",
