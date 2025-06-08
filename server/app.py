@@ -3,7 +3,7 @@ from flask_cors import CORS
 import requests
 import random
 import os
-import sqlite3
+import json
 from datetime import datetime, date
 
 app = Flask(__name__)
@@ -15,25 +15,17 @@ CORS(app, resources={r"/*": {
 }})
 
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+LEADERBOARD_FILE = "daily_leaderboard.json"
 
-# 🎯 Initialize SQLite leaderboard DB
-def init_db():
-    conn = sqlite3.connect("leaderboard.db")
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS leaderboard (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            player TEXT NOT NULL,
-            steps INTEGER NOT NULL,
-            duration INTEGER DEFAULT 0,
-            submitted_date TEXT DEFAULT (DATE('now')),
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    conn.commit()
-    conn.close()
+def load_leaderboard():
+    if os.path.exists(LEADERBOARD_FILE):
+        with open(LEADERBOARD_FILE, "r") as f:
+            return json.load(f)
+    return {}
 
-init_db()
+def save_leaderboard(data):
+    with open(LEADERBOARD_FILE, "w") as f:
+        json.dump(data, f, indent=2)
 
 actors = [
     "Samuel L. Jackson", "Scarlett Johansson", "Robert Downey Jr.", "Zoe Saldana", "Chris Pratt",
@@ -57,7 +49,6 @@ actors = [
     "Arnold Schwarzenegger", "Shia LaBeouf", "Keegan-Michael Key", "Jason Momoa", "Jude Law",
     "Meryl Streep", "Anthony Hopkins", "Evangeline Lilly", "Keira Knightley", "Channing Tatum"
 ]
-
 
 @app.route("/")
 def index():
@@ -181,32 +172,26 @@ def submit_daily_score():
     if not player or steps is None:
         return jsonify({"error": "Missing fields"}), 400
 
-    conn = sqlite3.connect("leaderboard.db")
-    c = conn.cursor()
-    c.execute("INSERT INTO leaderboard (player, steps, duration) VALUES (?, ?, ?)", 
-              (player, steps, duration))
-    conn.commit()
-    conn.close()
+    today = str(date.today())
+    leaderboard = load_leaderboard()
+    if today not in leaderboard:
+        leaderboard[today] = []
 
+    leaderboard[today].append({
+        "player": player,
+        "steps": steps,
+        "duration": duration
+    })
+
+    leaderboard[today] = sorted(leaderboard[today], key=lambda x: (x["steps"], x["duration"]))[:5]
+    save_leaderboard(leaderboard)
     return jsonify({"message": "Score submitted successfully"})
 
 @app.route("/get-daily-leaderboard")
 def get_daily_leaderboard():
     today = str(date.today())
-    conn = sqlite3.connect("leaderboard.db")
-    c = conn.cursor()
-    c.execute('''
-        SELECT player, steps
-        FROM leaderboard
-        WHERE submitted_date = ?
-        ORDER BY steps ASC, timestamp ASC
-        LIMIT 5
-    ''', (today,))
-    rows = c.fetchall()
-    conn.close()
-
-    leaderboard = [{"player": row[0], "steps": row[1]} for row in rows]
-    return jsonify(leaderboard)
+    leaderboard = load_leaderboard()
+    return jsonify(leaderboard.get(today, []))
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
