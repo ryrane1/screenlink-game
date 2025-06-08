@@ -45,21 +45,17 @@
   text-align: center;
 }
 
-/* ✅ Updated to scroll horizontally on mobile */
+/* Default (Desktop) */
 .actor-pair {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: flex-start;
-  gap: 20px;
+  gap: 40px;
   margin-bottom: 25px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding-bottom: 10px;
+  flex-wrap: wrap;
 }
 
-/* Each card keeps width and scrolls */
 .actor-card {
-  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -144,19 +140,17 @@ input[type="text"] {
   cursor: pointer;
 }
 
-/* ✅ Updated to scroll horizontally */
+/* Default (Desktop): Chain layout wraps and centers */
 .chain-container {
   display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding-bottom: 10px;
-  gap: 10px;
-  justify-content: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
+  margin-bottom: 20px;
+  gap: 10px;
 }
 
 .chain-item {
-  flex: 0 0 auto;
   background-color: #0c2522;
   padding: 10px;
   border-radius: 10px;
@@ -185,9 +179,7 @@ input[type="text"] {
   box-shadow: 0 0 15px gold;
 }
 
-/* ✅ Keep arrows from collapsing in scroll */
 .arrow {
-  flex: 0 0 auto;
   font-size: 24px;
   margin: 0 8px;
   color: #00ffcc;
@@ -271,5 +263,37 @@ input[type="text"] {
 
 .leaderboard td {
   background-color: #111;
+}
+
+/* ------------------------ */
+/* ✅ Mobile Scroll Styling */
+/* ------------------------ */
+@media (max-width: 768px) {
+  .actor-pair {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 20px;
+    padding-bottom: 10px;
+  }
+
+  .actor-card {
+    flex: 0 0 auto;
+  }
+
+  .chain-container {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 10px;
+  }
+
+  .chain-item {
+    flex: 0 0 auto;
+  }
+
+  .arrow {
+    flex: 0 0 auto;
+  }
 }
 
