@@ -1,4 +1,3 @@
-// 👇 Paste this into App.js
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import confetti from "canvas-confetti";
@@ -183,8 +182,108 @@ function App() {
 
   return (
     <div className="App">
-      {/* Existing UI... */}
-      
+      <h1 className="title">🎬 ScreenLink</h1>
+      <div className="mode-toggle">
+        <button
+          className={mode === "daily" ? "active" : ""}
+          onClick={() => setMode("daily")}
+        >
+          Daily
+        </button>
+        <button
+          className={mode === "free" ? "active" : ""}
+          onClick={() => setMode("free")}
+        >
+          Free Play
+        </button>
+      </div>
+
+      <div className="streak-bar">
+        🔥 Streak: {currentStreak} &nbsp;&nbsp; 🏅 Best Score:{" "}
+        {bestLinkCount !== null ? bestLinkCount : "—"}
+      </div>
+
+      <div className="actor-pair">
+        {startActor && (
+          <div className="actor-card">
+            <img src={startActor.image} alt={startActor.name} />
+            <strong>Start:</strong> {startActor.name}
+          </div>
+        )}
+        {goalActor && (
+          <div className="actor-card">
+            <img src={goalActor.image} alt={goalActor.name} />
+            <strong>Goal:</strong> {goalActor.name}
+          </div>
+        )}
+      </div>
+
+      <div className="inputs-container">
+        <input
+          type="text"
+          placeholder="Enter Movie/TV Title"
+          value={titleInput}
+          onChange={(e) => handleInputChange(e, "title")}
+        />
+        <input
+          type="text"
+          placeholder="Enter Next Actor"
+          value={actorInput}
+          onChange={(e) => handleInputChange(e, "actor")}
+        />
+        <button onClick={handleSubmit}>Submit</button>
+        {suggestions.length > 0 && (
+          <div className="suggestions">
+            {suggestions.map((s, idx) => (
+              <div key={idx} onClick={() => handleSuggestionClick(s)}>
+                {s.image && <img src={s.image} alt={s.name} />}
+                <span>{s.name}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="chain-container" ref={chainContainerRef}>
+        {chain.map((item, idx) => (
+          <React.Fragment key={idx}>
+            <div
+              className={`chain-item ${item.type === "actor" ? "actor" : "title"
+                }`}
+            >
+              <img src={item.image} alt={item.name} />
+              <span>{item.name}</span>
+            </div>
+            {idx < chain.length - 1 && <div className="arrow">➤</div>}
+          </React.Fragment>
+        ))}
+      </div>
+
+      <div className="buttons-container">
+        <button onClick={handleUndo}>Undo</button>
+        {gameOver && mode === "free" && (
+          <button onClick={handlePlayAgain}>Play Again</button>
+        )}
+      </div>
+
+      {gameOver && (
+        <div className="share-container">
+          {mode === "daily" && !submittedName && (
+            <div className="name-entry">
+              <input
+                type="text"
+                placeholder="Enter your name"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+              />
+              <button onClick={submitScore}>Submit</button>
+            </div>
+          )}
+          <button onClick={handleShare}>Share</button>
+          {copied && <p>Copied to clipboard!</p>}
+        </div>
+      )}
+
       {mode === "daily" && gameOver && submittedName && (
         <div className="leaderboard">
           <h2>🏆 Daily Leaderboard</h2>
