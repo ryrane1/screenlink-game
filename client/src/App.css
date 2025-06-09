@@ -255,5 +255,206 @@ input[type="text"] {
 }
 
 .name-prompt {
-  margin-top: 20px
+  margin-top: 20px;
+}
+
+.name-prompt input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  margin-right: 10px;
+}
+
+/* ————— Enhanced Leaderboard Styling ————— */
+.leaderboard {
+  margin-top: 40px;
+  background: none;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.leaderboard table {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.leaderboard th {
+  background-color: #1f3934;
+  color: #00ffcc;
+  font-size: 18px;
+  padding: 12px;
+  text-align: center;
+}
+
+.leaderboard td {
+  background-color: #0c2522;
+  color: #e0f7f2;
+  padding: 12px;
+  text-align: center;
+}
+
+.leaderboard tbody tr:nth-child(even) td {
+  background-color: #13332d;
+}
+
+.leaderboard th + th,
+.leaderboard td + td {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ------------------------ */
+/* ✅ Improved Mobile Styling */
+/* ------------------------ */
+@media (max-width: 768px) {
+  .App {
+    padding: 16px;
+  }
+
+  .description {
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .streak-bar {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .actor-pair {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .actor-card {
+    flex: 0 0 auto;
+    width: 140px;
+    min-height: 240px;
+  }
+
+  .actor-card img {
+    width: 120px;
+    height: 160px;
+  }
+
+  .actor-card p {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  .inputs-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .input-wrapper {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 10px;
+  }
+
+  .button-row-below {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .chain-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px 0;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    scroll-snap-type: x mandatory;
+  }
+
+  .chain-item {
+    flex: 0 0 auto;
+    width: 140px;
+    min-width: 140px;
+    scroll-snap-align: start;
+  }
+
+  .arrow {
+    flex-shrink: 0;
+    font-size: 22px;
+  }
+}
+
+/* ------------------------ */
+/* ✅ Modal Popup Styling   */
+/* ------------------------ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: #0e2c27;
+  padding: 28px 24px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.25);
+  text-align: center;
+  max-width: 350px;
+  width: 90%;
+  color: white;
+}
+
+.modal h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.modal p {
+  margin: 10px 0 20px;
+  font-size: 16px;
+  color: #ccc;
+}
+
+.modal input {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  width: 100%;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.modal button {
+  background-color: #00ffcc;
+  color: black;
+  font-weight: bold;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
 
