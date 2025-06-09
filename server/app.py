@@ -6,6 +6,7 @@ import os
 import json
 import base64
 from datetime import datetime, date
+import pytz
 import firebase_admin
 from firebase_admin import credentials, db
 
@@ -64,7 +65,8 @@ def get_random_actors():
 
 @app.route("/get-daily-actors")
 def get_daily_actors():
-    today_seed = datetime.utcnow().strftime("%Y-%m-%d")
+    pacific = pytz.timezone('US/Pacific')
+    today_seed = datetime.now(pacific).strftime("%Y-%m-%d")
     rng = random.Random(today_seed)
     selected = rng.sample(actors, 2)
     return jsonify({
@@ -172,7 +174,7 @@ def submit_daily_score():
     if not player or steps is None:
         return jsonify({"error": "Missing fields"}), 400
 
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(pytz.timezone('US/Pacific)).strftime("%Y-%m-%d")
     ref = db.reference(f"leaderboards/{today}")
     current = ref.get() or []
 
@@ -184,7 +186,7 @@ def submit_daily_score():
 
 @app.route("/get-daily-leaderboard")
 def get_daily_leaderboard():
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now('US/Pacific)).strftime("%Y-%m-%d")
     ref = db.reference(f"leaderboards/{today}")
     return jsonify(ref.get() or [])
 
