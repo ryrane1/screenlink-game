@@ -132,10 +132,6 @@ input[type="text"] {
 }
 
 .button-row-below {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
   margin-top: 10px;
   margin-bottom: 20px;
 }
@@ -149,35 +145,17 @@ input[type="text"] {
   padding: 10px 20px;
   border: none;
   border-radius: 10px;
+  margin: 5px;
   cursor: pointer;
-  font-size: 16px;
-  white-space: nowrap;
 }
 
 .chain-container {
-  overflow-x: auto;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  padding: 20px 0;
-  scrollbar-width: thin;
-}
-
-.chain {
-  display: inline-flex;
-  gap: 20px;
   align-items: center;
-  flex-wrap: nowrap;
-  min-width: max-content;
-  margin: 0 auto;
-}
-
-.chain-container::-webkit-scrollbar {
-  height: 8px;
-}
-
-.chain-container::-webkit-scrollbar-thumb {
-  background-color: #00ffcc;
-  border-radius: 10px;
+  margin-bottom: 20px;
+  gap: 10px;
 }
 
 .chain-item {
@@ -213,7 +191,6 @@ input[type="text"] {
   font-size: 24px;
   margin: 0 8px;
   color: #00ffcc;
-  flex-shrink: 0;
 }
 
 .suggestions-dropdown {
@@ -266,6 +243,14 @@ input[type="text"] {
   margin-right: 10px;
 }
 
+/* ✅ NEW: Fix spacing for share & play again buttons */
+.share-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 /* ————— Enhanced Leaderboard Styling ————— */
 .leaderboard {
   margin-top: 40px;
@@ -309,152 +294,12 @@ input[type="text"] {
   border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ------------------------ */
-/* ✅ Improved Mobile Styling */
-/* ------------------------ */
+/* ✅ Mobile tweaks preserved */
 @media (max-width: 768px) {
-  .App {
-    padding: 16px;
-  }
-
-  .description {
-    font-size: 15px;
-    margin-bottom: 20px;
-  }
-
-  .streak-bar {
-    font-size: 16px;
-    margin-bottom: 20px;
-  }
-
-  .actor-pair {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    gap: 16px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-  }
-
-  .actor-card {
-    flex: 0 0 auto;
-    width: 140px;
-    min-height: 240px;
-  }
-
-  .actor-card img {
-    width: 120px;
-    height: 160px;
-  }
-
-  .actor-card p {
-    font-size: 14px;
-    margin-top: 6px;
-  }
-
-  .inputs-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .input-wrapper {
-    width: 100%;
-    max-width: 300px;
-  }
-
-  .submit-btn {
-    width: 100%;
-    max-width: 300px;
-    margin-top: 10px;
-  }
-
-  .button-row-below {
+  .button-row-below,
+  .share-row {
     flex-direction: row;
-    justify-content: center;
     flex-wrap: wrap;
   }
-
-  .chain-container {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 10px 0;
-    gap: 12px;
-    justify-content: center;
-    align-items: center;
-    scroll-snap-type: x mandatory;
-  }
-
-  .chain-item {
-    flex: 0 0 auto;
-    width: 140px;
-    min-width: 140px;
-    scroll-snap-align: start;
-  }
-
-  .arrow {
-    flex-shrink: 0;
-    font-size: 22px;
-  }
-}
-
-/* ------------------------ */
-/* ✅ Modal Popup Styling   */
-/* ------------------------ */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: 999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal {
-  background-color: #0e2c27;
-  padding: 28px 24px;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0, 255, 204, 0.25);
-  text-align: center;
-  max-width: 350px;
-  width: 90%;
-  color: white;
-}
-
-.modal h3 {
-  font-size: 22px;
-  margin-bottom: 10px;
-}
-
-.modal p {
-  margin: 10px 0 20px;
-  font-size: 16px;
-  color: #ccc;
-}
-
-.modal input {
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
-  width: 100%;
-  margin-bottom: 16px;
-  box-sizing: border-box;
-}
-
-.modal button {
-  background-color: #00ffcc;
-  color: black;
-  font-weight: bold;
-  padding: 10px 24px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 16px;
 }
 
