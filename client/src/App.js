@@ -6,7 +6,7 @@ import "./App.css";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
 function App() {
-  const [mode, setMode] = useState("free");
+  const [mode, setMode] = useState("daily");
   const [startActor, setStartActor] = useState(null);
   const [goalActor, setGoalActor] = useState(null);
   const [chain, setChain] = useState([]);
