@@ -301,6 +301,13 @@ input[type="text"] {
     flex-direction: row;
     flex-wrap: wrap;
   }
+  .actor-pair {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 16px;
+    justify-content: center;
+    padding-bottom: 10px;
+  }
 }
 
 /* ✅ Modal popup styles for leaderboard submission */
