@@ -10,10 +10,6 @@
   font-size: 17px;
 }
 
-.highlight {
-  color: #00ffcc;
-}
-
 .description {
   margin-top: -10px;
   color: #ccc;
@@ -21,31 +17,40 @@
 }
 
 .mode-toggle {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
   margin-bottom: 10px;
 }
 
-.mode-button {
-  padding: 8px 16px;
-  font-size: 15px;
-  border-radius: 20px;
+.mode-toggle button {
+  background-color: #444;
   border: none;
+  color: white;
+  padding: 10px 20px;
+  margin: 0 10px;
+  font-size: 16px;
+  border-radius: 20px;
   cursor: pointer;
 }
 
-.mode-button.active {
+.mode-toggle button.active {
   background-color: #00ffcc;
   color: black;
+  font-weight: bold;
+}
+
+.streak-bar {
+  margin-top: 10px;
+  margin-bottom: 25px;
+  font-size: 18px;
+  color: #fff;
+  text-align: center;
 }
 
 .actor-pair {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 50px;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  gap: 40px;
+  margin-bottom: 25px;
   flex-wrap: wrap;
 }
 
@@ -53,228 +58,374 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 180px;
+  background-color: #0c2522;
+  border-radius: 10px;
   padding: 10px;
-  border-radius: 20px;
-  background-color: #132a24;
-  box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+  width: 160px;
+  box-shadow: 0 0 15px #00ffcc44;
+  justify-content: space-between;
 }
 
 .actor-card img {
-  width: 100%;
-  border-radius: 10px;
+  width: 130px;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.actor-card h3 {
+  font-size: 14px;
+  color: #00ffcc;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: bold;
+}
+
+.actor-card p {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 8px;
+  margin-bottom: 0;
+  text-align: center;
+  line-height: 1.2;
+  max-height: 2.4em;
+  overflow: hidden;
 }
 
 .inputs-container {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
+  align-items: center;
   flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.inputs-container input {
-  padding: 10px;
+.input-wrapper {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+  position: relative;
+}
+
+input[type="text"] {
+  padding: 12px;
   font-size: 16px;
-  border-radius: 10px;
+  border-radius: 8px;
   border: none;
-  width: 250px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .submit-btn {
-  margin-top: 10px;
-  padding: 12px 24px;
-  font-size: 16px;
   background-color: #00ffcc;
   color: black;
+  font-weight: bold;
+  padding: 12px 20px;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
-.undo-redo-container {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
+.button-row-below {
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 .undo-btn,
-.new-game-btn {
-  padding: 10px 20px;
-  font-size: 15px;
+.new-game-btn,
+.share-btn {
   background-color: #00ffcc;
   color: black;
+  font-weight: bold;
+  padding: 10px 20px;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
+  margin: 5px;
   cursor: pointer;
 }
 
 .chain-container {
-  overflow-x: auto;
-  white-space: nowrap;
   display: flex;
-  justify-content: flex-start;
-  padding: 10px 0;
-  margin-top: 20px;
-  scrollbar-width: thin;
-}
-
-.chain {
-  display: inline-flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
-  flex-wrap: nowrap;
+  margin-bottom: 20px;
+  gap: 10px;
 }
 
-.chain-container::-webkit-scrollbar {
-  height: 8px;
-}
-
-.chain-container::-webkit-scrollbar-thumb {
-  background-color: #00ffcc;
+.chain-item {
+  background-color: #0c2522;
+  padding: 10px;
   border-radius: 10px;
+  text-align: center;
+  width: 140px;
+  box-shadow: 0 0 10px #00ffcc55;
 }
 
-.chain-actor {
-  color: #ffffff;
-  font-weight: bold;
+.chain-item img {
+  width: 100%;
+  border-radius: 8px;
+  height: 180px;
+  object-fit: cover;
 }
 
-.chain-movie {
+.chain-item.actor {
+  border: 2px solid #31fccb;
+}
+
+.chain-item.title {
+  border: 2px solid #3399ff;
+}
+
+.chain-item.goal {
+  border: 2px solid gold;
+  box-shadow: 0 0 15px gold;
+}
+
+.arrow {
+  font-size: 24px;
+  margin: 0 8px;
   color: #00ffcc;
 }
 
-.chain-arrow {
-  font-size: 24px;
-  color: #ccc;
-}
-
-.goal-actor {
-  color: gold;
-}
-
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #132a24;
-  border: 2px solid #00ffcc;
-  border-radius: 20px;
-  padding: 30px;
-  z-index: 1000;
-  color: white;
-  box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
-}
-
-.modal input {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #238971;
+  border: 1px solid #555;
+  border-radius: 5px;
+  z-index: 10;
   width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
-.modal button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background-color: #00ffcc;
-  color: black;
-  border: none;
-  border-radius: 10px;
+.suggestion {
+  display: flex;
+  align-items: center;
+  padding: 8px;
   cursor: pointer;
 }
 
+.suggestion:hover {
+  background-color: #333;
+}
+
+.suggestion img {
+  width: 30px;
+  height: 40px;
+  object-fit: cover;
+  margin-right: 10px;
+  border-radius: 4px;
+}
+
+.copied-msg {
+  color: #00ffcc;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.name-prompt {
+  margin-top: 20px;
+}
+
+.name-prompt input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  margin-right: 10px;
+}
+
+/* ————— Enhanced Leaderboard Styling ————— */
 .leaderboard {
-  margin-top: 30px;
-  background-color: #132a24;
-  border-radius: 20px;
+  margin-top: 40px;
+  background: none;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+  border-radius: 12px;
 }
 
-.leaderboard h3 {
-  color: gold;
-  margin-bottom: 10px;
+.leaderboard table {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.leaderboard ul {
-  list-style: none;
-  padding: 0;
+.leaderboard th {
+  background-color: #1f3934;
+  color: #00ffcc;
+  font-size: 18px;
+  padding: 12px;
+  text-align: center;
 }
 
-.leaderboard li {
-  margin: 5px 0;
+.leaderboard td {
+  background-color: #0c2522;
+  color: #e0f7f2;
+  padding: 12px;
+  text-align: center;
 }
 
-/* ---------- MOBILE FIXES ---------- */
+.leaderboard tbody tr:nth-child(even) td {
+  background-color: #13332d;
+}
+
+.leaderboard th + th,
+.leaderboard td + td {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ------------------------ */
+/* ✅ Improved Mobile Styling */
+/* ------------------------ */
 @media (max-width: 768px) {
+  .App {
+    padding: 16px;
+  }
+
+  .description {
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .streak-bar {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
   .actor-pair {
-    flex-direction: row;
+    display: flex;
+    flex-wrap: nowrap;
     justify-content: center;
-    align-items: center;
-    gap: 20px;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 10px;
   }
 
   .actor-card {
-    width: 42vw;
-    max-width: 150px;
-    text-align: center;
-    padding: 10px;
+    flex: 0 0 auto;
+    width: 140px;
+    min-height: 240px;
+  }
+
+  .actor-card img {
+    width: 120px;
+    height: 160px;
+  }
+
+  .actor-card p {
+    font-size: 14px;
+    margin-top: 6px;
   }
 
   .inputs-container {
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-top: 20px;
+    align-items: center; /* ✅ centers inputs */
+    gap: 12px;
   }
 
-  .inputs-container input {
-    width: 80vw;
+  .input-wrapper {
+    width: 100%;
     max-width: 300px;
-    padding: 10px;
-    font-size: 16px;
   }
 
-  .submit-btn,
-  .undo-btn,
-  .new-game-btn {
-    padding: 10px 20px;
-    font-size: 15px;
-    margin: 5px;
-  }
-
-  .undo-redo-container {
-    flex-direction: row;
-    justify-content: center;
-    gap: 10px;
+  .submit-btn {
+    width: 100%;
+    max-width: 300px;
     margin-top: 10px;
   }
 
   .chain-container {
-    overflow-x: auto;
-    white-space: nowrap;
     display: flex;
-    padding: 10px 0;
-    margin-top: 20px;
-  }
-
-  .chain {
-    display: inline-flex;
-    gap: 20px;
-    align-items: center;
     flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px 0;
+    gap: 12px;
+    justify-content: center; /* ✅ center the chain */
+    align-items: center;
+    scroll-snap-type: x mandatory;
   }
 
-  .chain-container::-webkit-scrollbar {
-    height: 6px;
+  .chain-item {
+    flex: 0 0 auto;
+    width: 140px;
+    min-width: 140px;
+    scroll-snap-align: start;
   }
 
-  .chain-container::-webkit-scrollbar-thumb {
-    background-color: #00ffcc;
-    border-radius: 10px;
+  .arrow {
+    flex-shrink: 0;
+    font-size: 22px;
   }
+}
+
+
+/* ------------------------ */
+/* ✅ Modal Popup Styling   */
+/* ------------------------ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: #0e2c27;
+  padding: 28px 24px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.25);
+  text-align: center;
+  max-width: 350px;
+  width: 90%;
+  color: white;
+}
+
+.modal h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.modal p {
+  margin: 10px 0 20px;
+  font-size: 16px;
+  color: #ccc;
+}
+
+.modal input {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  width: 100%;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.modal button {
+  background-color: #00ffcc;
+  color: black;
+  font-weight: bold;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
