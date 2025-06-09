@@ -174,7 +174,7 @@ def submit_daily_score():
     if not player or steps is None:
         return jsonify({"error": "Missing fields"}), 400
 
-    today = datetime.now(pytz.timezone('US/Pacific)).strftime("%Y-%m-%d")
+    today = datetime.now(pytz.timezone('US/Pacific')).strftime("%Y-%m-%d")
     ref = db.reference(f"leaderboards/{today}")
     current = ref.get() or []
 
@@ -186,7 +186,7 @@ def submit_daily_score():
 
 @app.route("/get-daily-leaderboard")
 def get_daily_leaderboard():
-    today = datetime.now('US/Pacific)).strftime("%Y-%m-%d")
+    today = datetime.now(pytz.timezone('US/Pacific')).strftime("%Y-%m-%d")
     ref = db.reference(f"leaderboards/{today}")
     return jsonify(ref.get() or [])
 
