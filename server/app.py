@@ -29,7 +29,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 actors = [  # (unchanged actor list)
-    "Samuel L. Jackson", "Scarlett Johansson", "Robert Downey Jr.", "Zoe Saldana", "Chris Pratt",
+    "Samuel L. Jackson", "Scarlett Johansson", "Robert Downey Jr.", "Zoe Saldaña", "Chris Pratt",
     "Tom Cruise", "Chris Hemsworth", "Vin Diesel", "Dwayne Johnson", "Bradley Cooper",
     "Chris Evans", "Tom Hanks", "Johnny Depp", "Tom Holland", "Mark Ruffalo",
     "Emma Watson", "Will Smith", "Don Cheadle", "Dave Bautista", "Jeremy Renner",
