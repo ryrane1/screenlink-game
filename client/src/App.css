@@ -348,16 +348,60 @@
 }
 
 @media (max-width: 768px) {
-  .share-row {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
   .actor-pair {
     flex-wrap: nowrap;
     overflow-x: auto;
     gap: 16px;
     justify-content: center;
     padding-bottom: 10px;
+  }
+
+  .inputs-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .input-wrapper,
+  .inputs-row input[type="text"],
+  .inputs-row button {
+    width: 100% !important;
+    max-width: 300px;
+  }
+
+  .submit-btn,
+  .undo-btn {
+    margin-top: 10px;
+    width: 140px;
+  }
+
+  .share-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chain-container {
+    gap: 12px;
+    padding: 0 10px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .chain-item {
+    flex: 0 0 auto;
+    width: 140px;
+    height: 250px;
+  }
+
+  .new-game-btn {
+    width: 90%;
+    max-width: 280px;
+  }
+
+  .footer-quote {
+    font-size: 12px;
+    padding: 0 12px;
+    text-align: center;
   }
 }
 
