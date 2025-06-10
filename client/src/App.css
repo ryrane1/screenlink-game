@@ -547,6 +547,51 @@
     margin-top: 6px !important;
     margin-bottom: 4px !important;
   }
+  .chain-container {
+    margin-top: 6px;
+    padding: 0 4px;
+    gap: 4px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    height: 140px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .chain-item {
+    flex: 0 0 auto;
+    width: 75px;
+    height: 130px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  .chain-item img {
+    width: 100%;
+    height: 85px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 2px;
+  }
+
+  .chain-item p {
+    font-size: 9px;
+    line-height: 1.1;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 0 2px;
+    word-break: break-word;
+    max-height: 32px;
+    overflow: hidden;
+  }
 
   .footer-quote {
     font-size: 10px;
