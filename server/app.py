@@ -101,6 +101,71 @@ def suggest():
         suggestions.append({"name": name, "image": image})
 
     return jsonify(suggestions)
+@app.route("/get-easy-options", methods=["POST"])
+def get_easy_options():
+    data = request.get_json()
+    current_actor = data.get("current_actor")
+    goal_actor = data.get("goal_actor")
+
+    if not current_actor or not goal_actor:
+        return jsonify([])
+
+    # Step 1: Get TMDb ID for current actor
+    url = f"https://api.themoviedb.org/3/search/person?query={current_actor}&api_key={TMDB_API_KEY}"
+    res = requests.get(url).json()
+    results = res.get("results", [])
+    if not results:
+        return jsonify([])
+
+    current_id = results[0]["id"]
+
+    # Step 2: Get all movies/TV credits
+    movie_credits = requests.get(
+        f"https://api.themoviedb.org/3/person/{current_id}/movie_credits?api_key={TMDB_API_KEY}"
+    ).json().get("cast", [])
+    tv_credits = requests.get(
+        f"https://api.themoviedb.org/3/person/{current_id}/tv_credits?api_key={TMDB_API_KEY}"
+    ).json().get("cast", [])
+
+    credits = movie_credits + tv_credits
+    credits = sorted(credits, key=lambda x: x.get("popularity", 0), reverse=True)
+
+    suggestions = []
+    added_names = set()
+
+    for credit in credits:
+        title = credit.get("title") or credit.get("name")
+        if not title or title in added_names:
+            continue
+
+        suggestions.append({
+            "name": title,
+            "type": "title"
+        })
+        added_names.add(title)
+
+        # Fetch co-stars
+        content_id = credit["id"]
+        content_type = "movie" if "title" in credit else "tv"
+        credit_url = f"https://api.themoviedb.org/3/{content_type}/{content_id}/credits?api_key={TMDB_API_KEY}" \
+            if content_type == "movie" else \
+            f"https://api.themoviedb.org/3/{content_type}/{content_id}/aggregate_credits?api_key={TMDB_API_KEY}"
+
+        cast_list = requests.get(credit_url).json().get("cast", [])
+        for actor in cast_list:
+            actor_name = actor.get("name") or actor.get("original_name")
+            if actor_name and actor_name != current_actor and actor_name not in added_names:
+                suggestions.append({
+                    "name": actor_name,
+                    "type": "actor"
+                })
+                added_names.add(actor_name)
+                break  # Just grab 1 co-star per title
+
+        if len(suggestions) >= 5:
+            break
+
+    return jsonify(suggestions[:5])
 
 @app.route("/validate-link", methods=["POST"])
 def validate_link():
