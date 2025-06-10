@@ -373,12 +373,12 @@
   }
 
   .actor-card h3 {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .actor-card p {
-    font-size: 11px;
-    min-height: 1.6em;
+    font-size: 10px;
+    min-height: 1.4em;
   }
 
   .chain-container {
@@ -386,10 +386,10 @@
     padding: 0 5px;
     gap: 8px;
     overflow-x: auto;
-    overflow-y: hidden; /* prevent vertical scroll */
+    overflow-y: hidden;
     flex-wrap: nowrap;
     justify-content: center;
-    height: 220px; /* enough to fit all content without clipping */
+    height: 210px;
     scroll-snap-type: x mandatory;
   }
 
@@ -402,21 +402,19 @@
   }
 
   .submit-btn,
-  .undo-btn {
-    height: 36px;
-    font-size: 13px;
-    padding: 5px 10px;
-    width: 110px;
-    margin: 6px 4px;
+  .undo-btn,
+  .new-game-btn {
+    height: 32px;
+    font-size: 12px;
+    padding: 4px 10px;
+    width: 100px;
+    margin: 4px;
   }
 
   .new-game-btn {
-    width: 90%;
-    max-width: 240px;
-    height: 40px;
-    font-size: 14px;
-    padding: 6px 12px;
-    margin-top: 10px;
+    margin-top: 8px;
+    margin-bottom: 6px;
+    max-width: 220px;
   }
 
   .share-row {
@@ -446,6 +444,7 @@
     min-width: 120px;
   }
 }
+
 
 
 
