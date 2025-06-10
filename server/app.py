@@ -101,6 +101,7 @@ def suggest():
         suggestions.append({"name": name, "image": image})
 
     return jsonify(suggestions)
+
 @app.route("/get-easy-options", methods=["POST"])
 def get_easy_options():
     data = request.get_json()
@@ -110,60 +111,77 @@ def get_easy_options():
     if not current_actor or not goal_actor:
         return jsonify([])
 
-    # Step 1: Get TMDb ID for current actor
-    url = f"https://api.themoviedb.org/3/search/person?query={current_actor}&api_key={TMDB_API_KEY}"
-    res = requests.get(url).json()
-    results = res.get("results", [])
-    if not results:
+    def get_actor_id(name):
+        url = f"https://api.themoviedb.org/3/search/person?query={name}&api_key={TMDB_API_KEY}"
+        res = requests.get(url).json().get("results", [])
+        return res[0]["id"] if res else None
+
+    def get_credits(actor_id):
+        movies = requests.get(
+            f"https://api.themoviedb.org/3/person/{actor_id}/movie_credits?api_key={TMDB_API_KEY}"
+        ).json().get("cast", [])
+        tv = requests.get(
+            f"https://api.themoviedb.org/3/person/{actor_id}/tv_credits?api_key={TMDB_API_KEY}"
+        ).json().get("cast", [])
+        return sorted(movies + tv, key=lambda x: x.get("popularity", 0), reverse=True)
+
+    def get_costars(credit):
+        content_id = credit["id"]
+        content_type = "movie" if "title" in credit else "tv"
+        credit_url = (
+            f"https://api.themoviedb.org/3/{content_type}/{content_id}/credits?api_key={TMDB_API_KEY}"
+        )
+        cast = requests.get(credit_url).json().get("cast", [])
+        return [a.get("name") for a in cast if a.get("name")]
+
+    # IDs
+    current_id = get_actor_id(current_actor)
+    goal_id = get_actor_id(goal_actor)
+    if not current_id or not goal_id:
         return jsonify([])
 
-    current_id = results[0]["id"]
+    current_credits = get_credits(current_id)
+    goal_credits = get_credits(goal_id)
 
-    # Step 2: Get all movies/TV credits
-    movie_credits = requests.get(
-        f"https://api.themoviedb.org/3/person/{current_id}/movie_credits?api_key={TMDB_API_KEY}"
-    ).json().get("cast", [])
-    tv_credits = requests.get(
-        f"https://api.themoviedb.org/3/person/{current_id}/tv_credits?api_key={TMDB_API_KEY}"
-    ).json().get("cast", [])
-
-    credits = movie_credits + tv_credits
-    credits = sorted(credits, key=lambda x: x.get("popularity", 0), reverse=True)
+    # Get goal's known co-stars
+    goal_costars = set()
+    for credit in goal_credits[:15]:  # limit for performance
+        for name in get_costars(credit):
+            goal_costars.add(name)
 
     suggestions = []
     added_names = set()
+    guaranteed_goal_link = None
 
-    for credit in credits:
+    for credit in current_credits:
+        if len(suggestions) >= 5:
+            break
+
         title = credit.get("title") or credit.get("name")
         if not title or title in added_names:
             continue
 
-        suggestions.append({
-            "name": title,
-            "type": "title"
-        })
+        # Add the movie/show title
+        suggestions.append({"name": title, "type": "title"})
         added_names.add(title)
 
-        # Fetch co-stars
-        content_id = credit["id"]
-        content_type = "movie" if "title" in credit else "tv"
-        credit_url = f"https://api.themoviedb.org/3/{content_type}/{content_id}/credits?api_key={TMDB_API_KEY}" \
-            if content_type == "movie" else \
-            f"https://api.themoviedb.org/3/{content_type}/{content_id}/aggregate_credits?api_key={TMDB_API_KEY}"
+        # Get co-stars from this credit
+        cast = get_costars(credit)
+        for name in cast:
+            if name == current_actor or name in added_names:
+                continue
+            actor_entry = {"name": name, "type": "actor"}
+            added_names.add(name)
 
-        cast_list = requests.get(credit_url).json().get("cast", [])
-        for actor in cast_list:
-            actor_name = actor.get("name") or actor.get("original_name")
-            if actor_name and actor_name != current_actor and actor_name not in added_names:
-                suggestions.append({
-                    "name": actor_name,
-                    "type": "actor"
-                })
-                added_names.add(actor_name)
-                break  # Just grab 1 co-star per title
+            if name in goal_costars and not guaranteed_goal_link:
+                guaranteed_goal_link = actor_entry  # save this to force into list
+            else:
+                suggestions.append(actor_entry)
+            break  # just one co-star per title for brevity
 
-        if len(suggestions) >= 5:
-            break
+    # Insert guaranteed helpful actor if available
+    if guaranteed_goal_link and guaranteed_goal_link not in suggestions:
+        suggestions.insert(0, guaranteed_goal_link)
 
     return jsonify(suggestions[:5])
 
