@@ -530,27 +530,22 @@
     margin-bottom: 4px !important;
   }
 
-  .chain-container {
-    margin-top: 8px;
-    padding: 0 5px;
-    gap: 6px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    flex-wrap: nowrap;
-    justify-content: center;
-    height: 200px;
-    scroll-snap-type: x mandatory;
+  button.submit-btn,
+  button.undo-btn {
+    height: 26px !important;
+    font-size: 11px !important;
+    padding: 2px 8px !important;
+    width: 75px !important;
+    margin: 2px 4px !important;
   }
 
-  .chain-item {
-    flex: 0 0 auto;
-    width: 100px;
-    height: 180px;
-    scroll-snap-align: start;
-  }
-
-  .chain-item p {
-    font-size: 11px;
+  button.new-game-btn {
+    height: 30px !important;
+    font-size: 12px !important;
+    padding: 4px 10px !important;
+    width: 110px !important;
+    margin-top: 6px !important;
+    margin-bottom: 4px !important;
   }
 
   .footer-quote {
