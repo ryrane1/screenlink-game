@@ -371,38 +371,69 @@
     min-height: 1.4em;
   }
 
+  .mode-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .mode-toggle button {
+    width: 110px;
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .streak-bar {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
   .submit-btn,
   .undo-btn,
   .new-game-btn {
-    height: 32px;
+    height: 30px;
     font-size: 12px;
-    padding: 4px 10px;
-    width: 90px;
-    margin: 4px 6px;
+    padding: 4px 8px;
+    width: 85px;
+    margin: 3px 5px;
   }
 
-  .new-game-btn {
-    margin-top: 6px;
-    margin-bottom: 4px;
+  .inputs-row {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    gap: 8px;
+  }
+
+  .inputs-row input[type="text"] {
+    font-size: 14px;
+    height: 38px;
+    padding: 8px 12px;
+    width: 240px;
   }
 
   .chain-container {
-    margin-top: 10px;
+    margin-top: 8px;
     padding: 0 5px;
     gap: 6px;
     overflow-x: auto;
     overflow-y: hidden;
     flex-wrap: nowrap;
     justify-content: center;
-    height: 200px;
+    height: 180px;
     scroll-snap-type: x mandatory;
   }
 
   .chain-item {
     flex: 0 0 auto;
-    width: 105px;
-    height: 190px;
+    width: 100px;
+    height: 170px;
     scroll-snap-align: start;
+  }
+
+  .chain-item p {
+    font-size: 12px;
   }
 
   .footer-quote {
@@ -412,6 +443,7 @@
     margin-top: 18px;
   }
 }
+
 
 
 .modal-overlay {
