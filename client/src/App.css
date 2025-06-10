@@ -348,57 +348,27 @@
 }
 
 @media (max-width: 768px) {
-  .App {
-    padding: 10px;
-    font-size: 16px;
-  }
-
-  .actor-pair {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 16px;
-    justify-content: center;
-    padding-bottom: 10px;
-  }
-
   .actor-card {
-    width: 110px;
-    min-height: 180px;
-    padding: 6px;
+    width: 105px;
+    min-height: 170px;
+    padding: 4px;
   }
 
   .actor-card img {
-    width: 100px;
-    height: 130px;
+    width: 95px;
+    height: 125px;
   }
 
   .actor-card h3 {
-    font-size: 11px;
+    font-size: 10px;
+    margin-top: 2px;
   }
 
   .actor-card p {
     font-size: 10px;
+    line-height: 1.2;
+    padding: 2px 4px;
     min-height: 1.4em;
-  }
-
-  .chain-container {
-    margin-top: 10px;
-    padding: 0 5px;
-    gap: 8px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    flex-wrap: nowrap;
-    justify-content: center;
-    height: 210px;
-    scroll-snap-type: x mandatory;
-  }
-
-  .chain-item {
-    flex: 0 0 auto;
-    width: 110px;
-    height: 200px;
-    box-sizing: border-box;
-    scroll-snap-align: start;
   }
 
   .submit-btn,
@@ -407,46 +377,41 @@
     height: 32px;
     font-size: 12px;
     padding: 4px 10px;
-    width: 100px;
-    margin: 4px;
+    width: 90px;
+    margin: 4px 6px;
   }
 
   .new-game-btn {
-    margin-top: 8px;
-    margin-bottom: 6px;
-    max-width: 220px;
+    margin-top: 6px;
+    margin-bottom: 4px;
   }
 
-  .share-row {
-    flex-direction: column;
-    align-items: center;
+  .chain-container {
+    margin-top: 10px;
+    padding: 0 5px;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    justify-content: center;
+    height: 200px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .chain-item {
+    flex: 0 0 auto;
+    width: 105px;
+    height: 190px;
+    scroll-snap-align: start;
   }
 
   .footer-quote {
-    font-size: 12px;
-    padding: 0 12px;
+    font-size: 11px;
+    padding: 0 10px;
     text-align: center;
-    margin-top: 20px;
-  }
-
-  .mode-toggle {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 12px;
-    display: flex;
-  }
-
-  .mode-toggle button {
-    padding: 8px 14px;
-    font-size: 14px;
-    width: auto;
-    min-width: 120px;
+    margin-top: 18px;
   }
 }
-
-
-
 
 
 .modal-overlay {
