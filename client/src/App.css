@@ -592,7 +592,33 @@
     max-height: 36px;
     overflow: hidden;
   }
+  .modal {
+    padding: 16px 14px;
+    max-width: 280px;
+    width: 90%;
+    border-radius: 12px;
+  }
 
+  .modal h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .modal p {
+    font-size: 13px;
+    margin: 8px 0 14px;
+  }
+
+  .modal input {
+    padding: 8px;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .modal button {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
 
   .footer-quote {
     font-size: 10px;
@@ -600,4 +626,5 @@
     text-align: center;
     margin-top: 12px;
   }
+
 }
