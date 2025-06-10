@@ -512,22 +512,22 @@
     width: 220px;
   }
 
-  .submit-btn,
-  .undo-btn,
-  .new-game-btn {
-    height: 30px;
-    font-size: 12px;
-    padding: 4px 10px;
-    width: 90px;
-    margin: 4px 5px;
+  button.submit-btn,
+  button.undo-btn {
+    height: 26px !important;
+    font-size: 11px !important;
+    padding: 2px 8px !important;
+    width: 75px !important;
+    margin: 2px 4px !important;
   }
 
-  .new-game-btn {
-    margin-top: 6px;
-    margin-bottom: 4px;
-    font-size: 13px;
-    padding: 6px 12px;
-    width: 120px;
+  button.new-game-btn {
+    height: 30px !important;
+    font-size: 12px !important;
+    padding: 4px 10px !important;
+    width: 110px !important;
+    margin-top: 6px !important;
+    margin-bottom: 4px !important;
   }
 
   .chain-container {
