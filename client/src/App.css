@@ -386,14 +386,17 @@
     padding: 0 5px;
     gap: 8px;
     overflow-x: auto;
+    overflow-y: hidden; /* prevent vertical scroll */
     flex-wrap: nowrap;
     justify-content: flex-start;
+    height: 220px; /* enough to fit all content without clipping */
   }
 
   .chain-item {
     flex: 0 0 auto;
     width: 110px;
     height: 200px;
+    box-sizing: border-box;
   }
 
   .submit-btn,
@@ -441,6 +444,7 @@
     min-width: 120px;
   }
 }
+
 
 
 
