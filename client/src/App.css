@@ -348,6 +348,13 @@
 }
 
 @media (max-width: 768px) {
+  .description {
+  font-size: 13px;
+  margin-top: -4px;
+  margin-bottom: 10px;
+  line-height: 1.3;
+  color: #ccc;
+ }
   .actor-card {
     width: 100px;
     min-height: 160px;
@@ -419,23 +426,23 @@
   }
 
   .chain-container {
-    margin-top: 6px;
+    margin-top: 8px;
     padding: 0 5px;
     gap: 6px;
     overflow-x: auto;
     overflow-y: hidden;
     flex-wrap: nowrap;
     justify-content: center;
-    height: 160px;
+    height: 200px; /* was 160px */
     scroll-snap-type: x mandatory;
   }
 
   .chain-item {
     flex: 0 0 auto;
-    width: 95px;
-    height: 160px;
+    width: 100px;
+    height: 180px; /* was 160px */
     scroll-snap-align: start;
-  }
+  } 
 
   .chain-item p {
     font-size: 11px;
