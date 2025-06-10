@@ -347,63 +347,55 @@
   border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-@media (max-width: 768px) {
-  .actor-pair {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 16px;
-    justify-content: center;
-    padding-bottom: 10px;
-  }
-
-  .inputs-row {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .input-wrapper,
-  .inputs-row input[type="text"],
-  .inputs-row button {
-    width: 100% !important;
-    max-width: 300px;
-  }
-
-  .submit-btn,
-  .undo-btn {
-    margin-top: 10px;
-    width: 140px;
-  }
-
-  .share-row {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .chain-container {
-    gap: 12px;
-    padding: 0 10px;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-  }
-
-  .chain-item {
-    flex: 0 0 auto;
-    width: 140px;
-    height: 250px;
-  }
-
-  .new-game-btn {
-    width: 90%;
-    max-width: 280px;
-  }
-
-  .footer-quote {
-    font-size: 12px;
-    padding: 0 12px;
-    text-align: center;
-  }
+.App {
+  padding: 10px;
+  font-size: 16px;
 }
+
+.actor-card {
+  width: 110px;
+  min-height: 180px;
+  padding: 6px;
+}
+
+.actor-card img {
+  width: 100px;
+  height: 130px;
+}
+
+.actor-card h3 {
+  font-size: 12px;
+}
+
+.actor-card p {
+  font-size: 12px;
+  min-height: 1.8em;
+}
+
+.chain-container {
+  margin-top: 10px;
+  padding: 0 5px;
+  gap: 8px;
+}
+
+.inputs-row {
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.submit-btn,
+.undo-btn,
+.new-game-btn {
+  height: 40px;
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+.footer-quote {
+  margin-top: 20px;
+  font-size: 11px;
+}
+
 
 .modal-overlay {
   position: fixed;
