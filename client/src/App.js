@@ -190,7 +190,7 @@ links!\n\n`;
     <div className="App">
       <h1>ScreenLink</h1>
       <p className="description">
-        Connect the Start actor to the Goal actor by entering movie titles and actors they’ve worked with — one link at a time.
+        Connect the <b>Start</b> actor to the <b>Goal</b> actor by entering movie titles and actors they’ve worked with — one link at a time.
       </p>
 
       <div className="mode-toggle">
