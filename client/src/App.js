@@ -22,7 +22,40 @@ function App() {
   const [currentStreak, setCurrentStreak] = useState(() => Number(localStorage.getItem("streak")) || 0);
   const [bestLinkCount, setBestLinkCount] = useState(() => Number(localStorage.getItem("bestScore")) || 
 null);
+  const quotes = [
+    "“Frankly, my dear, I don't give a damn.” — Gone with the Wind",
+    "“I'm gonna make him an offer he can't refuse.” — The Godfather",
+    "“You talkin' to me?” — Taxi Driver",
+    "“May the Force be with you.” — Star Wars",
+    "“Here's looking at you, kid.” — Casablanca",
+    "“I see dead people.” — The Sixth Sense",
+    "“Hasta la vista, baby.” — Terminator 2",
+    "“You can't handle the truth!” — A Few Good Men",
+    "“Why so serious?” — The Dark Knight",
+    "“I'll be back.” — The Terminator",
+    "“To infinity... and beyond!” — Toy Story",
+    "“I'm king of the world!” — Titanic",
+    "“Just keep swimming.” — Finding Nemo",
+    "“Life is like a box of chocolates.” — Forrest Gump",
+    "“Nobody puts Baby in a corner.” — Dirty Dancing",
+    "“Houston, we have a problem.” — Apollo 13",
+    "“Keep the change, ya filthy animal.” — Home Alone",
+    "“That'll do, pig. That'll do.” — Babe",
+    "“You is kind. You is smart. You is important.” — The Help",
+    "“I am serious. And don't call me Shirley.” — Airplane!",
+    "“It's alive! It's alive!” — Frankenstein",
+    "“Say hello to my little friend!” — Scarface",
+    "“You had me at 'hello.'” — Jerry Maguire",
+    "“They're here...” — Poltergeist",
+    "“I'm walking here!” — Midnight Cowboy",
+    "“Toto, I've a feeling we're not in Kansas anymore.” — The Wizard of Oz",
+    "“You make me want to be a better man.” — As Good as It Gets",
+    "“The stuff that dreams are made of.” — The Maltese Falcon",
+    "“Carpe diem. Seize the day, boys.” — Dead Poets Society",
+    "“It's not who I am underneath, but what I do that defines me.” — Batman Begins"
+  ];
 
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
   const chainContainerRef = useRef(null);
 
   useEffect(() => {
@@ -324,6 +357,7 @@ Play</button>
           </table>
         </div>
       )}
+      <p className="footer-quote">{randomQuote}</p>
     </div>
   );
 }
