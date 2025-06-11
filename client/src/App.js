@@ -6,7 +6,7 @@ import "./App.css";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
 function App() {
-  const [mode, setMode] = useState("free");
+  const [mode, setMode] = useState("daily");
   const [startActor, setStartActor] = useState(null);
   const [goalActor, setGoalActor] = useState(null);
   const [chain, setChain] = useState([]);
@@ -194,7 +194,7 @@ function App() {
             type="text"
             placeholder="Enter a Film/Tv Title"
             value={titleInput}
-            onChange={(e) => setTitleInput(e.target.value)}
+            onChange={(e) => handleInputChange(e, "title")}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSubmit(); // ✅ fixed typo
             }}
@@ -271,28 +271,28 @@ function App() {
           )}
         </>
       )}
-
-      <div className="leaderboard">
-        <h2>🏆 Daily Leaderboard</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Links</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leaderboard.map((entry, idx) => (
-              <tr key={idx}>
-                <td>{entry.name}</td>
-                <td>{entry.links}</td>
+      {mode === "daily" && (
+        <div className="leaderboard">
+          <h2>🏆 Daily Leaderboard</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Links</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {leaderboard.map((entry, idx) => (
+                <tr key={idx}>
+                  <td>{entry.name}</td>
+                  <td>{entry.links}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
-
 export default App;
