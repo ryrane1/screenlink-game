@@ -166,6 +166,9 @@ null);
           image: res.data.actor_image,
         };
         setChain([...chain, movieItem, actorItem]);
+        setTimeout(() => {
+          chainContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          }, 100);
         setActorInput("");
         setTitleInput("");
         setSuggestions([]);
