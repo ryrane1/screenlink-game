@@ -182,6 +182,7 @@
 
 .chain-container::-webkit-scrollbar {
   height: 6px;
+  width: 15px;
 }
 
 .chain-container::-webkit-scrollbar-thumb {
