@@ -255,6 +255,7 @@
   margin: 0 12px;
   color: #00ffcc;
   user-select: none;
+  align-items: center;
 }
 
 .suggestions-dropdown {
