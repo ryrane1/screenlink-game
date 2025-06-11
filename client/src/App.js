@@ -22,7 +22,7 @@ function App() {
   const [currentStreak, setCurrentStreak] = useState(() => Number(localStorage.getItem("streak")) || 0);
   const [bestLinkCount, setBestLinkCount] = useState(() => Number(localStorage.getItem("bestScore")) || 
 null);
-
+  const [loading, setLoading] = useState(true);
   const quotes = [
     "“Frankly, my dear, I don't give a damn.” — Gone with the Wind",
     "“I'm gonna make him an offer he can't refuse.” — The Godfather",
@@ -82,6 +82,8 @@ null);
   }, [chain, goalActor]);
 
   const fetchNewGame = async (preserveStreak = false) => {
+    setLoading(true);
+
     const url = mode === "daily" ? "/get-daily-actors" : "/get-random-actors";
     const res = await axios.get(`${BACKEND_URL}${url}`);
     setStartActor(res.data.start);
@@ -96,6 +98,8 @@ null);
     if (!preserveStreak) {
       setCurrentStreak(0);
       localStorage.setItem("streak", "0");
+
+      setLoading(false);
     }
 
     if (mode === "daily") fetchLeaderboard();
@@ -220,9 +224,18 @@ links!\n\n`;
     setSubmittedName(true);
   };
 
+  if (loading) {
+    return (
+      <div className="App">
+        <h1>ScreenLink</h1>
+        <p className="loading-message">Loading actors...</p>
+      </div>
+    );
+  }
   return (
     <div className="App">
       <h1>ScreenLink</h1>
+      <p className="loading-message"></p>
       <p className="description">
         Connect the <b>Start</b> actor to the <b>Goal</b> actor by entering movie titles and actors they’ve worked with — one link at a time.
       </p>
