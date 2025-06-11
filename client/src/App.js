@@ -322,7 +322,7 @@ links!\n\n`;
               ${item.name === goalActor?.name ? "goal" : ""}
             `}>
               {item.image && <img src={item.image} alt={item.name} />}
-              <p>{item.name}</p>
+              <p>{item.name.replace(/ /g, "u00A0")}</p>
             </div>
             {index < chain.length - 1 && <div className="arrow">⟶</div>}
           </React.Fragment>
