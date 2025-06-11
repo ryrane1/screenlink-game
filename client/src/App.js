@@ -64,6 +64,12 @@ null);
   }, [mode]);
 
   useEffect(() => {
+  if (mode !== "free" && easyMode) {
+    setEasyMode(false);
+  }
+}, [mode, easyMode]);
+
+  useEffect(() => {
     if (easyMode && chain.length > 0 && goalActor && mode === "free") {
       axios.post(`${BACKEND_URL}/get-easy-options`, {
         current_actor: chain[chain.length - 1].name,
