@@ -209,10 +209,19 @@
 
 .chain-item p {
   font-family: 'Segoe UI', sans-serif;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 600;
   color: white;
+  margin-top: 6px;
+  padding: 0 4px;
+  text-align: center;
+  word-wrap: break-word;
+  white-space: normal;
+  line-height: 1.2;
+  max-height: 2.4em;
+  overflow: hidden;
 }
+
 
 .chain-item img {
   width: 100%;
