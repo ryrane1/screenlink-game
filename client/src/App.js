@@ -266,9 +266,9 @@ links!\n\n`;
       {mode === "free" && (
         <div className="button-row-below">
           {gameOver ? (
-            <button className="new-game-btn" onClick={handlePlayAgain}>Play Again</button>
+            <button className="refresh-btn" onClick={handlePlayAgain}>Play Again</button>
           ) : (
-            <button className="new-game-btn" onClick={() => fetchNewGame(false)}>Refresh</button>
+            <button className="refresh-btn" onClick={() => fetchNewGame(false)}>Refresh</button>
           )}
         </div>
       )}  

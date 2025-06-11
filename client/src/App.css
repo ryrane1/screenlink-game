@@ -435,7 +435,7 @@
   font-size: 16px;
 }
 
-.center-new-game {
+.center-refresh {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -444,19 +444,20 @@
   margin-bottom: 10px;
 }
 
-.new-game-btn {
+.refresh-btn {
+  font-size: 14px;
+  padding: 6px 16px;
+  width: auto;
+  height: 36px;
   background-color: #f7f7f7;
   color: black;
-  font-weight: bold;
-  font-size: 14px;
-  padding: 8px 20px;
+  border-radius: 8px;
   border: none;
-  border-radius: 10px;
+  font-weight: bold;
   cursor: pointer;
-  width: auto;
-  height: 38px;
-  box-shadow: 0 2px 5px rgba(0, 255, 204, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 255, 204, 0.15);
 }
+
 
 .new-game-btn:hover {
   transform: scale(1.05);
