@@ -5,11 +5,11 @@
   background-color: #0b1f1a;
   color: white;
   min-height: 100vh;
-  padding: 20px;
+  padding: 10px 10px;
   font-family: 'Inter', sans-serif;
   max-width: 100%;
   overflow-x: hidden;
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .loading-message {
@@ -20,9 +20,9 @@
 }
 
 .description {
-  margin-top: -10px;
+  margin-top: -5px;
   color: #ccc;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 .mode-toggle {
@@ -58,9 +58,9 @@
 .actor-pair {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  margin-bottom: 25px;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 10px;
   flex-wrap: wrap;
 }
 
@@ -78,10 +78,10 @@
 }
 
 .actor-card img {
-  width: 130px;
+  width: 120px;
   height: 170px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 6px;
 }
 
@@ -101,6 +101,7 @@
   line-height: 1.2;
   color: white;
   margin: 0;
+  margin-top: 4px;
   padding: 4px 6px;
   word-wrap: break-word;
   min-height: 2.4em;
@@ -111,6 +112,7 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  margin: 10px 0;
   gap: 12px;
   margin-top: 30px;
 }
@@ -154,12 +156,14 @@
   background-color: #f7f7f7;
   color: black;
   font-weight: bold;
+  padding 6px 14px;
 }
 
 .undo-btn {
   background-color: #d9d9d9;
   color: black;
   font-weight: bold;
+  padding 6px 14px;
 }
 
 .chain-container {
@@ -415,7 +419,13 @@
   font-size: 16px;
 }
 
-.center-new-game {
+.button-row-below {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.center-refresh {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -424,12 +434,12 @@
   margin-bottom: 10px;
 }
 
-.new-game-btn {
+.refresh-btn {
   background-color: #f7f7f7;
   color: black;
   font-weight: bold;
   font-size: 18px;
-  padding: 14px 28px;
+  padding: 6px 16px;
   margin-top: 20px;
   margin-bottom: 20px;
   border: none;
