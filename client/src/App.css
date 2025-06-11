@@ -523,9 +523,14 @@
 
 @media (max-width: 600px) {
   .chain-container {
-    flex-wrap: nowrap;
+    display: flex;
+    gap: 12px;
     overflow-x: auto;
+    flex-wrap: nowrap;
     justify-content: flex-start;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 50%;
+    padding: 10px 50%;
   }
   .chain-item {
     width: 95px;
