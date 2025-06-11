@@ -22,7 +22,7 @@ function App() {
   const [currentStreak, setCurrentStreak] = useState(() => Number(localStorage.getItem("streak")) || 0);
   const [bestLinkCount, setBestLinkCount] = useState(() => Number(localStorage.getItem("bestScore")) || 
 null);
-  const [easyMode, setEasyMode] = useState(false);
+
   const quotes = [
     "“Frankly, my dear, I don't give a damn.” — Gone with the Wind",
     "“I'm gonna make him an offer he can't refuse.” — The Godfather",
@@ -62,25 +62,6 @@ null);
   useEffect(() => {
     fetchNewGame(false);
   }, [mode]);
-
-  useEffect(() => {
-  if (mode !== "free" && easyMode) {
-    setEasyMode(false);
-  }
-}, [mode, easyMode]);
-
-  useEffect(() => {
-    if (easyMode && chain.length > 0 && goalActor && mode === "free") {
-      axios.post(`${BACKEND_URL}/get-easy-options`, {
-        current_actor: chain[chain.length - 1].name,
-        goal_actor: goalActor.name
-      }).then((res) => {
-        setSuggestions(res.data);
-      }).catch((err) => {
-        console.error("Error fetching easy options:", err);
-      });
-    }
-  }, [chain, easyMode, goalActor, mode]);
 
   useEffect(() => {
     if (chain.length > 0 && chain[chain.length - 1].name === goalActor?.name) {
@@ -250,22 +231,7 @@ links!\n\n`;
         <button className={mode === "daily" ? "active" : ""} onClick={() => setMode("daily")}>Daily</button>
         <button className={mode === "free" ? "active" : ""} onClick={() => setMode("free")}>Free Play</button>
       </div>
-      
-      {mode === "free" && (
-        <div className="easy-toggle">
-          <label>
-            <input
-              type="checkbox"
-              checked={easyMode}
-              onChange={() => setEasyMode(!easyMode)}
-            />
-            Easy Mode
-          </label>
-        </div>
-      )}
-    
-
-
+          
       <div className="streak-bar">
         <b> Streak: {currentStreak} | Best Score: {bestLinkCount ?? "—"} </b>
       </div>
@@ -294,31 +260,6 @@ links!\n\n`;
           )}
         </div>
       )}  
-
-      {easyMode ? (
-        <div className="inputs-row">
-          <select value={titleInput} onChange={(e) => setTitleInput(e.target.value)}>
-            <option value="">Select a Movie Title</option>
-            {suggestions
-              .filter((s) => s.type === "title")
-              .map((s, idx) => (
-                <option key={idx} value={s.name}>{s.name}</option>
-              ))}
-          </select>
-
-          <select value={actorInput} onChange={(e) => setActorInput(e.target.value)}>
-            <option value="">Select an Actor</option>
-            {suggestions
-              .filter((s) => s.type === "actor")
-              .map((s, idx) => (
-                <option key={idx} value={s.name}>{s.name}</option>
-              ))}
-          </select>
-
-          <button className="submit-btn" onClick={handleSubmit}>Submit</button>
-          <button className="undo-btn" onClick={handleUndo}>Undo</button>
-        </div>
-      ) : (  
         <div className="inputs-row">
           <div className="input-wrapper">
             <input
@@ -359,7 +300,6 @@ links!\n\n`;
           <button className="submit-btn" onClick={handleSubmit}>Submit</button>
           <button className="undo-btn" onClick={handleUndo}>Undo</button>
         </div>
-      )}  
 
       <div className="chain-container" ref={chainContainerRef}>
         {chain.map((item, index) => (
