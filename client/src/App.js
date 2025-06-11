@@ -316,8 +316,11 @@ links!\n\n`;
       <div className="chain-container" ref={chainContainerRef}>
         {chain.map((item, index) => (
           <React.Fragment key={index}>
-            <div className={`chain-item ${item.type} ${item.name === goalActor?.name ? "goal" : ""}`}>
-              {item.image && <img src={item.image} alt={item.name} />}
+            <div className={`chain-item 
+              ${item.type === "actor" ? "actor" : ""}
+              ${item.type === "title" ? "title" : ""}
+              ${item.name === goalActor?.name ? "goal" : ""}
+            `}>
               <p>{item.name}</p>
             </div>
             {index < chain.length - 1 && <div className="arrow">⟶</div>}
