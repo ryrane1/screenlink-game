@@ -257,9 +257,9 @@ links!\n\n`;
           </div>
         )}
         {goalActor && (
-          <div className="actor-card">
+          <div className="actor-card goal">
             <img src={goalActor.image} alt={goalActor.name} />
-            <p><strong>Goal:</strong> {goalActor.name}</p>
+            <p className="goal-name"><strong>Goal:</strong> {goalActor.name}</p>
           </div>
         )}
       </div>

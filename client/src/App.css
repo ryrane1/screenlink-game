@@ -5,11 +5,11 @@
   background-color: #0b1f1a;
   color: white;
   min-height: 100vh;
-  padding: 20px;
+  padding: 12px;
   font-family: 'Inter', sans-serif;
   max-width: 100%;
   overflow-x: hidden;
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .loading-message {
@@ -20,23 +20,24 @@
 }
 
 .description {
-  margin-top: -10px;
+  margin-top: -5px;
   color: #ccc;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
+  font-size: 16px;
 }
 
 .mode-toggle {
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 }
 
 .mode-toggle button {
   background-color: #444;
   border: none;
   color: white;
-  padding: 10px 20px;
-  margin: 0 10px;
-  font-size: 16px;
-  width: 200px;
+  padding: 8px 14px;
+  margin: 0 6px;
+  font-size: 14px;
+  width: 140px;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -48,9 +49,9 @@
 }
 
 .streak-bar {
-  margin-top: 20px;
-  margin-bottom: 25px;
-  font-size: 18px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  font-size: 16px;
   color: #fff;
   text-align: center;
 }
@@ -59,8 +60,8 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 40px;
-  margin-bottom: 25px;
+  gap: 30px;
+  margin-bottom: 15px;
   flex-wrap: wrap;
 }
 
@@ -71,15 +72,15 @@
   justfy-content: flex-start;
   background-color: #0c2522;
   border-radius: 10px;
-  padding: 10px;
-  width: 150px;
-  min-height: 230px;
+  padding: 6px;
+  width: 130px;
+  min-height: 200px;
   box-shadow: 0 0 15px #00ffcc44;
 }
 
 .actor-card img {
-  width: 130px;
-  height: 170px;
+  width: 115px;
+  height: 150px;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 6px;
@@ -95,7 +96,7 @@
 }
 
 .actor-card p {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   text-align: center;
   line-height: 1.2;
@@ -111,8 +112,8 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 30px;
+  gap: 8px;
+  margin-top: 20px;
 }
 
 .input-wrapper {
@@ -125,23 +126,23 @@
 .inputs-row input[type="text"] {
   background-color: #0c2522;
   color: white;
-  padding: 12px 16px;
-  font-size: 17px;
+  padding: 10px 14px;
+  font-size: 16px;
   border-radius: 10px;
-  border: 1px solid #2d4d47;
-  width: 280px;
-  height: 48px;
+  border: 2px solid #00ffcc;
+  width: 240px;
+  height: 40px;
   box-sizing: border-box;
   box-shadow: 0 1px 4px rgba(0, 255, 204, 0.2);
   font-weight: 500;
 }
 
 .inputs-row button {
-  width: 100px;
-  height: 48px;
+  width: 90px;
+  height: 40px;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   border: none;
   white-space: nowrap;
@@ -151,9 +152,10 @@
 }
 
 .submit-btn {
-  background-color: #f7f7f7;
+  background-color: #00cc99;
   color: black;
   font-weight: bold;
+  box-shadow: 0 0 10px #00cc9977;
 }
 
 .undo-btn {
@@ -164,17 +166,30 @@
 
 .chain-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30px;
-  margin-bottom: 20px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
   gap: 10px;
+  padding: 10px 16px;
+  justify-content: flex-start;
+  scroll-snap-type: x mandatory;
+  margin: 20px auto;
+  max-width: 100%;
 }
+
+.chain-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.chain-container::-webkit-scrollbar-thumb {
+  background-color: #00ffcc99;
+  border-radius: 10px;
+}
+
 
 .chain-item {
   background-color: #0c2522;
-  padding: 10px;
+  padding: 8px;
   border-radius: 10px;
   text-align: center;
   width: 160px;
@@ -184,6 +199,8 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  flex: 0 0 auto;
+  scroll-snap-align: center;
 }
 
 .chain-item p {
@@ -467,203 +484,11 @@
   height: 48px;
   box-shadow: 0 1px 4px rgba(0, 255, 204, 0.2);
   font-weight: 500;
-  appearance: none; /* hide native arrow on some browsers */
+  appearance: none;
 }
 
 .inputs-row select option {
   background-color: #0c2522;
   color: white;
   font-size: 14px;
-}
-
-@media (max-width: 768px) {
-  .App {
-    padding: 10px;
-    font-size: 18px;
-  }
-
-  .description {
-    font-size: 13px;
-    margin-top: -6px;
-    margin-bottom: 10px;
-    line-height: 1.3;
-  }
-
-  .mode-toggle {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    flex-wrap: nowrap;
-  }
-
-  .mode-toggle button {
-    width: 100px;
-    font-size: 12px;
-    padding: 5px 8px;
-  }
-
-  .streak-bar {
-    font-size: 13px;
-    margin-bottom: 8px;
-  }
-
-  .actor-card {
-    width: 100px;
-    min-height: 160px;
-    padding: 4px;
-  }
-
-  .actor-card img {
-    width: 90px;
-    height: 120px;
-  }
-
-  .actor-card h3 {
-    font-size: 10px;
-    margin-top: 2px;
-  }
-
-  .actor-card p {
-    font-size: 10px;
-    padding: 2px 4px;
-    min-height: 1.4em;
-  }
-
-  .inputs-row {
-    margin-top: 10px;
-    margin-bottom: 6px;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .inputs-row input[type="text"] {
-    font-size: 14px;
-    height: 36px;
-    padding: 6px 10px;
-    width: 220px;
-  }
-
-  button.submit-btn,
-  button.undo-btn {
-    height: 26px !important;
-    font-size: 11px !important;
-    padding: 2px 8px !important;
-    width: 75px !important;
-    margin: 2px 4px !important;
-  }
-
-  button.new-game-btn {
-    height: 30px !important;
-    font-size: 12px !important;
-    padding: 4px 10px !important;
-    width: 110px !important;
-    margin-top: 6px !important;
-    margin-bottom: 4px !important;
-  }
-
-  button.submit-btn,
-  button.undo-btn {
-    height: 26px !important;
-    font-size: 11px !important;
-    padding: 2px 8px !important;
-    width: 75px !important;
-    margin: 2px 4px !important;
-  }
-
-  button.new-game-btn {
-    height: 30px !important;
-    font-size: 12px !important;
-    padding: 4px 10px !important;
-    width: 110px !important;
-    margin-top: 6px !important;
-    margin-bottom: 4px !important;
-  }
-  .chain-container {
-    margin-top: 8px;
-    padding: 0 8px;
-    gap: 6px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    flex-wrap: nowrap;
-    justify-content: center; /* center start */
-    height: 160px;
-    scroll-snap-type: x mandatory;
-  }
-
-  .chain-item {
-    flex: 0 0 auto;
-    width: 90px;
-    height: 145px;
-    scroll-snap-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px;
-    border-radius: 8px;
-  }
-
-  .chain-item img {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 5px;
-    margin-bottom: 2px;
-  }
-
-  .chain-item p {
-    font-size: 10px;
-    line-height: 1.1;
-    font-weight: bold;
-    color: white;
-    text-align: center;
-    margin: 0;
-    padding: 0 2px;
-    word-break: break-word;
-    max-height: 36px;
-    overflow: hidden;
-  }
-  .modal {
-    padding: 16px 14px;
-    max-width: 280px;
-    width: 90%;
-    border-radius: 12px;
-  }
-
-  .modal h3 {
-    font-size: 16px;
-    margin-bottom: 8px;
-  }
-
-  .modal p {
-    font-size: 13px;
-    margin: 8px 0 14px;
-  }
-
-  .modal input {
-    padding: 8px;
-    font-size: 14px;
-    margin-bottom: 12px;
-  }
-
-  .modal button {
-    padding: 8px 20px;
-    font-size: 14px;
-  }
-
-  .footer-quote {
-    font-size: 10px;
-    padding: 0 10px;
-    text-align: center;
-    margin-top: 12px;
-  }
-
-  .inputs-row select {
-    font-size: 14px;
-    height: 38px;
-    padding: 8px 12px;
-    width: 220px;
-  }
-
 }
