@@ -256,7 +256,9 @@
   margin: 0 12px;
   color: #00ffcc;
   user-select: none;
+  display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .suggestions-dropdown {
