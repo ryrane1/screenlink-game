@@ -121,6 +121,8 @@
   width: 100%;
   max-width: 300px;
   margin-right: 12px;
+  margin-bottom: 0;
+  padding: 0;
 }
 
 .inputs-row input[type="text"] {
