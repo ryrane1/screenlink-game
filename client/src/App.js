@@ -98,9 +98,9 @@ null);
     if (!preserveStreak) {
       setCurrentStreak(0);
       localStorage.setItem("streak", "0");
-
-      setLoading(false);
     }
+
+    setLoading(false);
 
     if (mode === "daily") fetchLeaderboard();
   };
