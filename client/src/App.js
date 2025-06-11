@@ -23,6 +23,7 @@ function App() {
   const [bestLinkCount, setBestLinkCount] = useState(() => Number(localStorage.getItem("bestScore")) || 
 null);
   const [loading, setLoading] = useState(true);
+  const [showLeaderboardModal, setShowLeaderboardModal] = useState(true);
   const quotes = [
     "“Frankly, my dear, I don't give a damn.” — Gone with the Wind",
     "“I'm gonna make him an offer he can't refuse.” — The Godfather",
@@ -340,7 +341,7 @@ links!\n\n`;
       )}
       {copied && <p className="copied-msg">Copied to clipboard!</p>}
 
-      {gameOver && mode === "daily" && !submittedName && (
+      {showLeaderboardModal && gameOver && mode === "daily" && !submittedName && (
         <div className="modal-overlay">
           <div className="modal">
             <h3>🎉 You did it!</h3>
