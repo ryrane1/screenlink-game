@@ -347,6 +347,7 @@ links!\n\n`;
             <p>Enter your name to be added to today's leaderboard:</p>
             <input value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
             <button onClick={submitScore}>Submit</button>
+            <button onClick={() => setShowLeaderboardModal(false)}>Cancel</button>
           </div>
         </div>
       )}

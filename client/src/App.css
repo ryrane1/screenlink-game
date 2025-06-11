@@ -534,7 +534,7 @@
     padding: 10px;
     scroll-snap-type: x mandatory;
     scroll-padding-left: 24px;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   /* Prevent shrinking of cards and arrows */
