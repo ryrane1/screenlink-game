@@ -21,7 +21,7 @@ CORS(app, resources={r"/*": {
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 # 🔐 Load Firebase credentials from environment variable
-key_b64 = os.getenv("FIREBASE_KEY_B64")
+key_b64 = os.getenv("FIREBASE_CRED_B64")
 key_json = json.loads(base64.b64decode(key_b64))
 cred = credentials.Certificate(key_json)
 firebase_admin.initialize_app(cred, {
