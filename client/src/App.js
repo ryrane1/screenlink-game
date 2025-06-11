@@ -324,7 +324,9 @@ links!\n\n`;
               {item.image && <img src={item.image} alt={item.name} />}
               <p>{item.name.replace(/ /g, "\u00A0")}</p>
             </div>
-            {index < chain.length - 1 && <div className="arrow">⟶</div>}
+            {index < chain.length - 1 && (
+              <div className={'arrow ${index === chain.length - 2 ? "animate" : ""}'}>⟶</div>
+            )}
           </React.Fragment>
         ))}
       </div>
