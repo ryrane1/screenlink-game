@@ -321,6 +321,7 @@ links!\n\n`;
               ${item.type === "title" ? "title" : ""}
               ${item.name === goalActor?.name ? "goal" : ""}
             `}>
+              {item.image && <img src={item.image} alt={item.name} />}
               <p>{item.name}</p>
             </div>
             {index < chain.length - 1 && <div className="arrow">⟶</div>}
