@@ -3,7 +3,7 @@ import axios from "axios";
 import confetti from "canvas-confetti";
 import "./App.css";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 function App() {
   const [mode, setMode] = useState("daily");
@@ -15,97 +15,122 @@ function App() {
   const [suggestions, setSuggestions] = useState([]);
   const [suggestType, setSuggestType] = useState("actor");
   const [gameOver, setGameOver] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [nameInput, setNameInput] = useState("");
   const [copied, setCopied] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const [submittedName, setSubmittedName] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
-  const [stats, setStats] = useState({ currentStreak: 0, bestLinkCount: null });
-  const [isLoading, setIsLoading] = useState(false);
-  const actorInputRef = useRef(null); // ✅ added for auto-focus
+  const [currentStreak, setCurrentStreak] = useState(() => Number(localStorage.getItem("streak")) || 0);
+  const [bestLinkCount, setBestLinkCount] = useState(() => Number(localStorage.getItem("bestScore")) || 
+null);
+  const [loading, setLoading] = useState(true);
+  const quotes = [
+    "“Frankly, my dear, I don't give a damn.” — Gone with the Wind",
+    "“I'm gonna make him an offer he can't refuse.” — The Godfather",
+    "“You talkin' to me?” — Taxi Driver",
+    "“May the Force be with you.” — Star Wars",
+    "“Here's looking at you, kid.” — Casablanca",
+    "“I see dead people.” — The Sixth Sense",
+    "“Hasta la vista, baby.” — Terminator 2",
+    "“You can't handle the truth!” — A Few Good Men",
+    "“Why so serious?” — The Dark Knight",
+    "“I'll be back.” — The Terminator",
+    "“To infinity... and beyond!” — Toy Story",
+    "“I'm king of the world!” — Titanic",
+    "“Just keep swimming.” — Finding Nemo",
+    "“Life is like a box of chocolates.” — Forrest Gump",
+    "“Nobody puts Baby in a corner.” — Dirty Dancing",
+    "“Houston, we have a problem.” — Apollo 13",
+    "“Keep the change, ya filthy animal.” — Home Alone",
+    "“That'll do, pig. That'll do.” — Babe",
+    "“You is kind. You is smart. You is important.” — The Help",
+    "“I am serious. And don't call me Shirley.” — Airplane!",
+    "“It's alive! It's alive!” — Frankenstein",
+    "“Say hello to my little friend!” — Scarface",
+    "“You had me at 'hello.'” — Jerry Maguire",
+    "“They're here...” — Poltergeist",
+    "“I'm walking here!” — Midnight Cowboy",
+    "“Toto, I've a feeling we're not in Kansas anymore.” — The Wizard of Oz",
+    "“You make me want to be a better man.” — As Good as It Gets",
+    "“The stuff that dreams are made of.” — The Maltese Falcon",
+    "“Carpe diem. Seize the day, boys.” — Dead Poets Society",
+    "“It's not who I am underneath, but what I do that defines me.” — Batman Begins"
+  ];
 
-  const fetchNewGame = async (preserveStreak = true) => {
-    setGameOver(false);
-    setChain([]);
-    setSuggestions([]);
-    setTitleInput("");
-    setActorInput("");
-    setCopied(false);
-    try {
-      const res = await axios.get(`${BACKEND_URL}/generate-actors`);
-      setStartActor(res.data.start);
-      setGoalActor(res.data.goal);
-      if (!preserveStreak) {
-        setStats((prev) => ({ ...prev, currentStreak: 0 }));
-      }
-    } catch (error) {
-      console.error("Failed to generate actors:", error);
-    }
-  };
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  const chainContainerRef = useRef(null);
 
   useEffect(() => {
-    fetchNewGame();
-    fetchLeaderboard();
-  }, []);
+    fetchNewGame(false);
+  }, [mode]);
 
-  const handleSubmit = async () => {
-    if (!titleInput || !actorInput) return;
-    setIsLoading(true);
-    try {
-      const res = await axios.post(`${BACKEND_URL}/validate-link`, {
-        title: titleInput,
-        actor: actorInput,
-        chain,
-      });
-      if (res.data.valid) {
-        const newChain = [...chain, res.data.movie, res.data.actor];
-        setChain(newChain);
-        setActorInput("");
-        setTitleInput("");
-        setSuggestions([]);
-        if (actorInputRef.current) {
-          actorInputRef.current.focus(); // ✅ auto-focus actor input
-        }
-        if (res.data.actor.id === goalActor.id) {
-          setGameOver(true);
-          confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-          if (mode === "daily") setShowModal(true);
-          setStats((prev) => ({
-            currentStreak: prev.currentStreak + 1,
-            bestLinkCount:
-              prev.bestLinkCount === null || newChain.length < prev.bestLinkCount
-                ? newChain.length
-                : prev.bestLinkCount,
-          }));
-        }
-      } else {
-        alert("Invalid connection!");
+  useEffect(() => {
+    if (chain.length > 0 && chain[chain.length - 1].name === goalActor?.name) {
+      setGameOver(true);
+      confetti();
+
+      const links = (chain.length - 1) / 2;
+      if (!bestLinkCount || links < bestLinkCount) {
+        setBestLinkCount(links);
+        localStorage.setItem("bestScore", links);
       }
+
+      if (mode === "daily") {
+        if (playerName && !submittedName) submitScore();
+        fetchLeaderboard();
+      }
+    }
+  }, [chain, goalActor]);
+
+  const fetchNewGame = async (preserveStreak = false) => {
+    setLoading(true);
+
+    const url = mode === "daily" ? "/get-daily-actors" : "/get-random-actors";
+    const res = await axios.get(`${BACKEND_URL}${url}`);
+    setStartActor(res.data.start);
+    setGoalActor(res.data.goal);
+    setChain([res.data.start]);
+    setGameOver(false);
+    setActorInput("");
+    setTitleInput("");
+    setSuggestions([]);
+    setSubmittedName(false);
+
+    if (!preserveStreak) {
+      setCurrentStreak(0);
+      localStorage.setItem("streak", "0");
+
+      setLoading(false);
+    }
+
+    if (mode === "daily") fetchLeaderboard();
+  };
+
+  const fetchLeaderboard = async () => {
+    try {
+      const res = await axios.get(`${BACKEND_URL}/get-daily-leaderboard`);
+      setLeaderboard(res.data || []);
     } catch (error) {
-      console.error("Error validating link:", error);
-    } finally {
-      setIsLoading(false);
+      console.error("Error fetching leaderboard:", error);
+      setLeaderboard([]);
     }
   };
 
-  const handleInputChange = async (e, type) => {
+  const handleInputChange = (e, type) => {
     const value = e.target.value;
     if (type === "actor") {
       setActorInput(value);
+      setSuggestType("actor");
     } else {
       setTitleInput(value);
+      setSuggestType("title");
     }
-    setSuggestType(type);
-    if (!value) {
+
+    if (value.length > 1) {
+      axios
+        .get(`${BACKEND_URL}/suggest?query=${value}&type=${type}`)
+        .then((res) => setSuggestions(res.data));
+    } else {
       setSuggestions([]);
-      return;
-    }
-    try {
-      const res = await axios.get(`${BACKEND_URL}/suggest`, {
-        params: { query: value, type },
-      });
-      setSuggestions(res.data);
-    } catch (error) {
-      console.error("Suggestion fetch failed:", error);
     }
   };
 
@@ -118,53 +143,110 @@ function App() {
     setSuggestions([]);
   };
 
-  const fetchLeaderboard = async () => {
+  const handleSubmit = async () => {
+    if (!actorInput || !titleInput) return;
+
+    const payload = {
+      actor: chain[chain.length - 1].name,
+      title: titleInput,
+      next_actor: actorInput,
+    };
+
     try {
-      const res = await axios.get(`${BACKEND_URL}/leaderboard`);
-      setLeaderboard(res.data);
-    } catch (error) {
-      console.error("Failed to fetch leaderboard:", error);
+      const res = await axios.post(`${BACKEND_URL}/validate-link`, payload);
+      if (res.data.valid) {
+        const movieItem = {
+          name: titleInput,
+          type: "title",
+          image: res.data.poster,
+        };
+        const actorItem = {
+          name: actorInput,
+          type: "actor",
+          image: res.data.actor_image,
+        };
+        setChain([...chain, movieItem, actorItem]);
+        setActorInput("");
+        setTitleInput("");
+        setSuggestions([]);
+      } else {
+        alert("Invalid connection.");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const handleNameSubmit = async () => {
-    try {
-      await axios.post(`${BACKEND_URL}/submit-score`, {
-        name: nameInput,
-        links: chain.length,
-      });
-      fetchLeaderboard();
-      setShowModal(false);
-      setNameInput("");
-    } catch (error) {
-      console.error("Failed to submit name:", error);
+  const handleUndo = () => {
+    if (chain.length > 1) {
+      setChain(chain.slice(0, -2));
     }
   };
 
+  const handleShare = () => {
+    const links = (chain.length - 1) / 2;
+    const linkUrl = "https://screenlink-game-rohan-ranes-projects.vercel.app/";
+    let message = "";
+
+    if (mode === "daily") {
+      message = `🧩 I completed today's Daily Link in ${links}️⃣ links!\nHow many can you do?\n\n${linkUrl}`;
+    } else {
+      message = `🎬 I just connected ${chain[0]?.name} to ${chain[chain.length - 1]?.name} in ${links}️⃣ 
+links!\n\n`;
+      for (let i = 0; i < chain.length; i++) {
+        const icon = chain[i].type === "title" ? "🍿" : "🎭";
+        message += `${icon} ${chain[i].name}\n`;
+      }
+      message += `\nTry playing now!\n${linkUrl}`;
+    }
+
+    navigator.clipboard.writeText(message)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
+      })
+      .catch(() => alert("Failed to copy message."));
+  };
+
+  const handlePlayAgain = () => {
+    const newStreak = currentStreak + 1;
+    setCurrentStreak(newStreak);
+    localStorage.setItem("streak", newStreak.toString());
+    fetchNewGame(true);
+  };
+
+  const submitScore = async () => {
+    const steps = (chain.length - 1) / 2;
+    await axios.post(`${BACKEND_URL}/submit-daily-score`, {
+      player: playerName,
+      steps: steps,
+    });
+    setSubmittedName(true);
+  };
+
+  if (loading) {
+    return (
+      <div className="App">
+        <h1>ScreenLink</h1>
+        <p className="loading-message">Loading actors...</p>
+      </div>
+    );
+  }
   return (
     <div className="App">
       <h1>ScreenLink</h1>
+      <p className="loading-message"></p>
       <p className="description">
         Connect the <b>Start</b> actor to the <b>Goal</b> actor by entering movie titles and actors they’ve worked with — one link at a time.
       </p>
 
       <div className="mode-toggle">
-        <button
-          className={mode === "daily" ? "active" : ""}
-          onClick={() => setMode("daily")}
-        >
-          Daily
-        </button>
-        <button
-          className={mode === "free" ? "active" : ""}
-          onClick={() => setMode("free")}
-        >
-          Free Play
-        </button>
+        <button className={mode === "daily" ? "active" : ""} onClick={() => setMode("daily")}>Daily</button>
+        <button className={mode === "free" ? "active" : ""} onClick={() => setMode("free")}>Free Play</button>
       </div>
-
+          
       <div className="streak-bar">
-        Streak: {stats.currentStreak} | Best Score: {stats.bestLinkCount ?? "—"}
+        <b> Streak: {currentStreak} | Best Score: {bestLinkCount ?? "—"} </b>
       </div>
 
       <div className="actor-pair">
@@ -175,103 +257,94 @@ function App() {
           </div>
         )}
         {goalActor && (
-          <div className="actor-card goal">
+          <div className="actor-card">
             <img src={goalActor.image} alt={goalActor.name} />
-            <p className="goal-name"><strong>Goal:</strong> {goalActor.name}</p>
+            <p><strong>Goal:</strong> {goalActor.name}</p>
           </div>
         )}
       </div>
 
       {mode === "free" && (
         <div className="button-row-below">
-          <button className="refresh-btn" onClick={() => fetchNewGame(false)}>Refresh</button>
-        </div>
-      )}
-
-      <div className="inputs-row">
-        <div className="input-wrapper">
-          <input
-            type="text"
-            placeholder="Enter a Film/Tv Title"
-            value={titleInput}
-            onChange={(e) => handleInputChange(e, "title")}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSubmit(); // ✅ fixed typo
-            }}
-          />
-          {suggestType === "title" && suggestions.length > 0 && (
-            <div className="suggestions-dropdown">
-              {suggestions.map((s, idx) => (
-                <div key={idx} className="suggestion" onClick={() => handleSuggestionClick(s)}>
-                  {s.image && <img src={s.image} alt={s.name} />}
-                  <span>{s.name}</span>
-                </div>
-              ))}
-            </div>
+          {gameOver ? (
+            <button className="new-game-btn" onClick={handlePlayAgain}>Play Again</button>
+          ) : (
+            <button className="new-game-btn" onClick={() => fetchNewGame(false)}>Refresh</button>
           )}
         </div>
-
-        <div className="input-wrapper">
-          <input
-            type="text"
-            ref={actorInputRef} // ✅ auto-focus
-            placeholder="Enter Actor Name"
-            value={actorInput}
-            onChange={(e) => handleInputChange(e, "actor")}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSubmit(); // ✅ fixed typo
-            }}
-          />
-          {suggestType === "actor" && suggestions.length > 0 && (
-            <div className="suggestions-dropdown">
-              {suggestions.map((s, idx) => (
-                <div key={idx} className="suggestion" onClick={() => handleSuggestionClick(s)}>
-                  {s.image && <img src={s.image} alt={s.name} />}
-                  <span>{s.name}</span>
-                </div>
-              ))}
-            </div>
-          )}
+      )}  
+        <div className="inputs-row">
+          <div className="input-wrapper">
+            <input
+              type="text"
+              placeholder="Enter Movie Title"
+              value={titleInput}
+              onChange={(e) => handleInputChange(e, "title")}
+            />
+            {suggestType === "title" && suggestions.length > 0 && (
+              <div className="suggestions-dropdown">
+                {suggestions.map((s, idx) => (
+                  <div key={idx} className="suggestion" onClick={() => handleSuggestionClick(s)}>
+                    {s.image && <img src={s.image} alt={s.name} />}
+                    <span>{s.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="input-wrapper">
+            <input
+              type="text"
+              placeholder="Enter Actor Name"
+              value={actorInput}
+              onChange={(e) => handleInputChange(e, "actor")}
+            />
+            {suggestType === "actor" && suggestions.length > 0 && (
+              <div className="suggestions-dropdown">
+                {suggestions.map((s, idx) => (
+                  <div key={idx} className="suggestion" onClick={() => handleSuggestionClick(s)}>
+                    {s.image && <img src={s.image} alt={s.name} />}
+                    <span>{s.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+          <button className="undo-btn" onClick={handleUndo}>Undo</button>
         </div>
 
-        <button className="submit-btn" onClick={handleSubmit}>Submit</button>
-        <button className="undo-btn" onClick={() => setChain(chain.slice(0, -2))}>Undo</button>
-      </div>
-
-      {isLoading && <p className="loading-message">Fetching credits…</p>}
-
-      <div className="chain-container">
-        {chain.map((item, idx) => (
-          <React.Fragment key={idx}>
-            <div className={`chain-item ${item.type}`}>
-              <img src={item.image} alt={item.name} />
+      <div className="chain-container" ref={chainContainerRef}>
+        {chain.map((item, index) => (
+          <React.Fragment key={index}>
+            <div className={`chain-item ${item.type} ${item.name === goalActor?.name ? "goal" : ""}`}>
+              {item.image && <img src={item.image} alt={item.name} />}
               <p>{item.name}</p>
             </div>
-            {idx !== chain.length - 1 && <div className="arrow">→</div>}
+            {index < chain.length - 1 && <div className="arrow">⟶</div>}
           </React.Fragment>
         ))}
       </div>
 
       {gameOver && (
-        <>
-          {mode === "daily" && showModal && (
-            <div className="modal-overlay">
-              <div className="modal">
-                <h3>🎉 You did it!</h3>
-                <p>Enter your name to be added to today’s leaderboard:</p>
-                <input
-                  type="text"
-                  placeholder="Your name"
-                  value={nameInput}
-                  onChange={(e) => setNameInput(e.target.value)}
-                />
-                <button onClick={handleNameSubmit}>Submit</button>
-              </div>
-            </div>
-          )}
-        </>
+        <div className="share-row">
+          <button className="share-btn" onClick={handleShare}>Share</button>
+        </div>
       )}
-      {mode === "daily" && (
+      {copied && <p className="copied-msg">Copied to clipboard!</p>}
+
+      {gameOver && mode === "daily" && !submittedName && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>🎉 You did it!</h3>
+            <p>Enter your name to be added to today's leaderboard:</p>
+            <input value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
+            <button onClick={submitScore}>Submit</button>
+          </div>
+        </div>
+      )}
+
+      {mode === "daily" && leaderboard.length > 0 && (
         <div className="leaderboard">
           <h2>🏆 Daily Leaderboard</h2>
           <table>
@@ -282,17 +355,21 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {leaderboard.map((entry, idx) => (
-                <tr key={idx}>
-                  <td>{entry.name}</td>
-                  <td>{entry.links}</td>
-                </tr>
-              ))}
+              {leaderboard
+                .filter(entry => entry !== null)
+                .map((entry, idx) => (
+                  <tr key={idx}>
+                    <td>{["🥇 1st", "🥈 2nd", "🥉 3rd", "4th", "5th"][idx]} — {entry.player}</td>
+                    <td>{entry.steps}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
       )}
+      <p className="footer-quote">{randomQuote}</p>
     </div>
   );
 }
+
 export default App;
