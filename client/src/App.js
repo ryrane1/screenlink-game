@@ -321,8 +321,7 @@ links!\n\n`;
               ${item.type === "title" ? "title" : ""}
               ${item.name === goalActor?.name ? "goal" : ""}
             `}>
-              {item.image && <img src={item.image} alt={item.name} />}
-              <p>{item.name.replace(/ /g, "\u00A0")}</p>
+              {item.image && <img src={item.image} alt={item.name} title={item.name} />}
             </div>
             {index < chain.length - 1 && (
               <div className={'arrow ${index === chain.length - 2 ? "animate" : ""}'}>⟶</div>
