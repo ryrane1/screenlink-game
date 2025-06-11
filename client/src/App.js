@@ -316,22 +316,24 @@ links!\n\n`;
           <button className="submit-btn" onClick={handleSubmit}>Submit</button>
           <button className="undo-btn" onClick={handleUndo}>Undo</button>
         </div>
-
-      <div className="chain-container" ref={chainContainerRef}>
-        {chain.map((item, index) => (
-          <React.Fragment key={index}>
-            <div className={`chain-item 
-              ${item.type === "actor" ? "actor" : ""}
-              ${item.type === "title" ? "title" : ""}
-              ${item.name === goalActor?.name ? "goal" : ""}
-            `}>
-              {item.image && <img src={item.image} alt={item.name} title={item.name} />}
-            </div>
-            {index < chain.length - 1 && (
-              <div className={'arrow ${index === chain.length - 2 ? "animate" : ""}'}>⟶</div>
-            )}
-          </React.Fragment>
-        ))}
+      
+      <div className="chain-scroll-wrapper">
+        <div className="chain-container" ref={chainContainerRef}>
+          {chain.map((item, index) => (
+            <React.Fragment key={index}>
+              <div className={`chain-item 
+               ${item.type === "actor" ? "actor" : ""}
+                ${item.type === "title" ? "title" : ""}
+                ${item.name === goalActor?.name ? "goal" : ""}
+              `}>
+                {item.image && <img src={item.image} alt={item.name} title={item.name} />}
+              </div>
+              {index < chain.length - 1 && (
+                <div className={`arrow ${index === chain.length - 2 ? "animate" : ""}`}>⟶</div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
       </div>
 
       {gameOver && (

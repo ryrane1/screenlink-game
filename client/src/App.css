@@ -174,7 +174,6 @@
 .chain-container {
   display: flex;
   flex-wrap: nowrap;
-  overflow-x: auto;
   overflow-y: hidden;
   gap: 12px;
   padding: 10px 16px;
@@ -186,13 +185,40 @@
 
 
 .chain-container::-webkit-scrollbar {
-  height: 6px;
-  width: 15px;
+  height: 4px;
 }
 
 .chain-container::-webkit-scrollbar-thumb {
-  background-color: #00ffcc99;
+  background-color: #00ffcc55;
   border-radius: 10px;
+}
+
+.chain-scroll-wrapper {
+  position: relative;
+  overflow-x: auto;
+  margin-top: 20px;
+  padding: 10px 0;
+}
+
+.chain-scroll-wrapper::before,
+.chain-scroll-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.chain-scroll-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, #0b1f1a, transparent);
+}
+
+.chain-scroll-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, #0b1f1a, transparent);
 }
 
 
