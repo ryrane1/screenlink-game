@@ -520,3 +520,26 @@
   color: white;
   font-size: 14px;
 }
+
+@media (max-width: 600px) {
+  .chain-item {
+    width: 95px;
+    height: 140px;
+  }
+
+  .chain-item img {
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .arrow {
+    font-size: 20px;
+    margin: 0 6px;
+  }
+
+  .chain-container {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+}
