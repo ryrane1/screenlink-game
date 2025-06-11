@@ -451,18 +451,19 @@
 }
 
 .refresh-btn {
-  font-size: 13px;
-  padding: 4px 12px;
-  width: auto;
-  height: 32px;
   background-color: #f7f7f7;
   color: black;
-  border-radius: 8px;
-  border: none;
   font-weight: bold;
+  font-size: 14px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 255, 204, 0.15);
+  width: auto;
+  height: 36px;
+  box-shadow: 0 2px 5px rgba(0, 255, 204, 0.2);
 }
+
 
 
 .new-game-btn:hover {
