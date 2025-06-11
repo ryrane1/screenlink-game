@@ -171,7 +171,7 @@
   flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
-  gap: 8px;
+  gap: 12px;
   padding: 10px 16px;
   justify-content: center; /* changed from flex-start to center */
   scroll-snap-type: x mandatory;
@@ -252,8 +252,9 @@
 }
 
 .arrow {
-  font-size: 26px;
-  margin: 0 12px;
+  font-size: 24px;
+  margin: 0 6px;
+  transform: translateY(4px);
   color: #00ffcc;
   user-select: none;
   display: flex;
