@@ -235,7 +235,6 @@ links!\n\n`;
   return (
     <div className="App">
       <h1>ScreenLink</h1>
-      <p className="loading-message"></p>
       <p className="description">
         Connect the <b>Start</b> actor to the <b>Goal</b> actor by entering movie titles and actors they’ve worked with — one link at a time.
       </p>
