@@ -51,6 +51,8 @@ actors = [  # (unchanged actor list)
     "Meryl Streep", "Blake Lively", "Reece Witherspoon", "Channing Tatum"
 ]
 
+actor_cache = {}
+
 @app.route("/")
 def index():
     return "✅ Flask backend is running!"
@@ -75,11 +77,18 @@ def get_daily_actors():
     })
 
 def get_actor_data(name):
+    if name in actor_cache:
+        return actor_cache[name]
+
     url = f"https://api.themoviedb.org/3/search/person?query={name}&api_key={TMDB_API_KEY}"
     res = requests.get(url).json()
     result = res.get("results", [{}])[0]
     image = f"https://image.tmdb.org/t/p/w185{result.get('profile_path')}" if result.get("profile_path") else None
-    return {"name": name, "id": result.get("id"), "image": image}
+    data = {"name": name, "id": result.get("id"), "image": image}
+    
+    actor_cache[name] = data  # Save to cache
+    return data
+
 
 @app.route("/suggest")
 def suggest():
