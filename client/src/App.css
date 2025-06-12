@@ -111,13 +111,6 @@
   font-weight: 700;
 }
 
-.actor-card.goal,
-.actor-card.start {
-  max-width: 160px;
-  min-width: 140px;
-  width: 100%;
-}
-
 .inputs-row {
   display: flex;
   justify-content: center;
