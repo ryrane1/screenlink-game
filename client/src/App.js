@@ -407,10 +407,21 @@ links!\n\n`;
               Connect the <strong>Start actor</strong> to the <strong>Goal actor</strong> by entering movie/TV titles and actors they’ve worked with — one at a time.
             </p>
             <ul style={{ textAlign: "left", paddingLeft: "20px" }}>
-              <li>Enter a title → Submit</li>
-              <li>Enter an actor from that title → Submit</li>
-              <li>Repeat until you reach the Goal actor!</li>
+              <li>Using the Start Actor, enter a movie or TV title they have been in </li>
+              <li>Then enter an actor from that title → Submit</li>
+              <li>Repeat the pattern until you reach the Goal actor!</li>
             </ul>
+
+            <div style={{ marginTop: "20px", fontSize: "14px", textAlign: "left" }}>
+              <strong>Example:</strong>
+              <div style={{ marginTop: "8px" }}>
+                <div><strong>Start:</strong> Emma Stone</div>
+                <div>🎬 <em>La La Land</em></div>
+                <div>👤 Ryan Gosling</div>
+                <div>🎬 <em>Blade Runner 2049</em></div>
+                <div><strong>Goal:</strong> Harrison Ford</div>
+              </div>
+            </div>
             <button onClick={() => setShowHowToPlay(false)}>Got it!</button>
           </div>
         </div>
