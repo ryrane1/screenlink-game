@@ -412,16 +412,21 @@ links!\n\n`;
               <li>Repeat the pattern until you reach the Goal actor!</li>
             </ul>
 
-            <div style={{ marginTop: "20px", fontSize: "14px", textAlign: "left" }}>
+            <div className="sample-chain">
               <strong>Example:</strong>
-              <div style={{ marginTop: "8px" }}>
-                <div><strong>Start:</strong> Emma Stone</div>
-                <div>🎬 <em>La La Land</em></div>
-                <div>👤 Ryan Gosling</div>
-                <div>🎬 <em>Blade Runner 2049</em></div>
-                <div><strong>Goal:</strong> Harrison Ford</div>
+              <div className="sample-chain-items">
+                <span className="actor">Emma Stone</span>
+                <span className="arrow">→</span>
+                <span className="movie">La La Land</span>
+                <span className="arrow">→</span>
+                <span className="actor">Ryan Gosling</span>
+                <span className="arrow">→</span>
+                <span className="movie">Blade Runner 2049</span>
+                <span className="arrow">→</span>
+                <span className="actor goal">Harrison Ford</span>
               </div>
             </div>
+
             <button onClick={() => setShowHowToPlay(false)}>Got it!</button>
           </div>
         </div>

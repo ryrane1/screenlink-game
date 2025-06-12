@@ -586,6 +586,50 @@
   color: #ff6666;
 }
 
+.sample-chain {
+  margin-top: 20px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.sample-chain-items {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  animation: fadeInChain 1s ease-in-out;
+}
+
+.sample-chain-items .actor {
+  color: #00ffcc;
+  font-weight: bold;
+}
+
+.sample-chain-items .movie {
+  color: #ffcc00;
+  font-style: italic;
+}
+
+.sample-chain-items .arrow {
+  color: white;
+}
+
+.sample-chain-items .goal {
+  border-bottom: 2px solid gold;
+  padding-bottom: 2px;
+}
+
+@keyframes fadeInChain {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media (max-width: 780px) {
   /* Chain container should scroll horizontally */
