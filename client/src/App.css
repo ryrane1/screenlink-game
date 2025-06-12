@@ -650,13 +650,21 @@
 
 .sample-chain-items .arrow {
   color: white;
+  font-size: 20px;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  transform: translateY(2px); /* ✅ slightly lowers it */
 }
 
 .sample-chain-items .goal {
-  color: 2px solid gold;
+  color: gold;
+  font-weight: bold;
+  border-bottom: 2px solid gold;
   padding-bottom: 2px;
 }
+
 
 @keyframes fadeInChain {
   from {
