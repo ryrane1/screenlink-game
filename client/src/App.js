@@ -247,7 +247,7 @@ links!\n\n`;
   return (
     <div className="App">
       <button className="how-to-play-float" onClick={() => setShowHowToPlay(true)}>
-        ?
+        How to Play?
       </button>
 
       <h1>ScreenLink</h1>
