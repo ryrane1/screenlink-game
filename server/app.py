@@ -93,9 +93,16 @@ def suggest():
 
     suggestions = []
     for r in results:
-        name = r.get("name") or r.get("title") or r.get("original_name")
+        if type_ == "actor" and r.get("id"):
+            details_url = f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}"
+            details = requests.get(details_url).json()
+            name = details.get("name")
+        else:
+            name = r.get("name") or r.get("title") or r.get("original_name")
+        
         if not name:
             continue
+        
         profile_path = r.get("profile_path") or r.get("poster_path")
         image = f"https://image.tmdb.org/t/p/w185{profile_path}" if profile_path else None
         suggestions.append({"name": name, "image": image})
