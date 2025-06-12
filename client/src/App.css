@@ -624,8 +624,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 2px; /* fine-tunes vertical alignment */
+    margin-top: 2px; /* aligns better with 44px input height */
   }
+
 
 
   /* Optional: stack inputs vertically on mobile */
