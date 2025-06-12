@@ -90,6 +90,8 @@ def suggest():
     url = f"https://api.themoviedb.org/3/{endpoint}?query={query}&api_key={TMDB_API_KEY}"
     res = requests.get(url).json()
     results = res.get("results", [])
+    results = [r for r in results if r.get("popularity", 0) > 5]
+    results = sorted(results, key=lambda r: r.get("popularity", 0), reverse=True)   
 
     suggestions = []
     for r in results:
