@@ -181,8 +181,6 @@
   scroll-snap-type: x mandatory;
   margin: 20px auto;
   max-width: 100%;
-  padding-left: 50%;
-  transform: translateX(-50%);
 }
 
 
