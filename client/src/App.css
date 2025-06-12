@@ -607,11 +607,26 @@
   }
 
   /* Buttons and inputs can be slightly smaller if needed */
-  .inputs-row input,
-  .inputs-row button {
+  .inputs-row input{
     font-size: 14px;
     padding: 8px;
   }
+
+  .inputs-row button {
+    width: 100px;
+    height: 44px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px; /* fine-tunes vertical alignment */
+  }
+
 
   /* Optional: stack inputs vertically on mobile */
   .inputs-row {
