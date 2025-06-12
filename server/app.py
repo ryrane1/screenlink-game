@@ -102,7 +102,7 @@ def suggest():
         else:
             name = r.get("name") or r.get("title") or r.get("original_name")
         
-        if not name:
+        if not name or len(name.split()) < 2:
             continue
         
         profile_path = r.get("profile_path") or r.get("poster_path")
