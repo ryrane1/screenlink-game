@@ -171,7 +171,7 @@ null);
           const container = chainContainerRef.current;
           if (container) {
             container.scrollTo({
-              left: container.scrollWidth,
+              left: container.scrollWidth - container.clientWidth,
               behavior: 'smooth'
             });
           }
