@@ -268,13 +268,19 @@ links!\n\n`;
         {startActor && (
           <div className="actor-card">
             <img src={startActor.image} alt={startActor.name} />
-            <p><strong>Start:</strong> {startActor.name}</p>
+            <div className="actor-label">
+              <span className="label"><strong>Start:</strong></span> 
+              <span className="name">{startActor.name}</span>
+            </div>
           </div>
         )}
         {goalActor && (
           <div className="actor-card goal">
             <img src={goalActor.image} alt={goalActor.name} />
-            <p className="goal-name"><strong>Goal:</strong> {goalActor.name}</p>
+            <div className="actor-label">
+              <span className="label"><strong>Goal:</strong></span> 
+              <span className="name">{goalActor.name}</span>
+            </div>
           </div>
         )}
       </div>
