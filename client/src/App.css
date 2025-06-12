@@ -194,21 +194,25 @@
 }
 
 .chain-scroll-wrapper {
+  position: relative;
   -webkit-overflow-scrolling: touch;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
+  max-width: 100%;
+  padding: 10px 0;
+  margin-top: 20px;
 }
+
 
 
 .chain-scroll-wrapper::before,
 .chain-scroll-wrapper::after {
   content: "";
-  background: linear-gradient(to right, #0b1f1a, transparent);
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 32px;
+  width: 50px; /* Wider fade */
   z-index: 2;
   pointer-events: none;
 }
