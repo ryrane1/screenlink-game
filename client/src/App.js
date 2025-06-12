@@ -414,19 +414,26 @@ links!\n\n`;
 
             <div className="sample-chain">
               <strong>Example:</strong>
-              <div className="sample-chain-items">
+
+              <div className="sample-chain-row">
                 <span className="actor">Emma Stone</span>
                 <span className="arrow">→</span>
                 <span className="movie">La La Land</span>
                 <span className="arrow">→</span>
+              </div>
+
+              <div className="sample-chain-row">
                 <span className="actor">Ryan Gosling</span>
                 <span className="arrow">→</span>
                 <span className="movie">Blade Runner 2049</span>
                 <span className="arrow">→</span>
-                <span className="goal">Harrison Ford</span>
+              </div>
+
+              <div className="sample-chain-row">
+                <span className="actor goal">Harrison Ford</span>
               </div>
             </div>
-
+            
             <button className="got-it-btn" onClick={() => setShowHowToPlay(false)}>Got it!</button>
           </div>
         </div>

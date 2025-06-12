@@ -629,41 +629,39 @@
   text-align: center;
 }
 
-.sample-chain-items {
-  margin-top: 10px;
+.sample-chain-row {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
-  animation: fadeInChain 1s ease-in-out;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
 }
 
-.sample-chain-items .actor {
+.sample-chain-row .actor {
   color: #00ffcc;
   font-weight: bold;
 }
 
-.sample-chain-items .movie {
-  color: #60A5FA;
+.sample-chain-row .movie {
+  color: #66aaff;
   font-style: italic;
 }
 
-.sample-chain-items .arrow {
+.sample-chain-row .arrow {
   color: white;
   font-size: 20px;
-  display: inline-flex;
+  line-height: 1;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  transform: translateY(2px); /* ✅ slightly lowers it */
 }
 
-.sample-chain-items .goal {
+.sample-chain-row .goal {
   color: gold;
   font-weight: bold;
   border-bottom: 2px solid gold;
   padding-bottom: 2px;
 }
+
 
 
 @keyframes fadeInChain {
