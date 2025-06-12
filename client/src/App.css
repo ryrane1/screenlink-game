@@ -69,21 +69,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  background-color: #0c2522;
-  border-radius: 10px;
-  padding: 6px;
-  width: 130px;
-  min-height: 200px;
-  box-shadow: 0 0 15px #00ffcc44;
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 10px;
+  max-width: 160px;
+  min-width: 140px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+  transition: transform 0.3s ease;
 }
 
 .actor-card img {
-  width: 115px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 6px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
 }
 
 .actor-card h3 {
@@ -111,6 +111,12 @@
   font-weight: 700;
 }
 
+.actor-card.goal,
+.actor-card.start {
+  max-width: 160px;
+  min-width: 140px;
+  width: 100%;
+}
 
 .inputs-row {
   display: flex;
@@ -476,7 +482,7 @@
 .modal-buttons {
   display: flex;
   justify-content: center;
-  gap: 12px; /* <- This is what gives clean space between buttons */
+  gap: 12px;
   margin-top: 12px;
 }
 
@@ -673,6 +679,28 @@
     transform: translateY(0);
   }
 }
+
+@keyframes goalPulse {
+  0% {
+    box-shadow: 0 0 0px gold;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px gold;
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 0px gold;
+    transform: scale(1);
+  }
+}
+
+.goal-actor-glow {
+  animation: goalPulse 1.2s ease-in-out infinite;
+  border: 2px solid gold !important;
+  border-radius: 12px;
+}
+
 
 @media (max-width: 780px) {
   /* Chain container should scroll horizontally */
