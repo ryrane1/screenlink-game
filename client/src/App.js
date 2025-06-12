@@ -247,7 +247,7 @@ links!\n\n`;
   return (
     <div className="App">
       <button className="how-to-play-float" onClick={() => setShowHowToPlay(true)}>
-        How to Play?
+        ?
       </button>
 
       <h1>ScreenLink</h1>
@@ -402,7 +402,7 @@ links!\n\n`;
             >
               ❌
             </button>
-            <h2>?</h2>
+            <h2>How to Play</h2>
             <p>
               Connect the <strong>Start actor</strong> to the <strong>Goal actor</strong> by entering movie/TV titles and actors they’ve worked with — one at a time.
             </p>
