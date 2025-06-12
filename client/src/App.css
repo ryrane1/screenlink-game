@@ -100,9 +100,9 @@
   font-size: 14px;
   font-weight: 500;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.2;
   color: white;
-  margin-top: 6px;
+  margin-top: 4px;
   padding: 0 6px;
   word-wrap: break-word;
 }
@@ -110,6 +110,11 @@
 .actor-card p strong {
   color: #00ffcc;
   font-weight: 700;
+}
+
+.goal-name {
+  margin-top: 4px; /* match the same spacing */
+  line-height: 1.2;
 }
 
 
