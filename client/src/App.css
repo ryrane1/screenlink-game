@@ -567,8 +567,9 @@
   padding: 30px;
   border-radius: 20px;
   max-width: 400px;
-  text-align: right;
+  text-align: center;
   box-shadow: 0 0 12px #00ffcc;
+  align-items: left;
 }
 
 .modal-close-btn {
