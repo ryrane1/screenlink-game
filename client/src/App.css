@@ -560,6 +560,32 @@
   font-size: 14px;
 }
 
+.modal {
+  position: relative;
+  background: #112d28;
+  color: white;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 0 12px #00ffcc;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: transparent;
+  color: white;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-close-btn:hover {
+  color: #ff6666;
+}
+
 
 @media (max-width: 780px) {
   /* Chain container should scroll horizontally */

@@ -58,6 +58,7 @@ null);
   ];
 
   const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const chainContainerRef = useRef(null);
 
   useEffect(() => {
@@ -245,6 +246,10 @@ links!\n\n`;
   }
   return (
     <div className="App">
+      <button className="how-to-play-float" onClick={() => setShowHowToPlay(true)}>
+        ?
+      </button>
+
       <h1>ScreenLink</h1>
       <p className="description">
         Connect the <b>Start</b> actor to the <b>Goal</b> actor by entering movie titles and actors they’ve worked with — one link at a time.
@@ -388,6 +393,28 @@ links!\n\n`;
         </div>
       )}
       <p className="footer-quote">{randomQuote}</p>
+      {showHowToPlay && (
+        <div className="modal-overlay" onClick={() => setShowHowToPlay(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="modal-close-btn"
+              onClick={() => setShowHowToPlay(false)}
+            >
+              X
+            </button>
+            <h2>How to Play</h2>
+            <p>
+              Connect the <strong>Start actor</strong> to the <strong>Goal actor</strong> by entering movie/TV titles and actors they’ve worked with — one at a time.
+            </p>
+            <ul style={{ textAlign: "left", paddingLeft: "20px" }}>
+              <li>Enter a title → Submit</li>
+              <li>Enter an actor from that title → Submit</li>
+              <li>Repeat until you reach the Goal actor!</li>
+            </ul>
+            <button onClick={() => setShowHowToPlay(false)}>Got it!</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
