@@ -177,7 +177,7 @@
   overflow-y: hidden;
   gap: 12px;
   padding: 10px 16px;
-  justify-content: flex-start;
+  justify-content: center;
   scroll-snap-type: x mandatory;
   margin: 20px auto;
   max-width: 100%;
