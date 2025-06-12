@@ -83,7 +83,6 @@ def get_actor_data(name):
 
 @app.route("/suggest")
 def suggest():
-    import time
     query = request.args.get("query", "")
     type_ = request.args.get("type", "actor")
     suggestions = []
@@ -104,35 +103,40 @@ def suggest():
     results = res.json().get("results", [])
 
     for r in results:
-        # Only for actors: fetch full name from /person
         if type_ == "actor":
             if not r.get("id") or r.get("popularity", 0) < 5:
                 continue
 
-            person_url = f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}"
-            details = requests.get(person_url).json()
-            name = details.get("name")
+            # 🔍 Get full actor info
+            details = requests.get(
+                f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}"
+            ).json()
 
-            if not name or len(name.split()) < 2 or name in seen_names:
+            name = details.get("name")
+            if (
+                not name
+                or len(name.strip().split()) < 2  # ⛔ skip "Paul"
+                or name.lower() in seen_names
+            ):
                 continue
 
-            seen_names.add(name)
+            seen_names.add(name.lower())
             profile_path = details.get("profile_path")
             image = f"https://image.tmdb.org/t/p/w185{profile_path}" if profile_path else None
             suggestions.append({"name": name, "image": image})
 
         else:
-            # Title logic
             name = r.get("title") or r.get("name") or r.get("original_name")
-            if not name or name in seen_names:
+            if not name or name.lower() in seen_names:
                 continue
 
-            seen_names.add(name)
+            seen_names.add(name.lower())
             poster_path = r.get("poster_path")
             image = f"https://image.tmdb.org/t/p/w185{poster_path}" if poster_path else None
             suggestions.append({"name": name, "image": image})
 
     return jsonify(suggestions[:10])
+
 
 
 
