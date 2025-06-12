@@ -83,40 +83,54 @@ def get_actor_data(name):
 
 @app.route("/suggest")
 def suggest():
-    query = request.args.get("query")
-    type_ = request.args.get("type")
-    endpoint = "search/person" if type_ == "actor" else "search/multi"
-
-    url = f"https://api.themoviedb.org/3/{endpoint}?query={query}&api_key={TMDB_API_KEY}"
-    res = requests.get(url).json()
-    results = res.get("results", [])
-    results = [
-        r for r in res.get("results", [])
-        if r.get("popularity", 0) > 5
-        and r.get("id")
-        and ("name" in r and len(r["name"].split()) >= 2)
-    ]
-
-    results = sorted(results, key=lambda r: r.get("popularity", 0), reverse=True)   
-
+    query = request.args.get("query", "")
+    type_ = request.args.get("type", "actor")  # 'actor' or 'title'
     suggestions = []
-    for r in results:
-        name = ""
-        if type_ == "actor" and r.get("id"):
-            details_url = f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}"
-            details = requests.get(details_url).json()
-            name = details.get("name")
-        else:
-            name = r.get("name") or r.get("title") or r.get("original_name")
-        
-        if not name:
-            continue
-        
-        profile_path = r.get("profile_path") or r.get("poster_path")
-        image = f"https://image.tmdb.org/t/p/w185{profile_path}" if profile_path else None
-        suggestions.append({"name": name, "image": image})
 
-    return jsonify(suggestions)
+    if not query:
+        return jsonify([])
+
+    if type_ == "actor":
+        url = f"https://api.themoviedb.org/3/search/person?query={query}&api_key={TMDB_API_KEY}"
+    else:
+        url = f"https://api.themoviedb.org/3/search/multi?query={query}&api_key={TMDB_API_KEY}"
+
+    res = requests.get(url)
+    if res.status_code != 200:
+        return jsonify([])
+
+    results = res.json().get("results", [])
+
+    for r in results:
+        # Only process actors
+        if type_ == "actor":
+            if not r.get("id") or r.get("popularity", 0) < 5:
+                continue
+
+            # ✅ Get full person data
+            person_url = f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}"
+            details = requests.get(person_url).json()
+            name = details.get("name")
+
+            if not name or len(name.split()) < 2:
+                continue
+
+            profile_path = details.get("profile_path")
+            image = f"https://image.tmdb.org/t/p/w185{profile_path}" if profile_path else None
+            suggestions.append({"name": name, "image": image})
+
+        else:
+            # Movie or TV title fallback
+            name = r.get("title") or r.get("name") or r.get("original_name")
+            if not name:
+                continue
+
+            poster_path = r.get("poster_path")
+            image = f"https://image.tmdb.org/t/p/w185{poster_path}" if poster_path else None
+            suggestions.append({"name": name, "image": image})
+
+    return jsonify(suggestions[:10])
+
 
 @app.route("/get-easy-options", methods=["POST"])
 def get_easy_options():
