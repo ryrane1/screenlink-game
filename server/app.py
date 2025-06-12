@@ -107,15 +107,14 @@ def suggest():
             if not r.get("id") or r.get("popularity", 0) < 5:
                 continue
 
-            # 🔍 Get full actor info
-            details = requests.get(
-                f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}"
-            ).json()
-
+            # ✅ Fetch full name from /person/{id}
+            details_url = f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}"
+            details = requests.get(details_url).json()
             name = details.get("name")
+
             if (
                 not name
-                or len(name.strip().split()) < 2  # ⛔ skip "Paul"
+                or len(name.strip().split()) < 2  # filter single names like "Paul"
                 or name.lower() in seen_names
             ):
                 continue
@@ -126,6 +125,7 @@ def suggest():
             suggestions.append({"name": name, "image": image})
 
         else:
+            # Titles and TV names
             name = r.get("title") or r.get("name") or r.get("original_name")
             if not name or name.lower() in seen_names:
                 continue
@@ -136,8 +136,6 @@ def suggest():
             suggestions.append({"name": name, "image": image})
 
     return jsonify(suggestions[:10])
-
-
 
 
 @app.route("/get-easy-options", methods=["POST"])
