@@ -90,11 +90,18 @@ def suggest():
     url = f"https://api.themoviedb.org/3/{endpoint}?query={query}&api_key={TMDB_API_KEY}"
     res = requests.get(url).json()
     results = res.get("results", [])
-    results = [r for r in results if r.get("popularity", 0) > 5]
+    results = [
+        r for r in res.get("results", [])
+        if r.get("popularity", 0) > 5
+        and r.get("id")
+        and ("name" in r and len(r["name"].split()) >= 2)
+    ]
+
     results = sorted(results, key=lambda r: r.get("popularity", 0), reverse=True)   
 
     suggestions = []
     for r in results:
+        name = ""
         if type_ == "actor" and r.get("id"):
             details_url = f"https://api.themoviedb.org/3/person/{r['id']}?api_key={TMDB_API_KEY}"
             details = requests.get(details_url).json()
@@ -102,7 +109,7 @@ def suggest():
         else:
             name = r.get("name") or r.get("title") or r.get("original_name")
         
-        if not name or len(name.split()) < 2:
+        if not name:
             continue
         
         profile_path = r.get("profile_path") or r.get("poster_path")
