@@ -59,7 +59,7 @@
 .actor-pair {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch; /* ensures same height */
   gap: 30px;
   margin-bottom: 15px;
   flex-wrap: wrap;
@@ -74,9 +74,10 @@
   border-radius: 10px;
   padding: 6px;
   width: 130px;
-  min-height: 200px;
+  height: 215px; /* fixed height that's close to original size */
   box-shadow: 0 0 15px #00ffcc44;
 }
+
 
 .actor-card img {
   width: 115px;
