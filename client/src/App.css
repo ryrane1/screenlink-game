@@ -306,9 +306,6 @@
 
 
 
-
-
-
 .suggestions-dropdown {
   position: absolute;
   top: 100%;
@@ -560,6 +557,29 @@
   font-size: 14px;
 }
 
+.how-to-play-float {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background-color: #112d28;
+  color: #00ffcc;
+  border: 2px solid #00ffcc;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 0 6px #00ffcc88;
+  transition: all 0.2s ease;
+}
+
+.how-to-play-float:hover {
+  background-color: #003d33;
+  transform: scale(1.05);
+}
+
 .modal {
   position: relative;
   background: #112d28;
@@ -569,6 +589,23 @@
   max-width: 400px;
   text-align: center;
   box-shadow: 0 0 12px #00ffcc;
+}
+
+.got-it-btn {
+  background-color: #00ffcc;
+  color: #0b1f1a;
+  font-weight: bold;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-size: 16px;
+}
+
+.got-it-btn:hover {
+  background-color: #00e6b8;
 }
 
 .modal-close-btn {
@@ -607,16 +644,17 @@
 }
 
 .sample-chain-items .movie {
-  color: #ffcc00;
+  color: #60A5FA;
   font-style: italic;
 }
 
 .sample-chain-items .arrow {
   color: white;
+  align-items: center;
 }
 
 .sample-chain-items .goal {
-  border-bottom: 2px solid gold;
+  color: 2px solid gold;
   padding-bottom: 2px;
 }
 

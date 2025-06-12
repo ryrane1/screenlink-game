@@ -400,7 +400,7 @@ links!\n\n`;
               className="modal-close-btn"
               onClick={() => setShowHowToPlay(false)}
             >
-              X
+              ❌
             </button>
             <h2>How to Play</h2>
             <p>
@@ -427,7 +427,7 @@ links!\n\n`;
               </div>
             </div>
 
-            <button onClick={() => setShowHowToPlay(false)}>Got it!</button>
+            <button className="got-it-btn" onClick={() => setShowHowToPlay(false)}>Got it!</button>
           </div>
         </div>
       )}
