@@ -177,11 +177,15 @@
   overflow-y: hidden;
   gap: 12px;
   padding: 10px 16px;
-  justify-content: center;
   scroll-snap-type: x mandatory;
   margin: 20px auto;
   max-width: 100%;
+  justify-content: flex-start;
+
+  padding-left: 50%;
+  transform: translateX(-50%);
 }
+
 
 
 .chain-container::-webkit-scrollbar {

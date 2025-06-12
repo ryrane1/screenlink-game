@@ -168,8 +168,15 @@ null);
         };
         setChain([...chain, movieItem, actorItem]);
         setTimeout(() => {
-          chainContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-          }, 100);
+          const container = chainContainerRef.current;
+          if (container) {
+            container.scrollTo({
+              left: container.scrollWidth,
+              behavior: 'smooth'
+            });
+          }
+        }, 100);
+
         setActorInput("");
         setTitleInput("");
         setSuggestions([]);
