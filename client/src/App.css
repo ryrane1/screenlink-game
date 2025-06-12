@@ -177,7 +177,7 @@
   overflow-y: hidden;
   gap: 12px;
   padding: 10px 16px;
-  justify-content: center; /* changed from flex-start to center */
+  justify-content: flex-start;
   scroll-snap-type: x mandatory;
   margin: 20px auto;
   max-width: 100%;
@@ -194,15 +194,17 @@
 }
 
 .chain-scroll-wrapper {
-  position: relative;
+  -webkit-overflow-scrolling: touch;
   overflow-x: auto;
-  margin-top: 20px;
-  padding: 10px 0;
+  overflow-y: hidden;
+  white-space: nowrap;
 }
+
 
 .chain-scroll-wrapper::before,
 .chain-scroll-wrapper::after {
   content: "";
+  background: linear-gradient(to right, #0b1f1a, transparent);
   position: absolute;
   top: 0;
   bottom: 0;
@@ -232,6 +234,7 @@
   position: relative;
   box-shadow: 0 0 10px rgba(0, 255, 204, 0.12);
   transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .chain-item img {
@@ -281,6 +284,7 @@
   justify-content: center;
   user-select: none;
   transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .arrow.animate {
