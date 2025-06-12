@@ -402,7 +402,7 @@ links!\n\n`;
             >
               ❌
             </button>
-            <h2>How to Play</h2>
+            <h2>?</h2>
             <p>
               Connect the <strong>Start actor</strong> to the <strong>Goal actor</strong> by entering movie/TV titles and actors they’ve worked with — one at a time.
             </p>
@@ -423,7 +423,7 @@ links!\n\n`;
                 <span className="arrow">→</span>
                 <span className="movie">Blade Runner 2049</span>
                 <span className="arrow">→</span>
-                <span className="actor goal">Harrison Ford</span>
+                <span className="goal">Harrison Ford</span>
               </div>
             </div>
 
